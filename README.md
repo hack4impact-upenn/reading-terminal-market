@@ -6,3 +6,4 @@ Team
 - Jonathan Dubin
 - Hunter Lightman
 - Krishna Bharathala
+- Natasha Narang
