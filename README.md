@@ -8,3 +8,4 @@ Team
 - Krishna Bharathala
 - Natasha Narang
 - Abhinav Suri
+- Cathy Chen
