@@ -54,6 +54,16 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
+    # polymorphism
+    __mapper_args__ = {'polymorphic_identity': 'user'}
+    user_type = db.Column(db.String(32), nullable=False, default='user')
+    __mapper_args__ = {'polymorphic_on': user_type}
+
+    # application-specific profile fields
+    description = db.Column(db.String(128), default='')
+    handles_credit = db.Column(db.Boolean, default=True)
+    handles_cash = db.Column(db.Boolean, default=True)
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
@@ -183,6 +193,37 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_admin(self):
         return False
+
+
+class Vendor(User):
+    __tablename__ = 'vendors'
+    __mapper_args__ = {'polymorphic_identity': 'vendor'}
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    # are the vendor's prices visible to other vendors?
+    visible = db.Column(db.Boolean, default=False)
+
+    # TODO: one-to-many relationships to LISTINGs
+
+    def __init__(self, **kwargs):
+        super(Vendor, self).__init__(**kwargs)
+
+    def __repr__(self):
+        return '<Vendor %s>' % self.full_name()
+
+
+class Merchant(User):
+    __tablename__ = 'merchants'
+    __mapper_args__ = {'polymorphic_identity': 'merchant'}
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    # TODO: one-to-many relationships to BOOKMARKs
+
+    def __init__(self, **kwargs):
+        super(Merchant, self).__init__(**kwargs)
+
+    def __repr__(self):
+        return '<Merchant %s>' % self.full_name()
 
 
 login_manager.anonymous_user = AnonymousUser
