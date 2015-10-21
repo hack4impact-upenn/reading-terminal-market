@@ -73,7 +73,7 @@ def setup_prod():
 
 def setup_general():
     """Runs the set-up needed for both local development and production."""
-    Role.insert_roles()
+    pass
 
 if __name__ == '__main__':
     manager.run()
