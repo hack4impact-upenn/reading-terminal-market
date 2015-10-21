@@ -77,10 +77,11 @@ class User(UserMixin, db.Model):
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
-            if self.email == current_app.config['ADMIN_EMAIL']:
+            if not User.query.first():
+                Role.insert_roles()
                 self.role = Role.query.filter_by(
                     permissions=Permission.ADMINISTER).first()
-            if self.role is None:
+            else:
                 self.role = Role.query.filter_by(default=True).first()
         elif self.role.index == 'merchant' or self.role.index == 'vendor':
             self.user_type = self.role.index
