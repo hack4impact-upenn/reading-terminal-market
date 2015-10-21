@@ -83,6 +83,8 @@ class User(UserMixin, db.Model):
                     permissions=Permission.ADMINISTER).first()
             else:
                 self.role = Role.query.filter_by(default=True).first()
+        elif self.role.index == 'merchant' or self.role.index == 'vendor':
+            self.user_type = self.role.index
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
