@@ -10,7 +10,7 @@ from forms import (
     InviteUserForm,
 )
 from . import admin
-from ..models import User, Role
+from ..models import User, Role, Vendor, Merchant
 from .. import db
 from ..email import send_email
 
@@ -49,10 +49,16 @@ def invite_user():
     """Invites a new user to create an account and set their own password."""
     form = InviteUserForm()
     if form.validate_on_submit():
-        user = User(role=form.role.data,
-                    first_name=form.first_name.data,
-                    last_name=form.last_name.data,
-                    email=form.email.data)
+        role_choice = form.role.data.name
+        print role_choice
+        if role_choice == 'Vendor':
+            user = Vendor(email=form.email.data)
+        elif role_choice == 'Merchant':
+            user = Merchant(email=form.email.data)
+        else:
+            user = User(role=form.role.data,
+                        email=form.email.data)
+
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()
