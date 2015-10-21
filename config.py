@@ -15,8 +15,8 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
-    EMAIL_SUBJECT_PREFIX = '[Flask-Base]'
-    EMAIL_SENDER = 'Flask-Base Admin <flask-base-admin@example.com>'
+    EMAIL_SUBJECT_PREFIX = '[Reading Terminal Market]'
+    EMAIL_SENDER = 'Reading Terminal Market <readingterminalmarket@example.com>'
 
     @staticmethod
     def init_app(app):
