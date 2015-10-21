@@ -8,8 +8,8 @@ from .. import db, login_manager
 
 class Permission:
     GENERAL = 0x01
-    VENDOR = 0x11
-    MERCHANT = 0x12
+    VENDOR = GENERAL | 0x02  # == 0x03 (will match GENERAL && VENDOR)
+    MERCHANT = GENERAL | 0x04  # == 0x05 (will match GENERAL && MERCHANT)
     ADMINISTER = 0xff
 
 
@@ -27,6 +27,12 @@ class Role(db.Model):
         roles = {
             'User': (
                 Permission.GENERAL, 'main', True
+            ),
+            'Merchant': (
+                Permission.MERCHANT, 'merchant', True
+            ),
+            'Vendor': (
+                Permission.VENDOR, 'vendor', True
             ),
             'Administrator': (
                 Permission.ADMINISTER, 'admin', False  # grants all permissions
@@ -70,7 +76,6 @@ class User(UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
-        print('Setting role for new user')
         if self.role is None:
             if not User.query.first():
                 Role.insert_roles()
@@ -212,6 +217,7 @@ class Vendor(User):
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
+        self.role = Role.query.filter_by(index='vendor').first()
 
     def __repr__(self):
         return '<Vendor %s>' % self.full_name()
@@ -226,6 +232,7 @@ class Merchant(User):
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
+        self.role = Role.query.filter_by(index='merchant').first()
 
     def __repr__(self):
         return '<Merchant %s>' % self.full_name()
