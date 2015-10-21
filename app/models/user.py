@@ -8,6 +8,8 @@ from .. import db, login_manager
 
 class Permission:
     GENERAL = 0x01
+    VENDOR = 0x11
+    MERCHANT = 0x12
     ADMINISTER = 0xff
 
 
@@ -55,9 +57,11 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
     # polymorphism
-    __mapper_args__ = {'polymorphic_identity': 'user'}
     user_type = db.Column(db.String(32), nullable=False, default='user')
-    __mapper_args__ = {'polymorphic_on': user_type}
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on': user_type
+    }
 
     # application-specific profile fields
     description = db.Column(db.String(128), default='')
@@ -66,6 +70,7 @@ class User(UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
+        print('Setting role for new user')
         if self.role is None:
             if not User.query.first():
                 Role.insert_roles()
