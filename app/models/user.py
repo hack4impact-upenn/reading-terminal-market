@@ -216,6 +216,7 @@ class Vendor(User):
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
+        self.visible = kwargs.get('visible', False)
         self.role = Role.query.filter_by(index='vendor').first()
 
     def __repr__(self):
