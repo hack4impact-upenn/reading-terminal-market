@@ -29,10 +29,10 @@ class Role(db.Model):
                 Permission.GENERAL, 'main', True
             ),
             'Merchant': (
-                Permission.MERCHANT, 'merchant', True
+                Permission.MERCHANT, 'merchant', False
             ),
             'Vendor': (
-                Permission.VENDOR, 'vendor', True
+                Permission.VENDOR, 'vendor', False
             ),
             'Administrator': (
                 Permission.ADMINISTER, 'admin', False  # grants all permissions
