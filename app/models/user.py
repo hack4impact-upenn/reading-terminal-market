@@ -25,7 +25,7 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': (
+            'Inactive': (
                 Permission.GENERAL, 'main', True
             ),
             'Merchant': (
@@ -83,8 +83,6 @@ class User(UserMixin, db.Model):
                     permissions=Permission.ADMINISTER).first()
             else:
                 self.role = Role.query.filter_by(default=True).first()
-        elif self.role.index == 'merchant' or self.role.index == 'vendor':
-            self.user_type = self.role.index
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -208,7 +206,7 @@ class AnonymousUser(AnonymousUserMixin):
 
 
 class Vendor(User):
-    __tablename__ = 'vendors'
+    # __tablename__ = 'vendors'
     __mapper_args__ = {'polymorphic_identity': 'vendor'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
@@ -227,7 +225,7 @@ class Vendor(User):
 
 
 class Merchant(User):
-    __tablename__ = 'merchants'
+    # __tablename__ = 'merchants'
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
