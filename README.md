@@ -9,6 +9,7 @@ Team members:
 - Natasha Narang
 - Abhinav Suri
 - Cathy Chen
+- Ayush Goyal
 
 # flask-base
 

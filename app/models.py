@@ -10,6 +10,12 @@ class Permission:
     GENERAL = 0x01
     ADMINISTER = 0xff
 
+class Category(db.Model):
+    __tablename__ = 'categories'
+    id=db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    parent_category_id(db.Integer, unique=True)
+
 
 class Role(db.Model):
     __tablename__ = 'roles'
