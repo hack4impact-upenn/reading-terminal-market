@@ -30,11 +30,24 @@ def new_user():
     """Create a new user."""
     form = NewUserForm()
     if form.validate_on_submit():
-        user = User(role=form.role.data,
-                    first_name=form.first_name.data,
-                    last_name=form.last_name.data,
-                    email=form.email.data,
-                    password=form.password.data)
+        role_choice = form.role.data.name
+        print role_choice
+        if role_choice == 'Vendor':
+            user = Vendor(email=form.email.data,
+                          first_name=form.first_name.data,
+                          last_name=form.last_name.data,
+                          password=form.password.data)
+        elif role_choice == 'Merchant':
+            user = Merchant(email=form.email.data,
+                            first_name=form.first_name.data,
+                            last_name=form.last_name.data,
+                            password=form.password.data)
+        else:
+            user = User(role=form.role.data,
+                        email=form.email.data,
+                        first_name=form.first_name.data,
+                        last_name=form.last_name.data,
+                        password=form.password.data)
         db.session.add(user)
         db.session.commit()
         flash('User {} successfully created'.format(user.full_name()),
