@@ -206,7 +206,6 @@ class AnonymousUser(AnonymousUserMixin):
 
 
 class Vendor(User):
-    # __tablename__ = 'vendors'
     __mapper_args__ = {'polymorphic_identity': 'vendor'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
@@ -225,7 +224,6 @@ class Vendor(User):
 
 
 class Merchant(User):
-    # __tablename__ = 'merchants'
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
