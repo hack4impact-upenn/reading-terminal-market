@@ -8,6 +8,8 @@ from .. import db, login_manager
 
 class Permission:
     GENERAL = 0x01
+    VENDOR = GENERAL | 0x02  # == 0x03 (will match GENERAL && VENDOR)
+    MERCHANT = GENERAL | 0x04  # == 0x05 (will match GENERAL && MERCHANT)
     ADMINISTER = 0xff
 
 
@@ -23,8 +25,14 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': (
+            'Inactive': (
                 Permission.GENERAL, 'main', True
+            ),
+            'Merchant': (
+                Permission.MERCHANT, 'merchant', False
+            ),
+            'Vendor': (
+                Permission.VENDOR, 'vendor', False
             ),
             'Administrator': (
                 Permission.ADMINISTER, 'admin', False  # grants all permissions
@@ -53,6 +61,18 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+
+    # polymorphism
+    user_type = db.Column(db.String(32), nullable=False, default='user')
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on': user_type
+    }
+
+    # application-specific profile fields
+    description = db.Column(db.String(128), default='')
+    handles_credit = db.Column(db.Boolean, default=True)
+    handles_cash = db.Column(db.Boolean, default=True)
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -183,6 +203,38 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_admin(self):
         return False
+
+
+class Vendor(User):
+    __mapper_args__ = {'polymorphic_identity': 'vendor'}
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    # are the vendor's prices visible to other vendors?
+    visible = db.Column(db.Boolean, default=False)
+
+    # TODO: one-to-many relationships to LISTINGs
+
+    def __init__(self, **kwargs):
+        super(Vendor, self).__init__(**kwargs)
+        self.visible = kwargs.get('visible', False)
+        self.role = Role.query.filter_by(index='vendor').first()
+
+    def __repr__(self):
+        return '<Vendor %s>' % self.full_name()
+
+
+class Merchant(User):
+    __mapper_args__ = {'polymorphic_identity': 'merchant'}
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    # TODO: one-to-many relationships to BOOKMARKs
+
+    def __init__(self, **kwargs):
+        super(Merchant, self).__init__(**kwargs)
+        self.role = Role.query.filter_by(index='merchant').first()
+
+    def __repr__(self):
+        return '<Merchant %s>' % self.full_name()
 
 
 login_manager.anonymous_user = AnonymousUser

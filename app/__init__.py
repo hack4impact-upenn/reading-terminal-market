@@ -65,4 +65,10 @@ def create_app(config_name):
     from admin import admin as admin_blueprint
     app.register_blueprint(admin_blueprint, url_prefix='/admin')
 
+    from merchant import merchant as merchant_blueprint
+    app.register_blueprint(merchant_blueprint, url_prefix='/merchant')
+
+    from vendor import vendor as vendor_blueprint
+    app.register_blueprint(vendor_blueprint, url_prefix='/vendor')
+
     return app
