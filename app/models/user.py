@@ -25,9 +25,6 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'Inactive': (
-                Permission.GENERAL, 'main', True
-            ),
             'Merchant': (
                 Permission.MERCHANT, 'merchant', False
             ),
