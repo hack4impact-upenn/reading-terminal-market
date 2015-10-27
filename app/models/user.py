@@ -8,8 +8,8 @@ from .. import db, login_manager
 
 class Permission:
     GENERAL = 0x01
-    VENDOR = GENERAL | 0x02  # == 0x03 (will match GENERAL && VENDOR)
-    MERCHANT = GENERAL | 0x04  # == 0x05 (will match GENERAL && MERCHANT)
+    VENDOR = 0x02
+    MERCHANT = 0x04
     ADMINISTER = 0xff
 
 
@@ -26,10 +26,10 @@ class Role(db.Model):
     def insert_roles():
         roles = {
             'Merchant': (
-                Permission.MERCHANT, 'merchant', False
+                Permission.GENERAL | Permission.MERCHANT, 'merchant', False
             ),
             'Vendor': (
-                Permission.VENDOR, 'vendor', False
+                Permission.GENERAL | Permission.VENDOR, 'vendor', False
             ),
             'Administrator': (
                 Permission.ADMINISTER, 'admin', False  # grants all permissions
