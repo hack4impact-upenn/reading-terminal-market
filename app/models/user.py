@@ -168,15 +168,37 @@ class User(UserMixin, db.Model):
 
         seed()
         for i in range(count):
-            u = User(
-                first_name=forgery_py.name.first_name(),
-                last_name=forgery_py.name.last_name(),
-                email=forgery_py.internet.email_address(),
-                password=forgery_py.lorem_ipsum.word(),
-                confirmed=True,
-                role=choice(roles),
-                **kwargs
-            )
+            role = choice(roles)
+            if role.index == 'merchant':
+                u = Merchant(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
+            elif role.index == 'vendor':
+                u = Vendor(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
+            else:
+                u = Merchant(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
             db.session.add(u)
             try:
                 db.session.commit()
