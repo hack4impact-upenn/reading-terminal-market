@@ -41,12 +41,16 @@ def new_user():
                             first_name=form.first_name.data,
                             last_name=form.last_name.data,
                             password=form.password.data)
-        else:
+        elif role_choice == 'Administrator':
             user = User(role=form.role.data,
                         email=form.email.data,
                         first_name=form.first_name.data,
                         last_name=form.last_name.data,
                         password=form.password.data)
+        else:
+            # invalid selection for user role
+            flash('Invalid role selection', 'form-error')
+            return render_template('admin/new_user.html', form=form)
         db.session.add(user)
         db.session.commit()
         flash('User {} successfully created'.format(user.full_name()),
@@ -67,9 +71,13 @@ def invite_user():
             user = Vendor(email=form.email.data)
         elif role_choice == 'Merchant':
             user = Merchant(email=form.email.data)
-        else:
+        elif role_choice == 'Administrator':
             user = User(role=form.role.data,
                         email=form.email.data)
+        else:
+            # invalid selection for user role
+            flash('Invalid role selection', 'form-error')
+            return render_template('admin/new_user.html', form=form)
 
         db.session.add(user)
         db.session.commit()
