@@ -21,15 +21,6 @@ class ChangeUserEmailForm(Form):
             raise ValidationError('Email already registered.')
 
 
-class ChangeAccountTypeForm(Form):
-    role = QuerySelectField('New account type',
-                            validators=[DataRequired()],
-                            get_label='name',
-                            query_factory=lambda: db.session.query(Role).
-                            order_by('permissions'))
-    submit = SubmitField('Update role')
-
-
 class InviteUserForm(Form):
     role = QuerySelectField('Account type',
                             validators=[DataRequired()],
