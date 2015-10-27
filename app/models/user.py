@@ -73,13 +73,6 @@ class User(UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
-        if self.role is None:
-            if not User.query.first():
-                Role.insert_roles()
-                self.role = Role.query.filter_by(
-                    permissions=Permission.ADMINISTER).first()
-            else:
-                self.role = Role.query.filter_by(default=True).first()
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
