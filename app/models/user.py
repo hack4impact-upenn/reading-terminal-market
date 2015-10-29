@@ -190,7 +190,7 @@ class User(UserMixin, db.Model):
                     **kwargs
                 )
             else:
-                u = Merchant(
+                u = User(
                     first_name=forgery_py.name.first_name(),
                     last_name=forgery_py.name.last_name(),
                     email=forgery_py.internet.email_address(),
