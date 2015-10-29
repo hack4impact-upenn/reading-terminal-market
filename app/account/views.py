@@ -12,7 +12,7 @@ from ..models import User
 from .forms import (
     LoginForm,
     RegistrationForm,
-    CreatePasswordForm,
+    CreateUserFromInviteForm,
     ChangePasswordForm,
     ChangeEmailForm,
     RequestResetPasswordForm,
@@ -211,8 +211,10 @@ def join_from_invite(user_id, token):
         return redirect(url_for('main.index'))
 
     if new_user.confirm_account(token):
-            form = CreatePasswordForm()
+            form = CreateUserFromInviteForm()
             if form.validate_on_submit():
+                new_user.first_name = form.first_name.data
+                new_user.last_name = form.last_name.data
                 new_user.password = form.password.data
                 db.session.add(new_user)
                 db.session.commit()

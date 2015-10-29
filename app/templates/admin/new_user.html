@@ -27,10 +27,12 @@
 
                 {{ f.render_form_field(form.role) }}
 
+                {% if form.first_name %}
                 <div class="two fields">
                     {{ f.render_form_field(form.first_name) }}
                     {{ f.render_form_field(form.last_name) }}
                 </div>
+                {% endif %}
 
                 {{ f.render_form_field(form.email) }}
 
