@@ -45,11 +45,11 @@ def recreate_db():
     db.drop_all()
     db.create_all()
     db.session.commit()
-    default_user()
+    setup_default_user()
 
 
 @manager.command
-def default_user():
+def setup_default_user():
     """
     Sets up a default user as the admin
     """
