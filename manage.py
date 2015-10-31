@@ -4,6 +4,7 @@ from app import create_app, db
 from app.models import User, Role
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
+from config import Config
 
 # Import settings from .env file. Must define FLASK_CONFIG
 if os.path.exists('.env'):
@@ -43,6 +44,29 @@ def recreate_db():
     """
     db.drop_all()
     db.create_all()
+    db.session.commit()
+    setup_default_user()
+
+
+@manager.command
+def setup_default_user():
+    """
+    Sets up a default user as the admin
+    """
+    # Roles have to be set up for this to work, so we set them up
+    # when this is called. Won't have negative side effects if
+    # roles are already set up
+    Role.insert_roles()
+
+    c = Config()
+    admin_role = Role.query.filter_by(index='admin').first()
+    user = User(role=admin_role,
+                email=c.DEFAULT_EMAIL,
+                first_name=c.DEFAULT_FIRST,
+                last_name=c.DEFAULT_LAST,
+                password=c.DEFAULT_PASSWORD,
+                confirmed=True)
+    db.session.add(user)
     db.session.commit()
 
 

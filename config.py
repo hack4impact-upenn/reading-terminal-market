@@ -21,6 +21,12 @@ class Config:
     EMAIL_SENDER = '{app_name} Admin <{email}>'.format(app_name=APP_NAME,
                                                        email=MAIL_USERNAME)
 
+    DEFAULT_USER = 'admin'
+    DEFAULT_PASSWORD = 'alpine'
+    DEFAULT_FIRST = 'John'
+    DEFAULT_LAST = 'Cleese'
+    DEFAULT_EMAIL = 'test4impact@gmail.com'
+
     @staticmethod
     def init_app(app):
         pass
