@@ -9,7 +9,7 @@ from forms import (
     InviteUserForm,
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant
+from ..models import User, Role, Vendor, Merchant, Category
 from .. import db
 from ..email import send_email
 
@@ -56,6 +56,14 @@ def new_user():
         flash('User {} successfully created'.format(user.full_name()),
               'form-success')
     return render_template('admin/new_user.html', form=form)
+
+@admin.route('/manage-categories')
+@login_required
+@admin_required
+def manage_categories():
+    """Manage categories availabe to vendors"""
+    categories = Category.query.all()
+    return render_template('admin/manage_categories.html', categories=categories)
 
 
 @admin.route('/invite-user', methods=['GET', 'POST'])
