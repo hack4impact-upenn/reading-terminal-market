@@ -9,7 +9,7 @@ from forms import (
     InviteUserForm,
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant
+from ..models import User, Role, Merchant
 from .. import db
 from ..email import send_email
 
