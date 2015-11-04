@@ -10,7 +10,7 @@
 {% endmacro %}
 
 {% macro header_items(current_user) %}
-    <a class="header item" href="{{ url_for('main.index') }}">Flask-Base</a>
+    <a class="header item" href="{{ url_for('main.index') }}">{{ config.APP_NAME }}</a>
     {% if current_user.is_authenticated() %}
         {% set href = url_for(current_user.role.index + '.index') %}
         <a class="item" href="{{ href }}">{{ current_user.role.name }} Dashboard</a>
@@ -22,7 +22,6 @@
         <a href="{{ url_for('account.manage') }}" class="item">Your Account</a>
         <a href="{{ url_for('account.logout') }}" class="item">Log out</a>
     {% else %}
-        <a href="{{ url_for('account.register') }}" class="item">Register</a>
         <a href="{{ url_for('account.login') }}" class="item">Log in</a>
     {% endif %}
 {% endmacro %}

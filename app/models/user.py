@@ -8,6 +8,8 @@ from .. import db, login_manager
 
 class Permission:
     GENERAL = 0x01
+    VENDOR = 0x02
+    MERCHANT = 0x04
     ADMINISTER = 0xff
 
 
@@ -15,7 +17,7 @@ class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    index = db.Column(db.String(64), unique=True)
+    index = db.Column(db.String(64))
     default = db.Column(db.Boolean, default=False, index=True)
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
@@ -23,8 +25,11 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'User': (
-                Permission.GENERAL, 'main', True
+            'Merchant': (
+                Permission.GENERAL | Permission.MERCHANT, 'merchant', False
+            ),
+            'Vendor': (
+                Permission.GENERAL | Permission.VENDOR, 'vendor', False
             ),
             'Administrator': (
                 Permission.ADMINISTER, 'admin', False  # grants all permissions
@@ -54,15 +59,20 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
+    # polymorphism
+    user_type = db.Column(db.String(32), nullable=False, default='user')
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on': user_type
+    }
+
+    # application-specific profile fields
+    description = db.Column(db.String(128), default='')
+    handles_credit = db.Column(db.Boolean, default=True)
+    handles_cash = db.Column(db.Boolean, default=True)
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
-        if self.role is None:
-            if not User.query.first():
-                Role.insert_roles()
-                self.role = Role.query.filter_by(
-                    permissions=Permission.ADMINISTER).first()
-            else:
-                self.role = Role.query.filter_by(default=True).first()
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -158,15 +168,37 @@ class User(UserMixin, db.Model):
 
         seed()
         for i in range(count):
-            u = User(
-                first_name=forgery_py.name.first_name(),
-                last_name=forgery_py.name.last_name(),
-                email=forgery_py.internet.email_address(),
-                password=forgery_py.lorem_ipsum.word(),
-                confirmed=True,
-                role=choice(roles),
-                **kwargs
-            )
+            role = choice(roles)
+            if role.index == 'merchant':
+                u = Merchant(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
+            elif role.index == 'vendor':
+                u = Vendor(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
+            else:
+                u = User(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
             db.session.add(u)
             try:
                 db.session.commit()
@@ -183,6 +215,38 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_admin(self):
         return False
+
+
+class Vendor(User):
+    __mapper_args__ = {'polymorphic_identity': 'vendor'}
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    # are the vendor's prices visible to other vendors?
+    visible = db.Column(db.Boolean, default=False)
+
+    # TODO: one-to-many relationships to LISTINGs
+
+    def __init__(self, **kwargs):
+        super(Vendor, self).__init__(**kwargs)
+        self.visible = kwargs.get('visible', False)
+        self.role = Role.query.filter_by(index='vendor').first()
+
+    def __repr__(self):
+        return '<Vendor %s>' % self.full_name()
+
+
+class Merchant(User):
+    __mapper_args__ = {'polymorphic_identity': 'merchant'}
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    # TODO: one-to-many relationships to BOOKMARKs
+
+    def __init__(self, **kwargs):
+        super(Merchant, self).__init__(**kwargs)
+        self.role = Role.query.filter_by(index='merchant').first()
+
+    def __repr__(self):
+        return '<Merchant %s>' % self.full_name()
 
 
 login_manager.anonymous_user = AnonymousUser

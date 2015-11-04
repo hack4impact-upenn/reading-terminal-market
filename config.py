@@ -4,6 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
+    APP_NAME = 'Flask-Base'
     SECRET_KEY = os.environ.get('SECRET_KEY') or \
         'SjefBOa$1FgGco0SkfPO392qqH9%a492'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
@@ -15,8 +16,17 @@ class Config:
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
-    EMAIL_SUBJECT_PREFIX = '[Reading Terminal Market]'
-    EMAIL_SENDER = 'Reading Terminal Market <readingterminalmarket@example.com>'
+    ADMIN_EMAIL = 'flask-base-admin@example.com'
+    EMAIL_SUBJECT_PREFIX = '[{}]'.format(APP_NAME)
+    EMAIL_SENDER = '{app_name} Admin <{email}>'.format(app_name=APP_NAME,
+                                                       email=MAIL_USERNAME)
+
+    DEFAULT_USER = 'admin'
+    DEFAULT_PASSWORD = 'alpine'
+    DEFAULT_FIRST = 'John'
+    DEFAULT_LAST = 'Cleese'
+    DEFAULT_EMAIL = 'test4impact@gmail.com'
+
 
     @staticmethod
     def init_app(app):

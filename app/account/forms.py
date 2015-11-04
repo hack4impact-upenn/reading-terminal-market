@@ -1,4 +1,3 @@
-from flask import url_for
 from flask.ext.wtf import Form
 from wtforms.fields import (
     StringField,
@@ -21,34 +20,6 @@ class LoginForm(Form):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Keep me logged in')
     submit = SubmitField('Log in')
-
-
-class RegistrationForm(Form):
-    first_name = StringField('First name', validators=[
-        DataRequired(),
-        Length(1, 64)
-    ])
-    last_name = StringField('Last name', validators=[
-        DataRequired(),
-        Length(1, 64)
-    ])
-    email = EmailField('Email', validators=[
-        DataRequired(),
-        Length(1, 64),
-        Email()
-    ])
-    password = PasswordField('Password', validators=[
-        DataRequired(),
-        EqualTo('password2', 'Passwords must match')
-    ])
-    password2 = PasswordField('Confirm password', validators=[DataRequired()])
-    submit = SubmitField('Register')
-
-    def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first():
-            raise ValidationError('Email already registered. (Did you mean to '
-                                  '<a href="{}">log in</a> instead?)'
-                                  .format(url_for('account.login')))
 
 
 class RequestResetPasswordForm(Form):
@@ -80,14 +51,19 @@ class ResetPasswordForm(Form):
             raise ValidationError('Unknown email address.')
 
 
-class CreatePasswordForm(Form):
+class CreateUserFromInviteForm(Form):
+    first_name = StringField('First name', validators=[DataRequired(),
+                                                       Length(1, 64)])
+    last_name = StringField('Last name', validators=[DataRequired(),
+                                                     Length(1, 64)])
+
     password = PasswordField('Password', validators=[
         DataRequired(),
         EqualTo('password2', 'Passwords must match.')
     ])
     password2 = PasswordField('Confirm new password',
                               validators=[DataRequired()])
-    submit = SubmitField('Set password')
+    submit = SubmitField('Create account')
 
 
 class ChangePasswordForm(Form):
