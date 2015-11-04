@@ -57,6 +57,7 @@ def new_user():
               'form-success')
     return render_template('admin/new_user.html', form=form)
 
+
 @admin.route('/manage-categories')
 @login_required
 @admin_required

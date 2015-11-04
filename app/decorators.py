@@ -20,8 +20,10 @@ def permission_required(permission):
 def admin_required(f):
     return permission_required(Permission.ADMINISTER)(f)
 
+
 def vendor_required(f):
     return permission_required(Permission.VENDOR)(f)
+
 
 def merchant_required(f):
     return permission_required(Permission.MERCHANT)(f)
