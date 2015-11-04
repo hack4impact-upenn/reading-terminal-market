@@ -27,7 +27,6 @@ class Config:
     DEFAULT_LAST = 'Cleese'
     DEFAULT_EMAIL = 'test4impact@gmail.com'
 
-
     @staticmethod
     def init_app(app):
         pass
