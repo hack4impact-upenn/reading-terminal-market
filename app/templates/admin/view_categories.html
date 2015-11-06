@@ -1,0 +1,39 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
+            <a class="ui basic compact button" href="{{ url_for('admin.index') }}">
+                <i class="caret left icon"></i>
+                Back to dashboard
+            </a>
+            <h2 class="ui header">
+                Categories
+                <div class="sub header">
+                    View and manage categories available to vendors.
+                </div>
+            </h2>
+
+            <div style="overflow-x: scroll;">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                        <tr>
+                            <th class="sorted ascending">Category</th>
+                            <th>Unit</th>
+                            <th>Number of listings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for c in categories | sort(attribute='name') %}
+                        <tr>
+                            <td>{{ c.name }}</td>
+                            <td>{{ c.unit }}</td>
+                            <td>{{ c.num_listings }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

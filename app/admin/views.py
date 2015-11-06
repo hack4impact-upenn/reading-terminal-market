@@ -7,6 +7,7 @@ from forms import (
     ChangeUserEmailForm,
     NewUserForm,
     InviteUserForm,
+    NewCategoryForm
 )
 from . import admin
 from ..models import User, Role, Vendor, Merchant, Category
@@ -30,7 +31,6 @@ def new_user():
     form = NewUserForm()
     if form.validate_on_submit():
         role_choice = form.role.data.name
-        print role_choice
         if role_choice == 'Vendor':
             user = Vendor(email=form.email.data,
                           first_name=form.first_name.data,
@@ -58,13 +58,30 @@ def new_user():
     return render_template('admin/new_user.html', form=form)
 
 
-@admin.route('/manage-categories')
+@admin.route('/view-categories')
 @login_required
 @admin_required
-def manage_categories():
+def view_categories():
     """Manage categories availabe to vendors"""
     categories = Category.query.all()
-    return render_template('admin/manage_categories.html', categories=categories)
+    for category in categories:
+        pass
+    return render_template('admin/view_categories.html', categories=categories)
+
+
+@admin.route('/add-category', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_category():
+    form = NewCategoryForm()
+    if form.validate_on_submit():
+        category = Category(name=form.category_name.data, unit=form.unit.data)
+        db.session.add(category)
+        db.session.commit()
+        flash('Category {} successfully created'.format(category.name),
+              'form-success')
+    return render_template('admin/add_category.html', form=form)
+
 
 
 @admin.route('/invite-user', methods=['GET', 'POST'])
