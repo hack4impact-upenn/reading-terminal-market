@@ -6,7 +6,7 @@ class Listing(db.Model):
 
     # model relationships
     vendor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    type_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
     # listing properties
     listing_name = db.Column(db.String(64))
@@ -14,15 +14,15 @@ class Listing(db.Model):
     listing_price = db.Column(db.Float)
     listing_available = db.Column(db.Boolean, default=True)
 
-    def __init__(self, vendor_id, listing_name, type_id, listing_price,
+    def __init__(self, vendor_id, listing_name, category_id, listing_price,
                  listing_description=""):
         self.vendor_id = vendor_id
         self.listing_name = listing_name
         self.listing_description = listing_description
-        self.type_id = type_id
+        self.category_id = category_id
         self.listing_price = listing_price
 
     def __repr__(self):
-        return "<Vendor: {} Listing: {} Type: {}".format(self.vendor,
-                                                         self.listing_name,
-                                                         self.type_id)
+        return "<Vendor: {} Listing: {} Category: {}".format(self.vendor,
+                                                             self.listing_name,
+                                                             self.category_id)
