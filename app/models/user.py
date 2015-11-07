@@ -235,13 +235,12 @@ class Vendor(User):
 
 
 bookmarks_table = db.Table('association', db.Model.metadata,
-    db.Column('merchant_id', db.Integer, db.ForeignKey('merchants.id')),
+    db.Column('merchant_id', db.Integer, db.ForeignKey('users.id')),
     db.Column('listing_id', db.Integer, db.ForeignKey('listings.id'))
 )
 
 
 class Merchant(User):
-    __tablename__ = "merchants"
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
