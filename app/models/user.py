@@ -8,8 +8,8 @@ from .. import db, login_manager
 
 class Permission:
     GENERAL = 0x01
-    VENDOR = GENERAL | 0x02  # == 0x03 (will match GENERAL && VENDOR)
-    MERCHANT = GENERAL | 0x04  # == 0x05 (will match GENERAL && MERCHANT)
+    VENDOR = 0x02
+    MERCHANT = 0x04
     ADMINISTER = 0xff
 
 
@@ -25,14 +25,11 @@ class Role(db.Model):
     @staticmethod
     def insert_roles():
         roles = {
-            'Inactive': (
-                Permission.GENERAL, 'main', True
-            ),
             'Merchant': (
-                Permission.MERCHANT, 'merchant', False
+                Permission.GENERAL | Permission.MERCHANT, 'merchant', False
             ),
             'Vendor': (
-                Permission.VENDOR, 'vendor', False
+                Permission.GENERAL | Permission.VENDOR, 'vendor', False
             ),
             'Administrator': (
                 Permission.ADMINISTER, 'admin', False  # grants all permissions
@@ -76,13 +73,6 @@ class User(UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
-        if self.role is None:
-            if not User.query.first():
-                Role.insert_roles()
-                self.role = Role.query.filter_by(
-                    permissions=Permission.ADMINISTER).first()
-            else:
-                self.role = Role.query.filter_by(default=True).first()
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -178,15 +168,37 @@ class User(UserMixin, db.Model):
 
         seed()
         for i in range(count):
-            u = User(
-                first_name=forgery_py.name.first_name(),
-                last_name=forgery_py.name.last_name(),
-                email=forgery_py.internet.email_address(),
-                password=forgery_py.lorem_ipsum.word(),
-                confirmed=True,
-                role=choice(roles),
-                **kwargs
-            )
+            role = choice(roles)
+            if role.index == 'merchant':
+                u = Merchant(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
+            elif role.index == 'vendor':
+                u = Vendor(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
+            else:
+                u = User(
+                    first_name=forgery_py.name.first_name(),
+                    last_name=forgery_py.name.last_name(),
+                    email=forgery_py.internet.email_address(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    confirmed=True,
+                    role=choice(roles),
+                    **kwargs
+                )
             db.session.add(u)
             try:
                 db.session.commit()
@@ -211,8 +223,7 @@ class Vendor(User):
 
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
-
-    # TODO: one-to-many relationships to LISTINGs
+    listings = db.relationship("Listing", backref="vendor")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)

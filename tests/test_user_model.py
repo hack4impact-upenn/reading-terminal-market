@@ -1,7 +1,7 @@
 import unittest
 import time
 from app import create_app, db
-from app.models import User, AnonymousUser, Permission, Role
+from app.models import User, AnonymousUser, Permission, Role, Vendor, Merchant
 
 
 class UserModelTestCase(unittest.TestCase):
@@ -106,10 +106,18 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(u2.email == 'otheruser@example.org')
 
     def test_roles_and_permissions(self):
+        # test modified to support Vendors and merchants
         Role.insert_roles()
-        u = User(email='user@example.com', password='password')
-        self.assertTrue(u.can(Permission.GENERAL))
-        self.assertFalse(u.can(Permission.ADMINISTER))
+        v = Vendor(email='user@example.com', password='password')
+        m = Merchant(email='user@anotherexample.com', password='password')
+        self.assertTrue(v.can(Permission.GENERAL))
+        self.assertTrue(m.can(Permission.GENERAL))
+        self.assertTrue(v.can(Permission.VENDOR))
+        self.assertTrue(m.can(Permission.MERCHANT))
+        self.assertFalse(v.can(Permission.MERCHANT))
+        self.assertFalse(m.can(Permission.VENDOR))
+        self.assertFalse(m.can(Permission.ADMINISTER))
+        self.assertFalse(v.can(Permission.ADMINISTER))
 
     def test_make_administrator(self):
         Role.insert_roles()

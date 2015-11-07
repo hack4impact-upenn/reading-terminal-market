@@ -1,6 +1,6 @@
-<p>Dear {{ user.full_name() }},</p>
+<p>Hello!</p>
 
-<p>You are invited to join <b>{{ config.APP_NAME }}</b>!</p>
+<p>You are invited to join <b>{{ config.APP_NAME }}</b> as a <b>{{ user.role.name }}</b>!</p>
 
 <p>To set your password, please <a href="{{ url_for('account.join_from_invite', user_id=user_id, token=token, _external=True) }}">click here</a>.</p>
 

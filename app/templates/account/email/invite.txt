@@ -1,6 +1,6 @@
-Dear {{ user.full_name() }},
+Hello!
 
-You are invited to join {{ config.APP_NAME }}!
+You are invited to join {{ config.APP_NAME }} as a {{ user.role.name }}!
 
 To set your password, please click on the following link:
 

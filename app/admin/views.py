@@ -6,11 +6,11 @@ from flask.ext.login import login_required, current_user
 from forms import (
     ChangeUserEmailForm,
     NewUserForm,
-    ChangeAccountTypeForm,
     InviteUserForm,
+    NewCategoryForm
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant
+from ..models import User, Role, Vendor, Merchant, Category
 from .. import db
 from ..email import send_email
 
@@ -31,7 +31,6 @@ def new_user():
     form = NewUserForm()
     if form.validate_on_submit():
         role_choice = form.role.data.name
-        print role_choice
         if role_choice == 'Vendor':
             user = Vendor(email=form.email.data,
                           first_name=form.first_name.data,
@@ -42,17 +41,66 @@ def new_user():
                             first_name=form.first_name.data,
                             last_name=form.last_name.data,
                             password=form.password.data)
-        else:
+        elif role_choice == 'Administrator':
             user = User(role=form.role.data,
                         email=form.email.data,
                         first_name=form.first_name.data,
                         last_name=form.last_name.data,
                         password=form.password.data)
+        else:
+            # invalid selection for user role
+            flash('Invalid role selection', 'form-error')
+            return render_template('admin/new_user.html', form=form)
         db.session.add(user)
         db.session.commit()
         flash('User {} successfully created'.format(user.full_name()),
               'form-success')
     return render_template('admin/new_user.html', form=form)
+
+
+@admin.route('/view-categories')
+@login_required
+@admin_required
+def view_categories():
+    """Manage categories availabe to vendors"""
+    categories = Category.query.all()
+    return render_template('admin/view_categories.html', categories=categories)
+
+
+@admin.route('/add-category', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_category():
+    form = NewCategoryForm()
+    if form.validate_on_submit():
+        category_name = form.category_name.data
+        if Category.query.filter_by(name=category_name).first():
+            flash('Category {} already exists'.format(category_name),
+                'form-error')
+        else:
+            category = Category(name=category_name, unit=form.unit.data)
+            db.session.add(category)
+            db.session.commit()
+            flash('Category {} successfully created'.format(category.name),
+                'form-success')
+    return render_template('admin/add_category.html', form=form)
+
+
+@admin.route('/category/<int:category_id>/delete')
+@login_required
+@admin_required
+def delete_category(category_id):
+    category = Category.query.filter_by(id=category_id).first()
+    if not category:
+        flash('The category you are trying to delete does not exist.', 'error')
+    elif len(category.listings) > 0:
+        flash('You cannot delete a category with that has listings.', 'error')
+    else:
+        db.session.delete(category)
+        db.session.commit()
+        flash('Successfully deleted category {}.'.format(category.name), 'success')
+    return redirect(url_for('admin.view_categories'))
+
 
 
 @admin.route('/invite-user', methods=['GET', 'POST'])
@@ -63,14 +111,17 @@ def invite_user():
     form = InviteUserForm()
     if form.validate_on_submit():
         role_choice = form.role.data.name
-        print role_choice
         if role_choice == 'Vendor':
             user = Vendor(email=form.email.data)
         elif role_choice == 'Merchant':
             user = Merchant(email=form.email.data)
-        else:
+        elif role_choice == 'Administrator':
             user = User(role=form.role.data,
                         email=form.email.data)
+        else:
+            # invalid selection for user role
+            flash('Invalid role selection', 'form-error')
+            return render_template('admin/new_user.html', form=form)
 
         db.session.add(user)
         db.session.commit()
@@ -124,31 +175,6 @@ def change_user_email(user_id):
         db.session.commit()
         flash('Email for user {} successfully changed to {}.'
               .format(user.full_name(), user.email),
-              'form-success')
-    return render_template('admin/manage_user.html', user=user, form=form)
-
-
-@admin.route('/user/<int:user_id>/change-account-type',
-             methods=['GET', 'POST'])
-@login_required
-@admin_required
-def change_account_type(user_id):
-    """Change a user's account type."""
-    if current_user.id == user_id:
-        flash('You cannot change the type of your own account. Please ask '
-              'another administrator to do this.', 'error')
-        return redirect(url_for('admin.user_info', user_id=user_id))
-
-    user = User.query.get(user_id)
-    if user is None:
-        abort(404)
-    form = ChangeAccountTypeForm()
-    if form.validate_on_submit():
-        user.role = form.role.data
-        db.session.add(user)
-        db.session.commit()
-        flash('Role for user {} successfully changed to {}.'
-              .format(user.full_name(), user.role.name),
               'form-success')
     return render_template('admin/manage_user.html', user=user, form=form)
 
