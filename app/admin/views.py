@@ -7,9 +7,10 @@ from forms import (
     ChangeUserEmailForm,
     NewUserForm,
     InviteUserForm,
+    NewCategoryForm
 )
 from . import admin
-from ..models import User, Role, Merchant
+from ..models import User, Role, Vendor, Merchant, Category
 from .. import db
 from ..email import send_email
 
@@ -30,7 +31,6 @@ def new_user():
     form = NewUserForm()
     if form.validate_on_submit():
         role_choice = form.role.data.name
-        print role_choice
         if role_choice == 'Vendor':
             user = Vendor(email=form.email.data,
                           first_name=form.first_name.data,
@@ -58,6 +58,51 @@ def new_user():
     return render_template('admin/new_user.html', form=form)
 
 
+@admin.route('/view-categories')
+@login_required
+@admin_required
+def view_categories():
+    """Manage categories availabe to vendors"""
+    categories = Category.query.all()
+    return render_template('admin/view_categories.html', categories=categories)
+
+
+@admin.route('/add-category', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def add_category():
+    form = NewCategoryForm()
+    if form.validate_on_submit():
+        category_name = form.category_name.data
+        if Category.query.filter_by(name=category_name).first():
+            flash('Category {} already exists'.format(category_name),
+                'form-error')
+        else:
+            category = Category(name=category_name, unit=form.unit.data)
+            db.session.add(category)
+            db.session.commit()
+            flash('Category {} successfully created'.format(category.name),
+                'form-success')
+    return render_template('admin/add_category.html', form=form)
+
+
+@admin.route('/category/<int:category_id>/delete')
+@login_required
+@admin_required
+def delete_category(category_id):
+    category = Category.query.filter_by(id=category_id).first()
+    if not category:
+        flash('The category you are trying to delete does not exist.', 'error')
+    elif len(category.listings) > 0:
+        flash('You cannot delete a category with that has listings.', 'error')
+    else:
+        db.session.delete(category)
+        db.session.commit()
+        flash('Successfully deleted category {}.'.format(category.name), 'success')
+    return redirect(url_for('admin.view_categories'))
+
+
+
 @admin.route('/invite-user', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -66,7 +111,6 @@ def invite_user():
     form = InviteUserForm()
     if form.validate_on_submit():
         role_choice = form.role.data.name
-        print role_choice
         if role_choice == 'Vendor':
             user = Vendor(email=form.email.data)
         elif role_choice == 'Merchant':

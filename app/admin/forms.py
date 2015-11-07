@@ -4,7 +4,7 @@ from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from wtforms import ValidationError
-from ..models import User, Role
+from ..models import User, Role, Category
 from .. import db
 
 
@@ -49,3 +49,11 @@ class NewUserForm(InviteUserForm):
     password2 = PasswordField('Confirm password', validators=[DataRequired()])
 
     submit = SubmitField('Create')
+
+
+class NewCategoryForm(Form):
+    category_name = StringField('Category', validators=[DataRequired(),
+                                                        Length(1, 64)])
+    unit = StringField('Unit', validators=[DataRequired(),
+                                           Length(1, 32)])
+    submit = SubmitField('Add category')
