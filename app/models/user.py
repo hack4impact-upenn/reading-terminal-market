@@ -223,8 +223,7 @@ class Vendor(User):
 
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
-
-    # TODO: one-to-many relationships to LISTINGs
+    listings = db.relationship("Listing", backref="vendor")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
