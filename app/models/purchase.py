@@ -24,6 +24,6 @@ class Purchase(db.Model):
         self.purchase_approved = purchase_approved
 
     def __repr__(self):
-        return "<Merchant: {} Listing: {} Purchase: {}".format(self.merchant_id,
-                                                             self.listing_id,
-                                                             self.id)
+        return "<Purchase: {} Merchant: {} Listing: {}".format(self.id,
+                                                               self.merchant_id,
+                                                               self.listing_id)
