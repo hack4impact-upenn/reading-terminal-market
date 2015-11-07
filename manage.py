@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import User, Role
+from app.models import User, Role, Vendor, Merchant
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import Config
@@ -37,6 +37,29 @@ def test():
 
 
 @manager.command
+def setup_test_vendor_merchant():
+    u1 = Merchant(
+        first_name="Merch",
+        last_name="Ant",
+        email="merchant@example.com",
+        password="password",
+        confirmed=True,
+        role=Role.query.filter_by(index='merchant').first(),
+    )
+    u2 = Vendor(
+        first_name="Ven",
+        last_name="Dor",
+        email="vendor@example.com",
+        password="password",
+        confirmed=True,
+        role=Role.query.filter_by(index='vendor').first(),
+    )
+    db.session.add(u1)
+    db.session.add(u2)
+    db.session.commit()
+
+
+@manager.command
 def recreate_db():
     """
     Recreates a local database. You probably should not use this on
@@ -46,6 +69,7 @@ def recreate_db():
     db.create_all()
     db.session.commit()
     setup_default_user()
+    setup_test_vendor_merchant()
 
 
 @manager.command
