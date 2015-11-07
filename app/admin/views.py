@@ -86,6 +86,22 @@ def add_category():
     return render_template('admin/add_category.html', form=form)
 
 
+@admin.route('/category/<int:category_id>/delete')
+@login_required
+@admin_required
+def delete_category(category_id):
+    category = Category.query.filter_by(id=category_id).first()
+    if not category:
+        flash('The category you are trying to delete does not exist.', 'error')
+    elif len(category.listings) > 0:
+        flash('You cannot delete a category with that has listings.', 'error')
+    else:
+        db.session.delete(category)
+        db.session.commit()
+        flash('Successfully deleted category {}.'.format(category.name), 'success')
+    return redirect(url_for('admin.view_categories'))
+
+
 
 @admin.route('/invite-user', methods=['GET', 'POST'])
 @login_required
