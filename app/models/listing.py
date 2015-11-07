@@ -24,6 +24,6 @@ class Listing(db.Model):
         self.price = listing_price
 
     def __repr__(self):
-        return "<Listing: {} Vendor: {} Category: {}>".format(self.vendor_id,
-                                                             self.name,
+        return "<Listing: {} Vendor: {} Category: {}>".format(self.name,
+                                                             self.vendor_id,
                                                              self.category_id)
