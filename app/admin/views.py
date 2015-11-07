@@ -64,8 +64,6 @@ def new_user():
 def view_categories():
     """Manage categories availabe to vendors"""
     categories = Category.query.all()
-    for category in categories:
-        pass
     return render_template('admin/view_categories.html', categories=categories)
 
 
@@ -75,11 +73,16 @@ def view_categories():
 def add_category():
     form = NewCategoryForm()
     if form.validate_on_submit():
-        category = Category(name=form.category_name.data, unit=form.unit.data)
-        db.session.add(category)
-        db.session.commit()
-        flash('Category {} successfully created'.format(category.name),
-              'form-success')
+        category_name = form.category_name.data
+        if Category.query.filter_by(name=category_name).first():
+            flash('Category {} already exists'.format(category_name),
+                'form-error')
+        else:
+            category = Category(name=category_name, unit=form.unit.data)
+            db.session.add(category)
+            db.session.commit()
+            flash('Category {} successfully created'.format(category.name),
+                'form-success')
     return render_template('admin/add_category.html', form=form)
 
 
@@ -92,7 +95,6 @@ def invite_user():
     form = InviteUserForm()
     if form.validate_on_submit():
         role_choice = form.role.data.name
-        print role_choice
         if role_choice == 'Vendor':
             user = Vendor(email=form.email.data)
         elif role_choice == 'Merchant':

@@ -5,8 +5,8 @@ class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # model relationships
-    vendor_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
 
     # listing properties
     listing_name = db.Column(db.String(64))

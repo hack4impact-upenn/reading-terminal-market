@@ -55,10 +55,5 @@ class NewCategoryForm(Form):
     category_name = StringField('Category', validators=[DataRequired(),
                                                         Length(1, 64)])
     unit = StringField('Unit', validators=[DataRequired(),
-                                           Length(1, 64)])
+                                           Length(1, 32)])
     submit = SubmitField('Add category')
-
-    def validate_category(self, field):
-        if Category.query.filter_by(name=field.data).first():
-            raise ValidationError('Category already exists.')
-

@@ -18,12 +18,8 @@
 
             {% set flashes = {
                 'error':   get_flashed_messages(category_filter=['form-error']),
-                'warning': get_flashed_messages(category_filter=['form-check-email']),
-                'info':    get_flashed_messages(category_filter=['form-info']),
                 'success': get_flashed_messages(category_filter=['form-success'])
             } %}
-            TODO: Check if category does not already exist
-            TODO: delete category
             {{ f.begin_form(form, flashes) }}
 
                 <div class="two fields">
@@ -32,8 +28,6 @@
                 </div>
 
                 {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
-                {{ f.form_message(flashes['warning'], header='Check your email.', class='warning') }}
-                {{ f.form_message(flashes['info'], header='Information', class='info') }}
                 {{ f.form_message(flashes['success'], header='Success!', class='success') }}
 
                 {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
