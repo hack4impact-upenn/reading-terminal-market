@@ -6,6 +6,7 @@ from flask.ext.login import (
     current_user
 )
 from . import account
+from ..decorators import merchant_or_vendor_required
 from .. import db
 from ..email import send_email
 from ..models import User
@@ -15,7 +16,8 @@ from .forms import (
     ChangePasswordForm,
     ChangeEmailForm,
     RequestResetPasswordForm,
-    ResetPasswordForm
+    ResetPasswordForm,
+    ChangeCompanyNameForm
 )
 
 
@@ -231,3 +233,17 @@ def unconfirmed():
     if current_user.is_anonymous() or current_user.confirmed:
         return redirect(url_for('main.index'))
     return render_template('account/unconfirmed.html')
+
+
+@account.route('/manage/change-company-name', methods=['GET', 'POST'])
+@login_required
+@merchant_or_vendor_required
+def change_company_name():
+    """Change an existing user's company name."""
+    form = ChangeCompanyNameForm()
+    if form.validate_on_submit():
+        current_user.company_name = form.company_name.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('Your company name has been updated.', 'form-success')
+    return render_template('account/manage.html', form=form)

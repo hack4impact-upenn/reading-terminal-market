@@ -88,3 +88,10 @@ class ChangeEmailForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
+
+
+class ChangeCompanyNameForm(Form):
+    company_name = StringField('Company name', validators=[
+        DataRequired(),
+        Length(0, 64)])
+    submit = SubmitField('Update company name')

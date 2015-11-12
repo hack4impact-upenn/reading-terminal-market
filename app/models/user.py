@@ -10,7 +10,7 @@ class Permission:
     GENERAL = 0x01
     VENDOR = 0x02
     MERCHANT = 0x04
-    ADMINISTER = 0xff
+    ADMINISTER = 0x08
 
 
 class Role(db.Model):
@@ -32,7 +32,7 @@ class Role(db.Model):
                 Permission.GENERAL | Permission.VENDOR, 'vendor', False
             ),
             'Administrator': (
-                Permission.ADMINISTER, 'admin', False  # grants all permissions
+                Permission.ADMINISTER, 'admin', False
             )
         }
         for r in roles:
@@ -83,6 +83,15 @@ class User(UserMixin, db.Model):
 
     def is_admin(self):
         return self.can(Permission.ADMINISTER)
+
+    def is_vendor(self):
+        return self.can(Permission.VENDOR)
+
+    def is_merchant(self):
+        return self.can(Permission.MERCHANT)
+
+    def is_merchant_or_vendor(self):
+        return self.can(Permission.MERCHANT) or self.can(Permission.VENDOR)
 
     @property
     def password(self):
@@ -224,6 +233,7 @@ class Vendor(User):
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
     listings = db.relationship("Listing", backref="vendor")
+    company_name = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
@@ -244,6 +254,7 @@ class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
+    company_name = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
