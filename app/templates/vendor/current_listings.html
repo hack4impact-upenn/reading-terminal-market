@@ -48,12 +48,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for l in listings | sort(attribute='listing_name') %}
+                    {% for l in listings | sort(attribute='name') %}
                         <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
 
-                            <td>{{ l.listing_name }}</td>
-                            <td>{{ l.listing_price }}</td>
-                            <td>{{ l.listing_available }}</td>
+                            <td>{{ l.name }}</td>
+                            <td>{{ l.price }}</td>
+                            <td>{{ l.available }}</td>
                             <td class="item category">{{ l.category_id }}</td>
                         </tr>
                     {% endfor %}

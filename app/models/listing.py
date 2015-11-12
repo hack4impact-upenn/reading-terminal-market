@@ -15,13 +15,14 @@ class Listing(db.Model):
     price = db.Column(db.Float)
     available = db.Column(db.Boolean, default=True)
 
-    def __init__(self, vendor_id, listing_name, category_id, listing_price,
-                 listing_description=""):
+    def __init__(self, vendor_id, name, available, category_id, price,
+                 description=""):
         self.vendor_id = vendor_id
         self.category_id = category_id
-        self.name = listing_name
-        self.description = listing_description
-        self.price = listing_price
+        self.name = name
+        self.description = description
+        self.price = price
+        self.available = available
 
     def __repr__(self):
         return "<Listing: {} Vendor: {} Category: {}>".format(self.name,

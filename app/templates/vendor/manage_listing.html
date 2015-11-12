@@ -22,9 +22,9 @@
 
 {% macro listing_info(listing_id) %}
     <table class="ui compact definition table">
-        <tr><td>Full name</td><td>{{ listing.listing_name }}</td></tr>
-        <tr><td>Email address</td><td>{{ listing.listing_price }}</td></tr>
-        <tr><td>Account type</td><td>{{ listing.listing_description }}</td></tr>
+        <tr><td>Full name</td><td>{{ listing.name }}</td></tr>
+        <tr><td>Email address</td><td>{{ listing.price }}</td></tr>
+        <tr><td>Account type</td><td>{{ listing.description }}</td></tr>
     </table>
 {% endmacro %}
 
@@ -37,8 +37,8 @@
                 Back to all listings
             </a>
             <h2 class="ui header">
-                {{ listing.listing_name }}
-                <div class="sub header">View and manage {{listing.listing_name}}.</div>
+                {{ listing.name }}
+                <div class="sub header">View and manage {{listing.name}}.</div>
             </h2>
         </div>
         <div class="stretched divided very relaxed row">

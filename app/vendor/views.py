@@ -27,16 +27,17 @@ def new_listing():
     form = NewItemForm()
     if form.validate_on_submit():
         category_id = form.categoryId.data.name
-        listing = Listing(listing_name = form.listingName.data,
-        		listing_description = form.listingDescription.data, 
-                listing_available = form.listingAvailable.data,
-        		listing_price=form.listingPrice.data,
-                category_id = category_id,
-                vendor_id = current_user.id
+        listing = Listing(
+                name=form.listingName.data,
+        		description=form.listingDescription.data,
+                available=form.listingAvailable.data,
+        		price=form.listingPrice.data,
+                category_id=category_id,
+                vendor_id=current_user.id
         		)
         db.session.add(listing)
         db.session.commit()
-        flash('Item {} successfully created'.format(listing.listing_name),
+        flash('Item {} successfully created'.format(listing.name),
               'form-success')
     return render_template('vendor/new_listing.html', form=form)
 
@@ -47,7 +48,8 @@ def current_listings():
     """View all current listings."""
     listings = Listing.query.all()
     categories = Category.query.all()
-    return render_template('vendor/current_listings.html', listings=listings,
+    return render_template('vendor/current_listings.html',
+                           listings=listings,
                            categories=categories)
 
 
@@ -74,17 +76,18 @@ def change_listing_info(listing_id):
     form = ChangeListingInformation()
     if form.validate_on_submit():
         category_id = form.categoryId.data.name
-        listing = Listing(listing_name = form.listingName.data,
-                listing_description = form.listingDescription.data, 
-                listing_available = form.listingAvailable.data,
-                listing_price=form.listingPrice.data,
-                category_id = category_id,
-                vendor_id = current_user.id
-                )
+        listing = Listing(
+                name=form.listingName.data,
+                description=form.listingDescription.data,
+                available=form.listingAvailable.data,
+                price=form.listingPrice.data,
+                category_id=category_id,
+                vendor_id=current_user.id
+            )
         db.session.add(listing)
         db.session.commit()
         flash('Inforamtion for item {} successfully changed.'
-              .format(listing.listing_name),
+              .format(listing.name),
               'form-success')
     return render_template('vendor/manage_listing.html', listing=listing, form=form)
 
@@ -108,5 +111,5 @@ def delete_listing(listing_id):
     listing = Listing.query.filter_by(id=listing_id).first()
     db.session.delete(listing)
     db.session.commit()
-    flash('Successfully deleted item %s.' % listing.listing_name, 'success')
+    flash('Successfully deleted item %s.' % listing.name, 'success')
     return redirect(url_for('vendor.current_listings'))
