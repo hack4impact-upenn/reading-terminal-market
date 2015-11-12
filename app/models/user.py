@@ -239,7 +239,7 @@ class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
-    # TODO: one-to-many relationships to BOOKMARKs
+    purchases = db.relationship("Purchase")
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
