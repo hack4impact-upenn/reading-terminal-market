@@ -219,6 +219,15 @@ class AnonymousUser(AnonymousUserMixin):
     def is_admin(self):
         return False
 
+    def is_vendor(self):
+        return False
+
+    def is_merchant(self):
+        return False
+
+    def is_merchant_or_vendor(self):
+        return False
+
 
 class Vendor(User):
     __mapper_args__ = {'polymorphic_identity': 'vendor'}
