@@ -10,6 +10,7 @@ Flask-Script==2.0.5
 Flask-WTF==0.11
 Jinja2==2.7.3
 Mako==1.0.1
+pytz==2015.7
 MarkupSafe==0.23
 SQLAlchemy==1.0.6
 WTForms==2.0.2
