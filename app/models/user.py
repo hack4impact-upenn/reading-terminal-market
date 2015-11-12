@@ -242,18 +242,12 @@ bookmarks_table = db.Table('bookmarks', db.Model.metadata,
     db.Column('listing_id', db.Integer, db.ForeignKey('listings.id'))
 )
 
-# cart_table = db.Table('cart', db.Model.metadata,
-#     db.Column('merchant_id', db.Integer, db.ForeignKey('users.id')),
-#     db.Column('listing_id', db.Integer, db.ForeignKey('listings.id'))
-# )
-
-
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
-    cart = db.relationship("Listing", secondary=cart_table)
+    purchases = db.relationship("Purchase")
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
