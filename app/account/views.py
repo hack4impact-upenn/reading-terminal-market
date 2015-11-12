@@ -17,7 +17,8 @@ from .forms import (
     ChangeEmailForm,
     RequestResetPasswordForm,
     ResetPasswordForm,
-    ChangeCompanyNameForm
+    ChangeCompanyNameForm,
+    ChangeNameForm
 )
 
 
@@ -246,4 +247,18 @@ def change_company_name():
         db.session.add(current_user)
         db.session.commit()
         flash('Your company name has been updated.', 'form-success')
+    return render_template('account/manage.html', form=form)
+
+
+@account.route('/manage/change-name', methods=['GET', 'POST'])
+@login_required
+def change_name():
+    """Change an existing user's name."""
+    form = ChangeNameForm()
+    if form.validate_on_submit():
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('Your name has been updated.', 'form-success')
     return render_template('account/manage.html', form=form)

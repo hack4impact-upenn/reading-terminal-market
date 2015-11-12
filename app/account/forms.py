@@ -93,5 +93,15 @@ class ChangeEmailForm(Form):
 class ChangeCompanyNameForm(Form):
     company_name = StringField('Company name', validators=[
         DataRequired(),
-        Length(0, 64)])
+        Length(1, 64)])
     submit = SubmitField('Update company name')
+
+
+class ChangeNameForm(Form):
+    first_name = StringField('First name', validators=[
+        DataRequired(),
+        Length(1, 64)])
+    last_name = StringField('Last name', validators=[
+        DataRequired(),
+        Length(1, 64)])
+    submit = SubmitField('Update name')
