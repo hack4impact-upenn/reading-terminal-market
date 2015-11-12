@@ -1,0 +1,46 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
+            <h2 class="ui header">
+                Cart
+                <div class="sub header">
+                    View and manage your cart.
+                </div>
+            </h2>
+
+            <div style="overflow-x: scroll;">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                        <tr>
+                            <th class="sorted ascending seven wide">Product</th>
+                            <th class="six wide">Quantity</th>
+                            <th class="two wide">Vendor</th>
+{#                            <th class="one wide">Remove</th>#}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for c in categories | sort(attribute='name') %}
+                        <tr>
+                            <td>{{ c.name }}</td>
+                            <td>{{ c.unit }}</td>
+                            <td>{{ c.listings|length }}</td>
+                            {% if c.listings|length %}
+                                <td></td>
+                            {% else %}
+                                <td class="center aligned">
+                                    <a href="{{ url_for('admin.delete_category', category_id=c.id) }}">
+                                        <i class="remove icon red"></i>
+                                    </a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <button class="positive ui button">Order items</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

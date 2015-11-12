@@ -84,6 +84,9 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.can(Permission.ADMINISTER)
 
+    def is_merchant(self):
+        return self.can(Permission.MERCHANT)
+
     @property
     def password(self):
         raise AttributeError('`password` is not a readable attribute')
@@ -234,16 +237,23 @@ class Vendor(User):
         return '<Vendor %s>' % self.full_name()
 
 
-bookmarks_table = db.Table('association', db.Model.metadata,
+bookmarks_table = db.Table('bookmarks', db.Model.metadata,
     db.Column('merchant_id', db.Integer, db.ForeignKey('users.id')),
     db.Column('listing_id', db.Integer, db.ForeignKey('listings.id'))
 )
+
+# cart_table = db.Table('cart', db.Model.metadata,
+#     db.Column('merchant_id', db.Integer, db.ForeignKey('users.id')),
+#     db.Column('listing_id', db.Integer, db.ForeignKey('listings.id'))
+# )
 
 
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
+    cart = db.relationship("Listing", secondary=cart_table)
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)

@@ -15,6 +15,10 @@
         {% set href = url_for(current_user.role.index + '.index') %}
         <a class="item" href="{{ href }}">{{ current_user.role.name }} Dashboard</a>
     {% endif %}
+    {% if current_user.is_merchant() %}
+        {% set href = url_for('merchant.manage_cart') %}
+        <a class="item" href="{{ href }}">Manage cart</a>
+    {% endif %}
 {% endmacro %}
 
 {% macro account_items(current_user) %}
@@ -70,6 +74,11 @@
 {% endmacro %}
 
 {% macro render_nav(current_user, count, endpoints) %}
+{##}
+{#    {% set endpoints = [#}
+{#    ('account.manage', 'Account information', ''),#}
+{#    ] %}#}
+
     <nav class="ui navigation grid {% if endpoints %}has-submenu{% endif %}">
         {{ mobile_nav(current_user, endpoints=endpoints) }}
         {{ desktop_nav(current_user, endpoints=endpoints, count=count) }}
