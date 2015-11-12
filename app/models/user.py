@@ -247,7 +247,13 @@ class Merchant(User):
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
-    purchases = db.relationship("Purchase")
+    purchases = db.relationship("Purchase", lazy="dynamic")
+
+    def get_cart(self):
+        return self.purchases.filter_by(in_cart=True)
+
+    def add_to_cart(self, listing):
+        pass
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
