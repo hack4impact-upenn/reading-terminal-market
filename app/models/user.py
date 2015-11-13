@@ -243,6 +243,8 @@ bookmarks_table = db.Table('association', db.Model.metadata,
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    purchases = db.relationship("Purchase")
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
 
     def __init__(self, **kwargs):
