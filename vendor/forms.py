@@ -1,9 +1,7 @@
 from flask.ext.wtf import Form
 from wtforms.fields import StringField, DecimalField, RadioField, BooleanField, SubmitField, TextAreaField
-from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-from wtforms import ValidationError
 from ..models import Listing, Category
 from .. import db
 

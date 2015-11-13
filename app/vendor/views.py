@@ -8,9 +8,8 @@ from forms import (
     NewItemForm
 )  
 from . import vendor
-from ..models import User, Role, Merchant, Vendor, Listing, Category
+from ..models import Listing, Category
 from .. import db
-from ..email import send_email
 
 
 @vendor.route('/')
@@ -28,8 +27,12 @@ def new_listing():
     form = NewItemForm()
     if form.validate_on_submit():
         category_id = form.categoryId.data.id
+        name = form.listingName.data
+        if current_user.listings.filter_by(name=name).first():
+            flash('Item {} already exists'.format(name), 'form-error')
+            return render_template('vendor/new_listing.html', form=form)
         listing = Listing(
-                name=form.listingName.data,
+                name=name,
                 description=form.listingDescription.data,
                 available=True,
                 price=form.listingPrice.data,
