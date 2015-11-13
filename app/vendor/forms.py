@@ -14,12 +14,10 @@ class ChangeListingInformation(Form):
                                   validators=[DataRequired()],
                                   get_label='name',
                                   query_factory=lambda: db.session.query(Category).order_by('id'))
-    listingName = StringField('Item Name',
-                              validators=[DataRequired(), Length(1, 1000)])
+    listingName = StringField('Item Name', validators=[DataRequired(), Length(1, 1000)])
     listingDescription = TextAreaField('Item Description',
                                        validators=[DataRequired(), Length(1, 2500)])
-    listingPrice = DecimalField('Item Price',
-                                places=2,
+    listingPrice = DecimalField('Item Price', places=2,
                                 validators=[DataRequired(message=PRICE_MESSAGE)])
     listingAvailable = BooleanField('Available?')
     submit = SubmitField('Update Item Information')
@@ -34,7 +32,6 @@ class NewItemForm(Form):
                               validators=[DataRequired(), Length(1, 1000)])
     listingDescription = TextAreaField('Item Description',
                                        validators=[DataRequired(), Length(1, 2500)])
-    listingPrice = DecimalField('Item Price',
-                                places=2,
-                                validators=[DataRequired(message=PRICE_MESSAGE)])
+    listingPrice = DecimalField('Item Price', places=2,
+                                validators=[DataRequired(message=[PRICE_MESSAGE])])
     submit = SubmitField('Create New Item')
