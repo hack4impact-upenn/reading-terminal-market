@@ -4,9 +4,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, \
     BadSignature, SignatureExpired
 from .. import db, login_manager
+from enum import Enum
 
 
-class Permission:
+class Permission(Enum):
     GENERAL = 0x01
     VENDOR = 0x02
     MERCHANT = 0x04

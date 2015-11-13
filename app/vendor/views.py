@@ -4,8 +4,8 @@ from flask import render_template, abort, redirect, flash, url_for
 from flask.ext.login import login_required, current_user
 
 from forms import (
-	ChangeListingInformation,
-	NewItemForm   
+    ChangeListingInformation,
+    NewItemForm
 )  
 from . import vendor
 from ..models import User, Role, Merchant, Vendor, Listing, Category
@@ -19,6 +19,7 @@ from ..email import send_email
 def index():
     return render_template('vendor/index.html')
 
+
 @vendor.route('/new-item', methods=['GET', 'POST'])
 @login_required
 @vendor_required
@@ -29,17 +30,19 @@ def new_listing():
         category_id = form.categoryId.data.id
         listing = Listing(
                 name=form.listingName.data,
-        		description=form.listingDescription.data,
+                description=form.listingDescription.data,
                 available=True,
-        		price=form.listingPrice.data,
+                price=form.listingPrice.data,
                 category_id=category_id,
                 vendor_id=current_user.id
-        		)
+                )
         db.session.add(listing)
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
               'form-success')
+        return redirect(url_for('.new_listing'))
     return render_template('vendor/new_listing.html', form=form)
+
 
 @vendor.route('/items')
 @login_required
@@ -75,7 +78,12 @@ def change_listing_info(listing_id):
         abort(404)
     form = ChangeListingInformation()
     if form.validate_on_submit():
-        listing.category_id,listing.name, listing.description, listing.available, listing.price, listing.vendor_id = form.categoryId.data.id, form.listingName.data, form.listingDescription.data, form.listingAvailable.data, form.listingPrice.data, current_user.id
+        listing.category_id = form.categoryId.data.id
+        listing.name = form.listingName.data
+        listing.description = form.listingDescription.data
+        listing.available = form.listingAvailable.data
+        listing.price = form.listingPrice.data
+        listing.vendor_id = current_user.id
         db.session.add(listing)
         db.session.commit()
         flash('Inforamtion for item {} successfully changed.'
