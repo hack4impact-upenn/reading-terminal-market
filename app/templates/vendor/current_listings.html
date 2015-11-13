@@ -23,7 +23,9 @@
                     <div class="menu">
                         <div class="item" data-value="">All item types</div>
                         {% for c in categories %}
-                            <div class="item" data-value="{{ c.categories }}">{{ c.name }}</div>
+                            <script>
+                            </script>
+                            <div class="item" data-value="{{ c.name }}">{{ c.name }}</div>
                         {% endfor %}
                     </div>
                 </div>
@@ -43,6 +45,7 @@
                         <tr>
                             <th class="sorted ascending">Item name</th>
                             <th>Item Price</th>
+                            <th class="truncate">Description</th>
                             <th>Availability</th>
                             <th>Category</th>
                         </tr>
@@ -52,9 +55,10 @@
                         <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
 
                             <td>{{ l.name }}</td>
-                            <td>{{ l.price }}</td>
-                            <td>{{ l.available }}</td>
-                            <td class="item category">{{ l.category_id }}</td>
+                            <td>${{ l.price }}/{{l.category.unit}}</td>
+                            <td class="truncate">{{ l.description }}</td>
+                            <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                            <td class="item category">{{ l.category.name }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -86,4 +90,12 @@
             });
         });
     </script>
+    <style>
+    .truncate {
+      max-width: 100px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    </style>
 {% endblock %}

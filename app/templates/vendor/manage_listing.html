@@ -16,15 +16,21 @@
             <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{ href }}">
                 {{ name }}
             </a>
+
         {% endfor %}
     </div>
 {% endmacro %}
 
-{% macro listing_info(listing_id) %}
+{% macro listing_info(listing) %}
+            
     <table class="ui compact definition table">
-        <tr><td>Full name</td><td>{{ listing.name }}</td></tr>
-        <tr><td>Email address</td><td>{{ listing.price }}</td></tr>
-        <tr><td>Account type</td><td>{{ listing.description }}</td></tr>
+
+        <tr><td>Product Name</td><td>{{ listing.name }}</td></tr>
+        <tr><td>Price</td><td>${{ listing.price }}/{{listing.category.unit}}</td></tr>
+        <tr><td>Description</td><td>{{ listing.description }}</td></tr>
+        <tr><td>Category</td><td>{{ listing.category.name }}</td></tr>
+        <tr><td>Available</td><td>{% if listing.available %} Yes {% else %} No {% endif %}</td></tr>
+
     </table>
 {% endmacro %}
 
@@ -70,6 +76,8 @@
                         </a>
                     </div>
                     </div>
+                {% elif request.endpoint == 'vendor.listing_info' %}
+                    {{ listing_info(listing)}}
                 {% elif form %}
                     {{ f.render_form(form) }}
                 {% else %}
