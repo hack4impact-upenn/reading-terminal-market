@@ -26,11 +26,11 @@ def new_listing():
     """Create a new item."""
     form = NewItemForm()
     if form.validate_on_submit():
-        category_id = form.categoryId.data.name
+        category_id = form.categoryId.data.id
         listing = Listing(
                 name=form.listingName.data,
         		description=form.listingDescription.data,
-                available=form.listingAvailable.data,
+                available=True,
         		price=form.listingPrice.data,
                 category_id=category_id,
                 vendor_id=current_user.id
@@ -75,20 +75,18 @@ def change_listing_info(listing_id):
         abort(404)
     form = ChangeListingInformation()
     if form.validate_on_submit():
-        category_id = form.categoryId.data.name
-        listing = Listing(
-                name=form.listingName.data,
-                description=form.listingDescription.data,
-                available=form.listingAvailable.data,
-                price=form.listingPrice.data,
-                category_id=category_id,
-                vendor_id=current_user.id
-            )
+        listing.category_id,listing.name, listing.description, listing.available, listing.price, listing.vendor_id = form.categoryId.data.id, form.listingName.data, form.listingDescription.data, form.listingAvailable.data, form.listingPrice.data, current_user.id
         db.session.add(listing)
         db.session.commit()
         flash('Inforamtion for item {} successfully changed.'
               .format(listing.name),
               'form-success')
+    form.listingName.default = listing.name
+    form.listingDescription.default = listing.description
+    form.listingPrice.default = listing.price
+    form.categoryId.default = listing.category
+    form.listingAvailable.default = listing.available
+    form.process()
     return render_template('vendor/manage_listing.html', listing=listing, form=form)
 
 

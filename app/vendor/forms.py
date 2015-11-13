@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms.fields import StringField, IntegerField, RadioField, BooleanField, SubmitField, TextAreaField
+from wtforms.fields import StringField, DecimalField, RadioField, BooleanField, SubmitField, TextAreaField
 from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
@@ -12,7 +12,7 @@ class ChangeListingInformation(Form):
 	categoryId = QuerySelectField('Category', validators=[DataRequired()], get_label='name', query_factory=lambda: db.session.query(Category).order_by('id'))
 	listingName = StringField('Item Name', validators=[DataRequired(), Length(1, 1000)])
 	listingDescription = TextAreaField('Item Description', validators=[DataRequired(), Length(1, 2500)])
-	listingPrice = IntegerField('Item Price', validators=[DataRequired()])
+	listingPrice = DecimalField('Item Price', places=2, validators=[DataRequired(message="This value needs to be filled and needs to be a number")])
 	listingAvailable = BooleanField('Available?')
 	submit = SubmitField('Update Item Information')
 
@@ -20,6 +20,5 @@ class NewItemForm(Form):
 	categoryId = QuerySelectField('Category', validators=[DataRequired()], get_label='name', query_factory=lambda: db.session.query(Category).order_by('id'))
 	listingName = StringField('Item Name', validators=[DataRequired(), Length(1, 1000)])
 	listingDescription = TextAreaField('Item Description', validators=[DataRequired(), Length(1, 2500)])
-	listingPrice = IntegerField('Item Price', validators=[DataRequired()])
-	listingAvailable = BooleanField('Available?')
+	listingPrice = DecimalField('Item Price', places=2, validators=[DataRequired(message="This value needs to be filled and needs to be a number")])
 	submit = SubmitField('Create New Item')
