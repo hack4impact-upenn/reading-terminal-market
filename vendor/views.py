@@ -77,7 +77,12 @@ def change_listing_info(listing_id):
         abort(404)
     form = ChangeListingInformation()
     if form.validate_on_submit():
-        listing.category_id,listing.name, listing.description, listing.available, listing.price, listing.vendor_id = form.categoryId.data.id, form.listingName.data, form.listingDescription.data, form.listingAvailable.data, form.listingPrice.data, current_user.id
+        listing.category_id = form.categoryId.data.id
+        listing.name = form.listingName.data
+        listing.description =  form.listingDescription.data
+        listing.available = form.listingAvailable.data
+        listing.price = form.listingPrice.data
+        listing.vendor_id = current_user.id
         db.session.add(listing)
         db.session.commit()
         flash('Inforamtion for item {} successfully changed.'
