@@ -4,8 +4,8 @@ from flask import render_template, abort, redirect, flash, url_for
 from flask.ext.login import login_required, current_user
 
 from forms import (
-	ChangeListingInformation,
-	NewItemForm   
+    ChangeListingInformation,
+    NewItemForm
 )  
 from . import vendor
 from ..models import Listing, Category
@@ -17,6 +17,7 @@ from .. import db
 @vendor_required
 def index():
     return render_template('vendor/index.html')
+
 
 @vendor.route('/new-item', methods=['GET', 'POST'])
 @login_required
@@ -43,6 +44,7 @@ def new_listing():
         flash('Item {} successfully created'.format(listing.name),
               'form-success')
     return render_template('vendor/new_listing.html', form=form)
+
 
 @vendor.route('/items')
 @login_required
