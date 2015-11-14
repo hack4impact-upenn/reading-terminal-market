@@ -61,9 +61,11 @@ def current_listings():
 @vendor_required
 def listing_info(listing_id):
     """View a listing's info."""
-    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(id=listing_id).first()
     if listing is None:
         abort(404)
+    elif listing.vendor_id != current_user.id:
+        abort(403)
     return render_template('vendor/manage_listing.html', listing=listing)
 
 
