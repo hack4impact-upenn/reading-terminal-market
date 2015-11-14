@@ -1,35 +1,10 @@
 {% extends 'layouts/listings.html' %}
 
 {% block before %}
-<a class="ui basic compact button" href="{{ url_for('vendor.index') }}">
-    <i class="caret left icon"></i>
-    Back to dashboard
-</a>
-<h2 class="ui header">
-    Your Items
-    <div class="sub header">
-        View and manage all your items.
-    </div>
-</h2>
-
 <div class="ui menu">
-    <div id="select-role" class="ui dropdown item">
-        <div class="text">
-            All item categories
-        </div>
-        <i class="dropdown icon"></i>
-        <div class="menu">
-            <div class="item" data-value="">All item types</div>
-            {% for c in categories %}
-                <script>
-                </script>
-                <div class="item" data-value="{{ c.name }}">{{ c.name }}</div>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="ui right search item">
+    <div class="ui search item">
         <div class="ui transparent icon input">
-            <input id="search-items" type="text" placeholder="Search items...">
+            <input id="search-items" type="text" placeholder="Filter page...">
             <i class="search icon"></i>
         </div>
     </div>

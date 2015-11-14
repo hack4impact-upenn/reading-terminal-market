@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from forms import (
     ChangeListingInformation,
     NewItemForm
-)  
+)
 from . import vendor
 from ..models import Listing, Category
 from .. import db

@@ -84,6 +84,12 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.can(Permission.ADMINISTER)
 
+    def is_vendor(self):
+        return self.can(Permission.VENDOR)
+
+    def is_merchant(self):
+        return self.can(Permission.MERCHANT)
+
     @property
     def password(self):
         raise AttributeError('`password` is not a readable attribute')
