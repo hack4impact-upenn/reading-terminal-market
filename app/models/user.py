@@ -84,6 +84,12 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.can(Permission.ADMINISTER)
 
+    def is_vendor(self):
+        return self.can(Permission.VENDOR)
+
+    def is_merchant(self):
+        return self.can(Permission.MERCHANT)
+
     @property
     def password(self):
         raise AttributeError('`password` is not a readable attribute')
@@ -223,7 +229,7 @@ class Vendor(User):
 
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
-    listings = db.relationship("Listing", backref="vendor")
+    listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
