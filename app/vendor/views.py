@@ -2,11 +2,11 @@ from ..decorators import vendor_required
 
 from flask import render_template, abort, redirect, flash, url_for
 from flask.ext.login import login_required, current_user
-
+from sqlalchemy.exc import IntegrityError
 from forms import (
     ChangeListingInformation,
     NewItemForm
-)
+)  
 from . import vendor
 from ..models import Listing, Category
 from .. import db
@@ -27,22 +27,19 @@ def new_listing():
     form = NewItemForm()
     if form.validate_on_submit():
         category_id = form.category_id.data.id
-        name = form.listing_name.data
-        if current_user.listings.filter_by(name=name).first():
-            flash('Item {} already exists'.format(name), 'form-error')
-            return render_template('vendor/new_listing.html', form=form)
         listing = Listing(
-            name=name,
-            description=form.listing_description.data,
-            available=True,
-            price=form.listing_price.data,
-            category_id=category_id,
-            vendor_id=current_user.id
+                name=form.listing_name.data,
+                description=form.listing_description.data,
+                available=True,
+                price=form.listing_price.data,
+                category_id=category_id,
+                vendor_id=current_user.id
         )
         db.session.add(listing)
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
               'form-success')
+        return redirect(url_for('.new_listing'))
     return render_template('vendor/new_listing.html', form=form)
 
 
@@ -64,7 +61,7 @@ def current_listings():
 @vendor_required
 def listing_info(listing_id):
     """View a listing's info."""
-    listing = Listing.query.filter_by(id=listing_id).first()
+    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
     if listing is None:
         abort(404)
     return render_template('vendor/manage_listing.html', listing=listing)
@@ -75,20 +72,20 @@ def listing_info(listing_id):
 @vendor_required
 def change_listing_info(listing_id):
     """Change a listings's info."""
-    listing = Listing.query.filter_by(id=listing_id).first()
+    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
     if listing is None:
         abort(404)
     form = ChangeListingInformation()
+    form.listing_id = listing_id
     if form.validate_on_submit():
-        [listing.category_id, listing.name, listing.description,
-         listing.available, listing.price, listing.vendor_id] = \
-            [form.category_id.data.id, form.listing_name.data, form.listing_description.data,
-             form.listing_available.data, form.listing_price.data, current_user.id]
-        db.session.add(listing)
-        db.session.commit()
+        listing.category_id = form.category_id.data.id
+        listing.name = form.listing_name.data
+        listing.description = form.listing_description.data
+        listing.available = form.listing_available.data
+        listing.price = form.listing_price.data
+        listing.vendor_id = current_user.id
         flash('Information for item {} successfully changed.'
-              .format(listing.name),
-              'form-success')
+              .format(listing.name), 'form-success')
     form.listing_name.default = listing.name
     form.listing_description.default = listing.description
     form.listing_price.default = listing.price
@@ -103,7 +100,7 @@ def change_listing_info(listing_id):
 @vendor_required
 def delete_listing_request(listing_id):
     """Request deletion of an item"""
-    listing = Listing.query.filter_by(id=listing_id).first()
+    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
     if listing is None:
         abort(404)
     return render_template('vendor/manage_listing.html', listing=listing)
@@ -114,7 +111,7 @@ def delete_listing_request(listing_id):
 @vendor_required
 def delete_listing(listing_id):
     """Delete an item."""
-    listing = Listing.query.filter_by(id=listing_id).first()
+    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
     db.session.delete(listing)
     db.session.commit()
     flash('Successfully deleted item %s.' % listing.name, 'success')

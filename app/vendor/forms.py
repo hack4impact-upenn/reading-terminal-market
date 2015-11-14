@@ -1,8 +1,10 @@
 from flask.ext.wtf import Form
+from flask.ext.login import current_user
 from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length
-from ..models import Category
+from wtforms import ValidationError
+from ..models import Category, Listing
 from .. import db
 
 
@@ -22,6 +24,12 @@ class ChangeListingInformation(Form):
     listing_available = BooleanField('Available?')
     submit = SubmitField('Update Item Information')
 
+    def validate_listing_name(self, field):
+        is_same_name = Listing.name == field.data
+        is_diff_id = Listing.id != self.listing_id
+        if current_user.listings.filter(is_same_name, is_diff_id).first():
+            raise ValidationError('You already have an item with name {}.'.format(field.data))
+
 
 class NewItemForm(Form):	
     category_id = QuerySelectField('Category',
@@ -33,5 +41,9 @@ class NewItemForm(Form):
     listing_description = TextAreaField('Item Description',
                                         validators=[DataRequired(), Length(1, 2500)])
     listing_price = DecimalField('Item Price', places=2,
-                                 validators=[DataRequired(message=[PRICE_MESSAGE])])
+                                 validators=[DataRequired(message=PRICE_MESSAGE)])
     submit = SubmitField('Create New Item')
+
+    def validate_listing_name(self, field):
+        if current_user.listings.filter_by(name=field.data).first():
+            raise ValidationError('You already have an item with this name.')
