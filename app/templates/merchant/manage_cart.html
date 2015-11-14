@@ -29,16 +29,27 @@
                             <td>{{ item.listing.vendor_id }}</td>
                             <td>
                                 <div class="ui input fluid">
-                                    <input type="number" min="0" step="1" value={{ item.quantity }}>
+                                    <input id="quantity" type="number" min="0" step="1" value={{ item.quantity }}>
                                 </div>
                             </td>
-                            <td>{{ item.quantity * item.listing.price }}
+                            <td id="total_price">{{ item.quantity * item.listing.price }}</td>
+                            <meta id="unit_price" content={{ item.listing.price }}>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
                 <button class="positive ui button">Order items</button>
             </div>
-        </div>
+        </div>  
     </div>
+    <script>
+    $(document).ready(function() {
+        $("#quantity").on('input', function() {
+            console.log("HELLO CHANGE");
+            var new_quantity = $("#quantity").val();
+            console.log(parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
+            $("#total_price").text(parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
+        });
+    });
+    </script>
 {% endblock %}
