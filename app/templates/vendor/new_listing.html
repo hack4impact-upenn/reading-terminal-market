@@ -25,29 +25,29 @@
 
             {{ f.begin_form(form, flashes) }}
 
-                {{ f.render_form_field(form.categoryId) }}
+                {{ f.render_form_field(form.category_id) }}
 
-                {% if form.listingName %}
+                {% if form.listing_name %}
                 <div class="one field">
-                    {{ f.render_form_field(form.listingName) }}
+                    {{ f.render_form_field(form.listing_name) }}
                 </div>
                 {% endif %}
 
-                {% if form.listingDescription %}
+                {% if form.listing_description %}
 
-                 {{ f.render_form_field(form.listingDescription) }}
-
-                {% endif %}
-
-                {% if form.listingPrice %}
-
-                        {{ f.render_form_field(form.listingPrice) }}
+                 {{ f.render_form_field(form.listing_description) }}
 
                 {% endif %}
 
-                 {% if form.listingAvailable %}
+                {% if form.listing_price %}
 
-                        {{ f.render_form_field(form.listingAvailable) }}
+                        {{ f.render_form_field(form.listing_price) }}
+
+                {% endif %}
+
+                 {% if form.listing_available %}
+
+                        {{ f.render_form_field(form.listing_available) }}
 
                 {% endif %}
 

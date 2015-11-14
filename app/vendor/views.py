@@ -4,9 +4,9 @@ from flask import render_template, abort, redirect, flash, url_for
 from flask.ext.login import login_required, current_user
 
 from forms import (
-	ChangeListingInformation,
-	NewItemForm   
-)  
+    ChangeListingInformation,
+    NewItemForm
+)
 from . import vendor
 from ..models import Listing, Category
 from .. import db
@@ -18,6 +18,7 @@ from .. import db
 def index():
     return render_template('vendor/index.html')
 
+
 @vendor.route('/new-item', methods=['GET', 'POST'])
 @login_required
 @vendor_required
@@ -25,18 +26,18 @@ def new_listing():
     """Create a new item."""
     form = NewItemForm()
     if form.validate_on_submit():
-        category_id = form.categoryId.data.id
-        name = form.listingName.data
+        category_id = form.category_id.data.id
+        name = form.listing_name.data
         if current_user.listings.filter_by(name=name).first():
             flash('Item {} already exists'.format(name), 'form-error')
             return render_template('vendor/new_listing.html', form=form)
         listing = Listing(
-                name=name,
-                description=form.listingDescription.data,
-                available=True,
-                price=form.listingPrice.data,
-                category_id=category_id,
-                vendor_id=current_user.id
+            name=name,
+            description=form.listing_description.data,
+            available=True,
+            price=form.listing_price.data,
+            category_id=category_id,
+            vendor_id=current_user.id
         )
         db.session.add(listing)
         db.session.commit()
@@ -44,12 +45,13 @@ def new_listing():
               'form-success')
     return render_template('vendor/new_listing.html', form=form)
 
+
 @vendor.route('/items')
 @login_required
 @vendor_required
 def current_listings():
     """View all current listings."""
-    listings = Listing.query.all()
+    listings = current_user.listings.all()
     categories = Category.query.all()
     return render_template('vendor/current_listings.html',
                            listings=listings,
@@ -78,17 +80,20 @@ def change_listing_info(listing_id):
         abort(404)
     form = ChangeListingInformation()
     if form.validate_on_submit():
-        listing.category_id,listing.name, listing.description, listing.available, listing.price, listing.vendor_id = form.categoryId.data.id, form.listingName.data, form.listingDescription.data, form.listingAvailable.data, form.listingPrice.data, current_user.id
+        [listing.category_id, listing.name, listing.description,
+         listing.available, listing.price, listing.vendor_id] = \
+            [form.category_id.data.id, form.listing_name.data, form.listing_description.data,
+             form.listing_available.data, form.listing_price.data, current_user.id]
         db.session.add(listing)
         db.session.commit()
-        flash('Inforamtion for item {} successfully changed.'
+        flash('Information for item {} successfully changed.'
               .format(listing.name),
               'form-success')
-    form.listingName.default = listing.name
-    form.listingDescription.default = listing.description
-    form.listingPrice.default = listing.price
-    form.categoryId.default = listing.category
-    form.listingAvailable.default = listing.available
+    form.listing_name.default = listing.name
+    form.listing_description.default = listing.description
+    form.listing_price.default = listing.price
+    form.category_id.default = listing.category
+    form.listing_available.default = listing.available
     form.process()
     return render_template('vendor/manage_listing.html', listing=listing, form=form)
 
