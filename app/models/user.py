@@ -10,7 +10,7 @@ class Permission:
     GENERAL = 0x01
     VENDOR = 0x02
     MERCHANT = 0x04
-    ADMINISTER = 0xff
+    ADMINISTER = 0x08
 
 
 class Role(db.Model):
@@ -32,7 +32,7 @@ class Role(db.Model):
                 Permission.GENERAL | Permission.VENDOR, 'vendor', False
             ),
             'Administrator': (
-                Permission.ADMINISTER, 'admin', False  # grants all permissions
+                Permission.ADMINISTER, 'admin', False
             )
         }
         for r in roles:
@@ -89,6 +89,9 @@ class User(UserMixin, db.Model):
 
     def is_merchant(self):
         return self.can(Permission.MERCHANT)
+
+    def is_merchant_or_vendor(self):
+        return self.can(Permission.MERCHANT) or self.can(Permission.VENDOR)
 
     @property
     def password(self):
@@ -168,8 +171,9 @@ class User(UserMixin, db.Model):
         """Generate a number of fake users for testing."""
         from sqlalchemy.exc import IntegrityError
         from random import seed, choice
-        import forgery_py
+        from faker import Faker
 
+        fake = Faker()
         roles = Role.query.all()
 
         seed()
@@ -230,6 +234,7 @@ class Vendor(User):
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
     listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
+    company_name = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
@@ -252,6 +257,7 @@ class Merchant(User):
 
     purchases = db.relationship("Purchase")
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
+    company_name = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
