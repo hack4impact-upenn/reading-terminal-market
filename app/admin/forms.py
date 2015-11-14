@@ -42,6 +42,9 @@ class NewUserForm(InviteUserForm):
     last_name = StringField('Last name', validators=[DataRequired(),
                                                      Length(1, 64)])
 
+    company_name = StringField('Company name', validators=[DataRequired(),
+                                                           Length(1, 64)])
+
     password = PasswordField('Password', validators=[
         DataRequired(), EqualTo('password2',
                                 'Passwords must match.')

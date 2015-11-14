@@ -56,7 +56,6 @@ class CreateUserFromInviteForm(Form):
                                                        Length(1, 64)])
     last_name = StringField('Last name', validators=[DataRequired(),
                                                      Length(1, 64)])
-
     password = PasswordField('Password', validators=[
         DataRequired(),
         EqualTo('password2', 'Passwords must match.')
@@ -65,6 +64,10 @@ class CreateUserFromInviteForm(Form):
                               validators=[DataRequired()])
     submit = SubmitField('Create account')
 
+
+class CreateMerchantVendorFromInviteForm(CreateUserFromInviteForm):
+    company_name = StringField('Company name', validators=[DataRequired(),
+                                                     Length(1, 64)])
 
 class ChangePasswordForm(Form):
     old_password = PasswordField('Old password', validators=[DataRequired()])
