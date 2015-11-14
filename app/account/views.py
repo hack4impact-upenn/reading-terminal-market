@@ -202,7 +202,7 @@ def join_from_invite(user_id, token):
                 new_user.first_name = form.first_name.data
                 new_user.last_name = form.last_name.data
                 new_user.password = form.password.data
-                if form.__contains__("company_name"):
+                if 'company_name' in form:
                     new_user.company_name = form.company_name.data
                 db.session.add(new_user)
                 db.session.commit()
