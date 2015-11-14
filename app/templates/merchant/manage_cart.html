@@ -22,20 +22,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for c in categories | sort(attribute='name') %}
+
+                    {% for item in cart | sort(attribute='date') %}
                         <tr>
-                            <td>{{ c.name }}</td>
-                            <td>{{ c.unit }}</td>
-                            <td>{{ c.listings|length }}</td>
-                            {% if c.listings|length %}
-                                <td></td>
-                            {% else %}
-                                <td class="center aligned">
-                                    <a href="{{ url_for('admin.delete_category', category_id=c.id) }}">
-                                        <i class="remove icon red"></i>
-                                    </a>
-                                </td>
-                            {% endif %}
+                            <td>{{ item.listing.name }}</td>
+                            <td>{{ item.listing.vendor_id }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.quantity * item.listing.price }}
                         </tr>
                     {% endfor %}
                     </tbody>
