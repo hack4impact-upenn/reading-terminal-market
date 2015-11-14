@@ -29,7 +29,7 @@
                     </thead>
                     <tbody>
                     {% for l in listings | sort(attribute='name') %}
-                        {% if current_user.is_vendor %}
+                        {% if current_user.is_vendor() %}
                             <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
                         {% else %}
                             <tr onclick="window.location.href = '{{ url_for('merchant.listing_info', listing_id=l.id) }}';">
