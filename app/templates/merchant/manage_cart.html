@@ -27,7 +27,11 @@
                         <tr>
                             <td>{{ item.listing.name }}</td>
                             <td>{{ item.listing.vendor_id }}</td>
-                            <td>{{ item.quantity }}</td>
+                            <td>
+                                <div class="ui input fluid">
+                                    <input type="number" min="0" step="1" value={{ item.quantity }}>
+                                </div>
+                            </td>
                             <td>{{ item.quantity * item.listing.price }}
                         </tr>
                     {% endfor %}
