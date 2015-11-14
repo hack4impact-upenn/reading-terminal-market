@@ -67,7 +67,7 @@ class CreateUserFromInviteForm(Form):
 
 
 class CreateMerchantVendorFromInviteForm(CreateUserFromInviteForm):
-    company_name = StringField('Company name', validators=[DataRequired(),
+    company_name = StringField('Company name', validators=[InputRequired(),
                                                      Length(1, 64)])
 
 
@@ -97,16 +97,16 @@ class ChangeEmailForm(Form):
 
 class ChangeCompanyNameForm(Form):
     company_name = StringField('Company name', validators=[
-        DataRequired(),
+        InputRequired(),
         Length(1, 64)])
     submit = SubmitField('Update company name')
 
 
 class ChangeNameForm(Form):
     first_name = StringField('First name', validators=[
-        DataRequired(),
+        InputRequired(),
         Length(1, 64)])
     last_name = StringField('Last name', validators=[
-        DataRequired(),
+        InputRequired(),
         Length(1, 64)])
     submit = SubmitField('Update name')

@@ -42,7 +42,7 @@ class NewUserForm(InviteUserForm):
     last_name = StringField('Last name', validators=[InputRequired(),
                                                      Length(1, 64)])
 
-    company_name = StringField('Company name', validators=[DataRequired(),
+    company_name = StringField('Company name', validators=[InputRequired(),
                                                            Length(1, 64)])
 
     password = PasswordField('Password', validators=[
