@@ -34,6 +34,10 @@
                 </div>
                 {% endif %}
 
+                {% if form.company_name %}
+                    {{ f.render_form_field(form.company_name) }}
+                {% endif %}
+
                 {{ f.render_form_field(form.email) }}
 
                 {% if form.password %}
@@ -57,4 +61,15 @@
             {{ f.end_form() }}
         </div>
     </div>
+
+    <script type="text/javascript">
+        $('#role').change(function() {
+            var selectedRole = $("#role option:selected").text();
+            if (selectedRole === "Administrator") {
+                $('#company_name').prop('disabled', true);
+            } else {
+                $('#company_name').prop('disabled', false);
+            }
+        });
+    </script>
 {% endblock %}

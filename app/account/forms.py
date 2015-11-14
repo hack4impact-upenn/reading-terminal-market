@@ -56,7 +56,6 @@ class CreateUserFromInviteForm(Form):
                                                        Length(1, 64)])
     last_name = StringField('Last name', validators=[DataRequired(),
                                                      Length(1, 64)])
-
     password = PasswordField('Password', validators=[
         DataRequired(),
         EqualTo('password2', 'Passwords must match.')
@@ -64,6 +63,11 @@ class CreateUserFromInviteForm(Form):
     password2 = PasswordField('Confirm new password',
                               validators=[DataRequired()])
     submit = SubmitField('Create account')
+
+
+class CreateMerchantVendorFromInviteForm(CreateUserFromInviteForm):
+    company_name = StringField('Company name', validators=[DataRequired(),
+                                                     Length(1, 64)])
 
 
 class ChangePasswordForm(Form):
@@ -88,3 +92,20 @@ class ChangeEmailForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
+
+
+class ChangeCompanyNameForm(Form):
+    company_name = StringField('Company name', validators=[
+        DataRequired(),
+        Length(1, 64)])
+    submit = SubmitField('Update company name')
+
+
+class ChangeNameForm(Form):
+    first_name = StringField('First name', validators=[
+        DataRequired(),
+        Length(1, 64)])
+    last_name = StringField('Last name', validators=[
+        DataRequired(),
+        Length(1, 64)])
+    submit = SubmitField('Update name')
