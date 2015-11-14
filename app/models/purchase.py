@@ -2,6 +2,17 @@ from .. import db
 from datetime import datetime
 import pytz
 
+
+class CartItem(db.model):
+    __tablename__ = "cartItems"
+    quantity = db.Column(db.Integer)
+    # TODO setup other relations, also add to merchant model
+
+
+class Order(db.Model):
+    __tablename__ = 'orders'
+
+
 class Purchase(db.Model):
     __tablename__ = 'purchases'
     id = db.Column(db.Integer, primary_key=True)
