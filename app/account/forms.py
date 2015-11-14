@@ -69,6 +69,7 @@ class CreateMerchantVendorFromInviteForm(CreateUserFromInviteForm):
     company_name = StringField('Company name', validators=[DataRequired(),
                                                      Length(1, 64)])
 
+
 class ChangePasswordForm(Form):
     old_password = PasswordField('Old password', validators=[DataRequired()])
     new_password = PasswordField('New password', validators=[
