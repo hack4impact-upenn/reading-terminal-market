@@ -28,6 +28,9 @@ class Purchase(db.Model):
         self.date = datetime.now(pytz.timezone('US/Eastern'))
         self.approved = purchase_approved
 
+
+    # TODO: set constraints for purchases to accord with cart behavior
+
     def __repr__(self):
         return "<Purchase: {} Merchant: {} Listing: {}".format(self.id,
                                                                self.merchant_id,
