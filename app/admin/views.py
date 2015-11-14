@@ -23,41 +23,6 @@ def index():
     return render_template('admin/index.html')
 
 
-@admin.route('/new-user', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def new_user():
-    """Create a new user."""
-    form = NewUserForm()
-    if form.validate_on_submit():
-        role_choice = form.role.data.name
-        if role_choice == 'Vendor':
-            user = Vendor(email=form.email.data,
-                          first_name=form.first_name.data,
-                          last_name=form.last_name.data,
-                          password=form.password.data)
-        elif role_choice == 'Merchant':
-            user = Merchant(email=form.email.data,
-                            first_name=form.first_name.data,
-                            last_name=form.last_name.data,
-                            password=form.password.data)
-        elif role_choice == 'Administrator':
-            user = User(role=form.role.data,
-                        email=form.email.data,
-                        first_name=form.first_name.data,
-                        last_name=form.last_name.data,
-                        password=form.password.data)
-        else:
-            # invalid selection for user role
-            flash('Invalid role selection', 'form-error')
-            return render_template('admin/new_user.html', form=form)
-        db.session.add(user)
-        db.session.commit()
-        flash('User {} successfully created'.format(user.full_name()),
-              'form-success')
-    return render_template('admin/new_user.html', form=form)
-
-
 @admin.route('/view-categories')
 @login_required
 @admin_required
@@ -76,13 +41,13 @@ def add_category():
         category_name = form.category_name.data
         if Category.query.filter_by(name=category_name).first():
             flash('Category {} already exists'.format(category_name),
-                'form-error')
+                  'form-error')
         else:
             category = Category(name=category_name, unit=form.unit.data)
             db.session.add(category)
             db.session.commit()
             flash('Category {} successfully created'.format(category.name),
-                'form-success')
+                  'form-success')
     return render_template('admin/add_category.html', form=form)
 
 
@@ -101,6 +66,42 @@ def delete_category(category_id):
         flash('Successfully deleted category {}.'.format(category.name), 'success')
     return redirect(url_for('admin.view_categories'))
 
+
+@admin.route('/new-user', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def new_user():
+    """Create a new user."""
+    form = NewUserForm()
+    if form.validate_on_submit():
+        role_choice = form.role.data.name
+        if role_choice == 'Vendor':
+            user = Vendor(email=form.email.data,
+                          first_name=form.first_name.data,
+                          company_name=form.company_name.data,
+                          last_name=form.last_name.data,
+                          password=form.password.data)
+        elif role_choice == 'Merchant':
+            user = Merchant(email=form.email.data,
+                            first_name=form.first_name.data,
+                            company_name=form.company_name.data,
+                            last_name=form.last_name.data,
+                            password=form.password.data)
+        elif role_choice == 'Administrator':
+            user = User(role=form.role.data,
+                        email=form.email.data,
+                        first_name=form.first_name.data,
+                        last_name=form.last_name.data,
+                        password=form.password.data)
+        else:
+            # invalid selection for user role
+            flash('Invalid role selection', 'form-error')
+            return render_template('admin/new_user.html', form=form)
+        db.session.add(user)
+        db.session.commit()
+        flash('User {} successfully created'.format(user.full_name()),
+              'form-success')
+    return render_template('admin/new_user.html', form=form)
 
 
 @admin.route('/invite-user', methods=['GET', 'POST'])
@@ -132,8 +133,8 @@ def invite_user():
                    user=user,
                    user_id=user.id,
                    token=token)
-        flash('User {} successfully invited'.format(user.full_name()),
-              'form-success')
+
+        flash('User successfully invited', 'form-success')
     return render_template('admin/new_user.html', form=form)
 
 

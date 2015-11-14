@@ -1,0 +1,38 @@
+{% extends 'layouts/listings.html' %}
+
+{% block before %}
+<div class="ui menu">
+    <div class="ui search item">
+        <div class="ui transparent icon input">
+            <input id="search-items" type="text" placeholder="Filter page...">
+            <i class="search icon"></i>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block after %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#search-items').keyup(function () {
+                var searchText = $(this).val();
+                if (searchText.length > 0) {
+                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
+                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
+                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
+                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+                } else {
+                    $('td.positive').removeClass('positive');
+                    $('tr.hidden').removeClass('hidden').show();
+                }
+            });
+
+            $('#select-role').dropdown({
+                onChange: function (value, text, $selectedItem) {
+                    $('td.item.category:contains(' + value + ')').closest('tr').removeClass('hidden').show();
+                    $('td.item.category').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,59 +1,65 @@
 {% extends 'layouts/base.html' %}
 {% import 'macros/form_macros.html' as f %}
 
-{% set deletion_endpoint = 'admin.delete_user_request' %}
+{% set deletion_endpoint = 'vendor.delete_listing_request' %}
 
 {% set endpoints = [
-    ('admin.user_info', 'User information'),
-    ('admin.change_user_email', 'Change email address'),
-    (deletion_endpoint, 'Delete user')
+    ('vendor.listing_info', 'Item information'),
+    ('vendor.change_listing_info', 'Change Item Details'),
+    (deletion_endpoint, 'Delete item')
 ] %}
 
 {% macro navigation(items) %}
     <div class="ui vertical fluid secondary menu">
         {% for route, name in items %}
-            {% set href = url_for(route, user_id=user.id) %}
+            {% set href = url_for(route, listing_id=listing.id) %}
             <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{ href }}">
                 {{ name }}
             </a>
+
         {% endfor %}
     </div>
 {% endmacro %}
 
-{% macro user_info(user) %}
+{% macro listing_info(listing) %}
+            
     <table class="ui compact definition table">
-        <tr><td>Full name</td><td>{{ '%s %s' % (user.first_name, user.last_name) }}</td></tr>
-        <tr><td>Email address</td><td>{{ user.email }}</td></tr>
-        <tr><td>Account type</td><td>{{ user.role.name }}</td></tr>
-        <tr><td>Company name</td><td>{{ user.company_name }}</td></tr>
+
+        <tr><td>Product Name</td><td>{{ listing.name }}</td></tr>
+        <tr><td>Price</td><td>${{ listing.price }}/{{listing.category.unit}}</td></tr>
+        <tr><td>Description</td><td>{{ listing.description }}</td></tr>
+        <tr><td>Category</td><td>{{ listing.category.name }}</td></tr>
+        <tr><td>Available</td><td>{% if listing.available %} Yes {% else %} No {% endif %}</td></tr>
+
     </table>
 {% endmacro %}
+
 
 {% block content %}
     <div class="ui stackable centered grid container">
         <div class="twelve wide column">
-            <a class="ui basic compact button" href="{{ url_for('admin.registered_users') }}">
+            <a class="ui basic compact button" href="{{ url_for('vendor.current_listings') }}">
                 <i class="caret left icon"></i>
-                Back to all users
+                Back to all listings
             </a>
             <h2 class="ui header">
-                {{ user.full_name() }}
-                <div class="sub header">View and manage {{ user.first_name }}’s account.</div>
+                {{ listing.name }}
+                <div class="sub header">View and manage {{listing.name}}.</div>
             </h2>
         </div>
         <div class="stretched divided very relaxed row">
-            <div class="four wide column">
+        <div class="four wide column">
                 {{ navigation(endpoints) }}
             </div>
-            <div class="eight wide column">
+     <div class="eight wide column">
                 {% if request.endpoint == deletion_endpoint %}
                     <h3 class="ui red block header">
                         <i class="warning circle icon"></i>
                         <div class="content">
                             This action is permanent
                             <div class="sub header">
-                                Deleting a user account is not a reversible change. Any information associated
-                                with this account will be removed, and cannot be recovered.
+                                Deleting an item is not a reversible change. Any information associated
+                                with this item will be removed, and cannot be recovered.
                             </div>
                         </div>
                     </h3>
@@ -66,14 +72,15 @@
                             </div>
                         </div>
                         <a class="ui disabled negative deletion button">
-                            Delete this user
+                            Delete this item
                         </a>
                     </div>
                     </div>
+                {% elif request.endpoint == 'vendor.listing_info' %}
+                    {{ listing_info(listing)}}
                 {% elif form %}
                     {{ f.render_form(form) }}
                 {% else %}
-                    {{ user_info(user) }}
                 {% endif %}
             </div>
         </div>
@@ -83,7 +90,7 @@
         $('.deletion.checkbox').checkbox({
             onChecked: function() {
                 $('.deletion.button').removeClass('disabled')
-                        .attr('href', '{{ url_for('admin.delete_user', user_id=user.id) }}');
+                        .attr('href', '{{ url_for('vendor.delete_listing', listing_id=listing.id) }}');
             },
             onUnchecked: function() {
                 $('.deletion.button').addClass('disabled').removeAttr('href');
