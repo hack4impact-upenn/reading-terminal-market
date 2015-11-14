@@ -1,0 +1,100 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% set deletion_endpoint = 'vendor.delete_listing_request' %}
+
+{% set endpoints = [
+    ('vendor.listing_info', 'Item information'),
+    ('vendor.change_listing_info', 'Change Item Details'),
+    (deletion_endpoint, 'Delete item')
+] %}
+
+{% macro navigation(items) %}
+    <div class="ui vertical fluid secondary menu">
+        {% for route, name in items %}
+            {% set href = url_for(route, listing_id=listing.id) %}
+            <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{ href }}">
+                {{ name }}
+            </a>
+
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro listing_info(listing) %}
+            
+    <table class="ui compact definition table">
+
+        <tr><td>Product Name</td><td>{{ listing.name }}</td></tr>
+        <tr><td>Price</td><td>${{ listing.price }}/{{listing.category.unit}}</td></tr>
+        <tr><td>Description</td><td>{{ listing.description }}</td></tr>
+        <tr><td>Category</td><td>{{ listing.category.name }}</td></tr>
+        <tr><td>Available</td><td>{% if listing.available %} Yes {% else %} No {% endif %}</td></tr>
+
+    </table>
+{% endmacro %}
+
+
+{% block content %}
+    <div class="ui stackable centered grid container">
+        <div class="twelve wide column">
+            <a class="ui basic compact button" href="{{ url_for('vendor.current_listings') }}">
+                <i class="caret left icon"></i>
+                Back to all listings
+            </a>
+            <h2 class="ui header">
+                {{ listing.name }}
+                <div class="sub header">View and manage {{listing.name}}.</div>
+            </h2>
+        </div>
+        <div class="stretched divided very relaxed row">
+        <div class="four wide column">
+                {{ navigation(endpoints) }}
+            </div>
+     <div class="eight wide column">
+                {% if request.endpoint == deletion_endpoint %}
+                    <h3 class="ui red block header">
+                        <i class="warning circle icon"></i>
+                        <div class="content">
+                            This action is permanent
+                            <div class="sub header">
+                                Deleting an item is not a reversible change. Any information associated
+                                with this item will be removed, and cannot be recovered.
+                            </div>
+                        </div>
+                    </h3>
+
+                    <div class="ui form">
+                        <div class="inline field">
+                            <div class="ui deletion checkbox">
+                                <input type="checkbox" tabindex="0" class="hidden">
+                                <label>I understand that this action cannot be undone.</label>
+                            </div>
+                        </div>
+                        <a class="ui disabled negative deletion button">
+                            Delete this item
+                        </a>
+                    </div>
+                    </div>
+                {% elif request.endpoint == 'vendor.listing_info' %}
+                    {{ listing_info(listing)}}
+                {% elif form %}
+                    {{ f.render_form(form) }}
+                {% else %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $('.deletion.checkbox').checkbox({
+            onChecked: function() {
+                $('.deletion.button').removeClass('disabled')
+                        .attr('href', '{{ url_for('vendor.delete_listing', listing_id=listing.id) }}');
+            },
+            onUnchecked: function() {
+                $('.deletion.button').addClass('disabled').removeAttr('href');
+            }
+        });
+    </script>
+{% endblock %}

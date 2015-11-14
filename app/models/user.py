@@ -233,7 +233,7 @@ class Vendor(User):
 
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
-    listings = db.relationship("Listing", backref="vendor")
+    listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
     company_name = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):

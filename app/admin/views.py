@@ -41,13 +41,13 @@ def add_category():
         category_name = form.category_name.data
         if Category.query.filter_by(name=category_name).first():
             flash('Category {} already exists'.format(category_name),
-                'form-error')
+                  'form-error')
         else:
             category = Category(name=category_name, unit=form.unit.data)
             db.session.add(category)
             db.session.commit()
             flash('Category {} successfully created'.format(category.name),
-                'form-success')
+                  'form-success')
     return render_template('admin/add_category.html', form=form)
 
 
