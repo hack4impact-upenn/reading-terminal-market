@@ -84,6 +84,12 @@ class User(UserMixin, db.Model):
     def is_admin(self):
         return self.can(Permission.ADMINISTER)
 
+    def is_vendor(self):
+        return self.can(Permission.VENDOR)
+
+    def is_merchant(self):
+        return self.can(Permission.MERCHANT)
+
     @property
     def password(self):
         raise AttributeError('`password` is not a readable attribute')
@@ -243,6 +249,8 @@ bookmarks_table = db.Table('association', db.Model.metadata,
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    purchases = db.relationship("Purchase")
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
 
     def __init__(self, **kwargs):

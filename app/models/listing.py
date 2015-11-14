@@ -1,4 +1,5 @@
 from .. import db
+from sqlalchemy import or_
 
 
 class Listing(db.Model):
@@ -23,6 +24,23 @@ class Listing(db.Model):
         self.description = description
         self.price = price
         self.available = available
+
+    @property
+    def category_name(self):
+        return self.category_id.name
+
+    @staticmethod
+    def search(**kwargs):
+        """ Returns all listings matching the criteria """
+        filter_list = []
+        if 'term' in kwargs:
+            term = kwargs['term']
+            filter_list.append(or_(
+                            Listing.name.like('%{}%'.format(term)),
+                            Listing.description.like('%{}%'.format(term)))
+            )
+
+        return Listing.query.filter(*filter_list).all()
 
     def __repr__(self):
         return "<Listing: {} Vendor: {} Category: {}>".format(self.name,
