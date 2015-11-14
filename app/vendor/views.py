@@ -2,7 +2,7 @@ from ..decorators import vendor_required
 
 from flask import render_template, abort, redirect, flash, url_for
 from flask.ext.login import login_required, current_user
-
+from sqlalchemy.exc import IntegrityError
 from forms import (
     ChangeListingInformation,
     NewItemForm
@@ -27,12 +27,8 @@ def new_listing():
     form = NewItemForm()
     if form.validate_on_submit():
         category_id = form.categoryId.data.id
-        name = form.listingName.data
-        if current_user.listings.filter_by(name=name).first():
-            flash('Item {} already exists'.format(name), 'form-error')
-            return render_template('vendor/new_listing.html', form=form)
         listing = Listing(
-                name=name,
+                name=form.listing_name.data,
                 description=form.listingDescription.data,
                 available=True,
                 price=form.listingPrice.data,
@@ -43,6 +39,7 @@ def new_listing():
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
               'form-success')
+        return redirect(url_for('.new_listing'))
     return render_template('vendor/new_listing.html', form=form)
 
 
@@ -79,14 +76,18 @@ def change_listing_info(listing_id):
     if listing is None:
         abort(404)
     form = ChangeListingInformation()
+    form.listing_id = listing_id
     if form.validate_on_submit():
-        listing.category_id,listing.name, listing.description, listing.available, listing.price, listing.vendor_id = form.categoryId.data.id, form.listingName.data, form.listingDescription.data, form.listingAvailable.data, form.listingPrice.data, current_user.id
-        db.session.add(listing)
-        db.session.commit()
-        flash('Inforamtion for item {} successfully changed.'
+        listing.category_id = form.categoryId.data.id
+        listing.name = form.listing_name.data
+        listing.description = form.listingDescription.data
+        listing.available = form.listingAvailable.data
+        listing.price = form.listingPrice.data
+        listing.vendor_id = current_user.id
+        flash('Information for item {} successfully changed.'
               .format(listing.name),
-              'form-success')
-    form.listingName.default = listing.name
+            'form-success')
+    form.listing_name.default = listing.name
     form.listingDescription.default = listing.description
     form.listingPrice.default = listing.price
     form.categoryId.default = listing.category

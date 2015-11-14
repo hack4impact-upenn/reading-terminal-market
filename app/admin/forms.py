@@ -4,7 +4,7 @@ from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from wtforms import ValidationError
-from ..models import User, Role, Category
+from ..models import User, Role
 from .. import db
 
 

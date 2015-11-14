@@ -14,6 +14,7 @@ class Listing(db.Model):
     description = db.Column(db.Text)
     price = db.Column(db.Float)
     available = db.Column(db.Boolean, default=True)
+    __table_args__ = (db.UniqueConstraint('vendor_id', 'name', name='_vendor_name_uc'),)
 
     def __init__(self, vendor_id, name, available, category_id, price,
                  description=""):
@@ -25,6 +26,8 @@ class Listing(db.Model):
         self.available = available
 
     def __repr__(self):
-        return "<Listing: {} Vendor: {} Category: {}>".format(self.name,
-                                                              self.vendor_id,
-                                                              self.category_id)
+        return "<Listing: {} Listing id: {} " \
+               "Vendor: {} Category: {}>".format(self.name,
+                                                 self.id,
+                                                 self.vendor_id,
+                                                 self.category_id)
