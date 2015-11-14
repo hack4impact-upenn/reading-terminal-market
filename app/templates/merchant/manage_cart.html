@@ -45,9 +45,7 @@
     <script>
     $(document).ready(function() {
         $("#quantity").on('input', function() {
-            console.log("HELLO CHANGE");
             var new_quantity = $("#quantity").val();
-            console.log(parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
             $("#total_price").text(parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
         });
     });
