@@ -255,16 +255,19 @@ class Vendor(User):
 
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
-    db.Column('merchant_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('listing_id', db.Integer, db.ForeignKey('listings.id'))
-)
+                           db.Column('merchant_id', db.Integer,
+                                     db.ForeignKey('users.id')),
+                           db.Column('listing_id', db.Integer,
+                                     db.ForeignKey('listings.id'))
+                           )
+
 
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
-    purchases = db.relationship("Purchase", lazy="dynamic")
+    cart_items = db.relationship("CartItem")
     company_name = db.Column(db.String(64), default="")
 
     def get_cart(self):

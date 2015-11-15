@@ -52,7 +52,7 @@ def setup_test_vendor_merchant():
         last_name="Dor",
         email="vendor@example.com",
         password="password",
-        company="Jonny's Bagels",
+        company_name="Jonny's Bagels",
         confirmed=True,
         role=Role.query.filter_by(index='vendor').first(),
     )
