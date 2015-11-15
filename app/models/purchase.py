@@ -31,7 +31,8 @@ class Purchase(db.Model):
     approved = db.Column(db.Boolean, default=False)
     in_cart = db.Column(db.Boolean, default=True)
 
-    def __init__(self, merchant_id, listing_id, purchase_quantity, purchase_order_number, purchase_approved):
+    def __init__(self, merchant_id, listing_id, purchase_quantity,
+                 purchase_order_number, purchase_approved):
         self.merchant_id = merchant_id
         self.listing_id = listing_id
         self.quantity = purchase_quantity
