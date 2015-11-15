@@ -271,7 +271,7 @@ class Merchant(User):
     company_name = db.Column(db.String(64), default="")
 
     def get_cart(self):
-        return self.purchases.filter_by(in_cart=True)
+        return self.cart_items
 
     def add_to_cart(self, listing):
         pass
