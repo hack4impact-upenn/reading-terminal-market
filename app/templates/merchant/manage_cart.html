@@ -1,0 +1,53 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
+            <h2 class="ui header">
+                Cart
+                <div class="sub header">
+                    View and manage your cart.
+                </div>
+            </h2>
+
+            <div style="overflow-x: scroll;">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                        <tr>
+                            <th class="seven wide">Product</th>
+                            <th class="five wide">Vendor</th>
+                            <th class="two wide">Quantity</th>
+                            <th class="two wide">Price</th>
+{#                            <th class="one wide">Remove</th> #}
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for item in cart | sort(attribute='date') %}
+                        <tr>
+                            <td>{{ item.listing.name }}</td>
+                            <td>{{ item.listing.vendor_id }}</td>
+                            <td>
+                                <div class="ui input fluid">
+                                    <input id="quantity" type="number" min="0" step="1" value={{ item.quantity }}>
+                                </div>
+                            </td>
+                            <td id="total_price">{{ item.quantity * item.listing.price }}</td>
+                            <meta id="unit_price" content={{ item.listing.price }}>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <button class="positive ui button">Order items</button>
+            </div>
+        </div>  
+    </div>
+    <script>
+    $(document).ready(function() {
+        $("#quantity").on('input', function() {
+            var new_quantity = $("#quantity").val();
+            $("#total_price").text(parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
+        });
+    });
+    </script>
+{% endblock %}
