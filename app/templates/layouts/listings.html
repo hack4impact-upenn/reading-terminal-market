@@ -25,6 +25,8 @@
                             <th class="truncate">Description</th>
                             <th>Availability</th>
                             <th>Category</th>
+                            <th>Add to Cart</th>
+                            <th>Favorite</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,6 +42,17 @@
                             <td class="truncate">{{ l.description }}</td>
                             <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
                             <td class="item category">{{ l.category.name }}</td>
+
+                            <td class="center aligned">
+                                <a href="{{ url_for('merchant.add_to_cart', current_listing_id=l.id, quantity_needed=1) }}">
+                                    <i class="cart icon"></i>
+                                </a>
+                            </td>
+                            <td class="center aligned">
+                                <a href="{{ url_for('merchant.favorite', listing_id=l.id) }}">
+                                    <i class="favorite icon"></i>
+                                </a>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

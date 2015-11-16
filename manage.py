@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import User, Role, Vendor, Merchant
+from app.models import User, Role, Vendor, Merchant, Listing
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import Config
@@ -60,6 +60,28 @@ def setup_test_vendor_merchant():
     db.session.add(u2)
     db.session.commit()
 
+@manager.command
+def setup_test_listings():
+    u1 = Listing(
+        vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
+        category_id=0,
+        name="Natasha\'s Broccoli",
+        description="Best Broccoli Around",
+        price=5.00,
+        available=True
+    )
+    u2 = Listing(
+        vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
+        category_id=0,
+        name="Krishna\'s Eggs",
+        description="Best Eggs Around",
+        price=12.00,
+        available=True
+    )
+    db.session.add(u1)
+    db.session.add(u2)
+    db.session.commit()
+
 
 @manager.command
 def recreate_db():
@@ -72,6 +94,7 @@ def recreate_db():
     db.session.commit()
     setup_default_user()
     setup_test_vendor_merchant()
+    setup_test_listings()
 
 
 @manager.command

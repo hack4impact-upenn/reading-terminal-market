@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, flash, abort, request
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
@@ -51,31 +51,43 @@ def listing_search(search):
                            listings=listings,
                            header="Search results for \"{}\"".format(search))
 
+
 @merchant.route('/add_to_cart', methods=['POST'])
+@login_required
+@merchant_required
 def add_to_cart(current_listing_id, quantity_needed):
-    listing = Listing.query.filter_by(id = current_listing_id)[0]
-    cart_item_list = CartItem.query.filter_by(merchant_id=current_user.id).filter_by(listing_id=current_listing_id)
+    if request.method == 'POST':
+        listing = Listing.query.filter_by(id=current_listing_id).first()
+        cart_item = CartItem.query.filter_by(merchant_id=current_user.id).filter_by(listing_id=current_listing_id).first()
 
-    if len(cart_item_list) == 0:
-        db.session.add(CartItem(current_user.id, current_listing_id, quantity_needed, listing))
-    else:
-        cart_item_list[0].quantity += quantity_needed
+        if cart_item is None:
+            db.session.add(CartItem(current_user.id, current_listing_id, quantity_needed, listing))
+        else:
+            cart_item.quantity += quantity_needed
 
-    db.session.commit()
-    flash('Successfully added item {}'.format(listing.name)) #will add in listing name
-    return render_template('/')
+        db.session.commit()
+        flash('Successfully added item {}'.format(listing.name))
+        return render_template('/')
+    if request.method == 'GET':
+        flash('Hello world!')
+
 
 @merchant.route('/add_to_favorites', methods=['POST'])
+@login_required
+@merchant_required
 def favorite(listing_id):
-    bookmarks_list = db.session.query(bookmarks_table).filter_by(merchant_id=current_user.id)
-    listing = Listing.query.filter_by(id = listing_id)[0]
-    in_list = False
-    for listing in bookmarks_list:
-        if listing.id == listing_id:
-            in_list = True
-    if not in_list:
-        db.session.add(bookmarks_table(merchant_id=current_user.id, listing_id=listing_id))
+    if request.method == 'POST':
+        bookmarks_list = db.session.query(bookmarks_table).filter_by(merchant_id=current_user.id)
+        listing = Listing.query.filter_by(id=listing_id).first()
+        if listing is None:
+            abort(404)
+        in_list = False
+        for listing in bookmarks_list:
+            if listing.id == listing_id:
+                in_list = True
+        if not in_list:
+            db.session.add(bookmarks_table(merchant_id=current_user.id, listing_id=listing_id))
 
-    db.session.commit()
-    flash('Successfully added item {}'.format(listing.name))
-    return render_template('/');
+        db.session.commit()
+        flash('Successfully added item {}'.format(listing.name))
+        return render_template('/')
