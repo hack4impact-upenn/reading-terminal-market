@@ -1,7 +1,7 @@
 from flask import render_template, abort
 from . import merchant
 from ..decorators import merchant_required
-from flask.ext.login import login_required
+from flask.ext.login import login_required, current_user
 from ..models import Listing
 
 
@@ -10,6 +10,14 @@ from ..models import Listing
 @merchant_required
 def index():
     return listing_view_all()
+
+
+@merchant.route('/manage-cart')
+@login_required
+@merchant_required
+def manage_cart():
+    # todo : include price, total price, price for quantity
+    return render_template('merchant/manage_cart.html', cart=current_user.get_cart())
 
 
 @merchant.route('/items/<int:listing_id>')

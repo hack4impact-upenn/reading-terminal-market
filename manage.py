@@ -43,6 +43,7 @@ def setup_test_vendor_merchant():
         last_name="Ant",
         email="merchant@example.com",
         password="password",
+        company_name="Hunter's Diner",
         confirmed=True,
         role=Role.query.filter_by(index='merchant').first(),
     )
@@ -51,6 +52,7 @@ def setup_test_vendor_merchant():
         last_name="Dor",
         email="vendor@example.com",
         password="password",
+        company_name="Jonny's Bagels",
         confirmed=True,
         role=Role.query.filter_by(index='vendor').first(),
     )
