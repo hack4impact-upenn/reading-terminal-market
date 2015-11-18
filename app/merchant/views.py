@@ -17,10 +17,9 @@ def index():
 @merchant_required
 def listing_view_all():
     """Search for listings"""
-    listings = Listing.search()
+    listings = Listing.search(available=True)
     return render_template('merchant/view_listings.html',
                            listings=listings,
-                           available=True,
                            cart_listings=current_user.get_cart_listings(),
                            header="All listings")
 

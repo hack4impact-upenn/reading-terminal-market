@@ -1,4 +1,5 @@
 from .. import db
+from purchase import CartItem
 from sqlalchemy import or_
 
 
@@ -24,6 +25,24 @@ class Listing(db.Model):
         self.description = description
         self.price = price
         self.available = available
+
+    def remove_from_carts(self):
+        cart_items = CartItem.query.filter_by(listing_id=self.id).all()
+        for cart_item in cart_items:
+            db.session.delete(cart_item)
+        db.session.commit()
+
+    def disable_listing(self):
+        """Disable the listing and remove from all carts"""
+        self.available = False
+        self.remove_from_carts()
+        db.session.commit()
+
+    def delete_listing(self):
+        """Delete the listing and remove from all carts"""
+        self.remove_from_carts()
+        db.session.delete(self)
+        db.session.commit()
 
     @property
     def category_name(self):
