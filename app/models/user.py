@@ -270,11 +270,14 @@ class Merchant(User):
     cart_items = db.relationship("CartItem")
     company_name = db.Column(db.String(64), default="")
 
+    def get_cart_listings(self):
+        return [cart_item.listing for cart_item in self.cart_items]
+
     # def has_bookmark(self, listing):
     #     return listing in bookmarks
 
-    def add_to_cart(self, listing):
-        pass
+    # def add_to_cart(self, listing):
+    #     pass
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)

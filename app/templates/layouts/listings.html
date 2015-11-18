@@ -58,7 +58,11 @@
                             {% if current_user.is_merchant() %}
                                 <td class="center aligned">
                                     <a href="{{ url_for('merchant.add_to_cart', current_listing_id=l.id, quantity_needed=1) }}">
-                                        <i class="cart icon"></i>
+                                        {% if l in cart_listings %}
+                                            <i class="cart icon blue"></i>
+                                        {% else %}
+                                            <i class="cart icon grey"></i>
+                                        {% endif %}
                                     </a>
                                 </td>
                                 <td class="center aligned">

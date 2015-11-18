@@ -1,8 +1,8 @@
-from flask import render_template, flash, abort, request, redirect, url_for
+from flask import render_template, abort, request, redirect, url_for
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, bookmarks_table
+from ..models import Listing, CartItem
 from .. import db
 
 @merchant.route('/')
@@ -21,6 +21,7 @@ def listing_view_all():
     return render_template('merchant/view_listings.html',
                            listings=listings,
                            available=True,
+                           cart_listings=current_user.get_cart_listings(),
                            header="All listings")
 
 
@@ -73,7 +74,7 @@ def add_to_cart():
             quantity=quantity_needed
         ))
     else:
-        cart_item.quantity = quantity_needed
+        db.session.delete(cart_item)
 
     db.session.commit()
     return redirect(url_for('.listing_view_all'))

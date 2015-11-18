@@ -25,7 +25,7 @@
                     </thead>
                     <tbody>
 
-                    {% for item in cart | sort(attribute='date') %}
+                    {% for item in cart | sort(attribute='listing.name') %}
                         <tr>
                             <td>{{ item.listing.name }}</td>
                             <td>{{ item.listing.vendor.company_name }}</td>
