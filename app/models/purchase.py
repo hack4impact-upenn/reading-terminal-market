@@ -33,13 +33,13 @@ class Order(db.Model):
         self.status = Status.PENDING
 
         for item in cart_items:
-            vendor_id = item.listing.vendor
+            vendor_id = item.listing.vendor_id
             listing_id = item.listing.id
-            qty = item.quantity
-            item = item.listing.name
-            cost = item.listing.cost * qty
-            db.session.add(Purchase(vendor_id, listing_id, self, qty, item,
-                                    cost))
+            quantity = item.quantity
+            item_name = item.listing.name
+            item_price = item.listing.price
+            p = Purchase(vendor_id, listing_id, self, quantity, item_name, item_price)
+            db.session.add(p)
 
         db.session.commit()
 
@@ -47,32 +47,30 @@ class Order(db.Model):
         return "<Order: {}>".format(self.id)
 
 
+
 class Purchase(db.Model):
     __tablename__ = 'purchases'
     id = db.Column(db.Integer, primary_key=True)
 
     # model relationships
-    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    vendor_id = db.Column(db.Integer)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     order = db.relationship("Order", backref="purchases")
-    listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'))
+    listing_id = db.Column(db.Integer)
 
     # purchase properties
     quantity = db.Column(db.Integer)
-    approved = db.Column(db.Boolean, default=False)
-    item = db.Column(db.String(64))
-    total_cost = db.Column(db.Float)
+    item_name = db.Column(db.String(64))
+    item_price = db.Column(db.Float)
 
-    def __init__(self, vendor_id, listing_id, order, purchase_quantity,
-                 purchase_item, purchase_total_cost):
+    def __init__(self, vendor_id, listing_id, order, quantity, item_name, item_price):
         self.vendor_id = vendor_id
         self.listing_id = listing_id
         self.order = order
-        self.quantity = purchase_quantity
-        self.item = purchase_item
-        self.total_cost = purchase_total_cost
+        self.quantity = quantity
+        self.item_name = item_name
+        self.item_price = item_price
 
-    # TODO: set constraints for purchases to accord with cart behavior
 
     def __repr__(self):
         return "<Purchase: {} Listing: {}>".format(self.id, self.listing_id)
