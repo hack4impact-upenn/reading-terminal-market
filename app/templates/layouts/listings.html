@@ -34,7 +34,7 @@
                         {% if current_user.is_vendor() %}
                             <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
                         {% else %}
-                            <tr onclick="window.location.href = '{{ url_for('merchant.listing_info', listing_id=l.id) }}';">
+                            <tr onclick="window.location.href = '{{ url_for('merchant.index', listing_id=l.id) }}';">
                         {% endif %}
 
                             <td>{{ l.name }}</td>
