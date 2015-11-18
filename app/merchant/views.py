@@ -20,6 +20,7 @@ def listing_view_all():
     listings = Listing.search()
     return render_template('merchant/view_listings.html',
                            listings=listings,
+                           available=True,
                            header="All listings")
 
 
@@ -62,6 +63,9 @@ def add_to_cart():
     listing = Listing.query.filter_by(id=current_listing_id).first()
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id).filter_by(listing_id=current_listing_id).first()
 
+    if listing is None:
+        abort(404)
+
     if cart_item is None:
         db.session.add(CartItem(
             merchant_id=current_user.id,
@@ -72,26 +76,20 @@ def add_to_cart():
         cart_item.quantity = quantity_needed
 
     db.session.commit()
-    flash('Successfully added item {}'.format(listing.name))
-    return redirect(url_for('.index'))
+    return redirect(url_for('.listing_view_all'))
 
 
-@merchant.route('/add_to_favorites', methods=['POST'])
+@merchant.route('/add_to_favorites')
 @login_required
 @merchant_required
-def favorite(listing_id):
-    if request.method == 'POST':
-        bookmarks_list = db.session.query(bookmarks_table).filter_by(merchant_id=current_user.id)
-        listing = Listing.query.filter_by(id=listing_id).first()
-        if listing is None:
-            abort(404)
-        in_list = False
-        for listing in bookmarks_list:
-            if listing.id == listing_id:
-                in_list = True
-        if not in_list:
-            db.session.add(bookmarks_table(merchant_id=current_user.id, listing_id=listing_id))
-
-        db.session.commit()
-        flash('Successfully added item {}'.format(listing.name))
-        return render_template('/')
+def favorite():
+    listing_id = request.args.get('listing_id')
+    if not listing_id:
+        abort(404)
+    listing = Listing.query.filter_by(id=listing_id).first_or_404()
+    if listing in current_user.bookmarks:
+        current_user.bookmarks.remove(listing)
+    else:
+        current_user.bookmarks.append(listing)
+    db.session.commit()
+    return redirect(url_for('.listing_view_all'))

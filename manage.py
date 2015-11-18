@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import User, Role, Vendor, Merchant, Listing
+from app.models import User, Role, Vendor, Merchant, Listing, Category
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import Config
@@ -60,20 +60,23 @@ def setup_test_vendor_merchant():
     db.session.add(u2)
     db.session.commit()
 
+
 @manager.command
 def setup_test_listings():
+    c = Category(name="Milk", unit="Gallons")
+    db.session.add(c)
     u1 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
-        category_id=0,
-        name="Natasha\'s Broccoli",
+        category_id=Category.query.filter_by(name="Milk").first().id,
+        name="Broccoli",
         description="Best Broccoli Around",
         price=5.00,
         available=True
     )
     u2 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
-        category_id=0,
-        name="Krishna\'s Eggs",
+        category_id=Category.query.filter_by(name="Milk").first().id,
+        name="Eggs",
         description="Best Eggs Around",
         price=12.00,
         available=True

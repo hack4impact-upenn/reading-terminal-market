@@ -39,6 +39,8 @@ class Listing(db.Model):
                 Listing.name.like('%{}%'.format(term)),
                 Listing.description.like('%{}%'.format(term)))
             )
+        if 'available' in kwargs:
+            filter_list.append(Listing.available == kwargs['available'])
 
         return Listing.query.filter(*filter_list).all()
 

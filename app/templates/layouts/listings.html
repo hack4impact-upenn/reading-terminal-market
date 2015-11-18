@@ -21,38 +21,56 @@
                     <thead>
                         <tr>
                             <th class="sorted ascending">Item name</th>
+                            {% if current_user.is_merchant() %}
+                                <th>Company</th>
+                            {% endif %}
                             <th>Item Price</th>
                             <th class="truncate">Description</th>
-                            <th>Availability</th>
+                            {% if current_user.is_vendor() %}
+                                <th>Availability</th>
+                            {% endif %}
                             <th>Category</th>
-                            <th>Add to Cart</th>
-                            <th>Favorite</th>
+                            {% if current_user.is_merchant() %}
+                                <th>Add to Cart</th>
+                                <th>Favorite</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                     {% for l in listings | sort(attribute='name') %}
                         {% if current_user.is_vendor() %}
                             <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
-                        {% else %}
+                        {% elif current_user.is_merchant() %}
                             <tr onclick="window.location.href = '{{ url_for('merchant.index', listing_id=l.id) }}';">
                         {% endif %}
 
                             <td>{{ l.name }}</td>
+                            {% if current_user.is_merchant() %}
+                                <td>{{ l.vendor.company_name }}</td>
+                            {% endif %}
                             <td>${{ l.price }}/{{l.category.unit}}</td>
                             <td class="truncate">{{ l.description }}</td>
-                            <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                            {% if current_user.is_vendor() %}
+                                <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                            {% endif %}
                             <td class="item category">{{ l.category.name }}</td>
 
-                            <td class="center aligned">
-                                <a href="{{ url_for('merchant.add_to_cart', current_listing_id=l.id, quantity_needed=1) }}">
-                                    <i class="cart icon"></i>
-                                </a>
-                            </td>
-                            <td class="center aligned">
-                                <a href="{{ url_for('merchant.favorite', listing_id=l.id) }}">
-                                    <i class="favorite icon"></i>
-                                </a>
-                            </td>
+                            {% if current_user.is_merchant() %}
+                                <td class="center aligned">
+                                    <a href="{{ url_for('merchant.add_to_cart', current_listing_id=l.id, quantity_needed=1) }}">
+                                        <i class="cart icon"></i>
+                                    </a>
+                                </td>
+                                <td class="center aligned">
+                                    <a href="{{ url_for('merchant.favorite', listing_id=l.id) }}">
+                                        {% if l in current_user.bookmarks %}
+                                            <i class="favorite icon yellow"></i>
+                                        {% else %}
+                                            <i class="favorite icon grey"></i>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>

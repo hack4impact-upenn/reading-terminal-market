@@ -270,6 +270,9 @@ class Merchant(User):
     cart_items = db.relationship("CartItem")
     company_name = db.Column(db.String(64), default="")
 
+    # def has_bookmark(self, listing):
+    #     return listing in bookmarks
+
     def add_to_cart(self, listing):
         pass
 
