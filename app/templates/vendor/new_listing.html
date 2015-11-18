@@ -7,13 +7,13 @@
 {% block content %}
     <div class="ui stackable centered grid container">
         <div class="twelve wide column">
-            <a class="ui basic compact button" href="{{ url_for('admin.index') }}">
+            <a class="ui basic compact button" href="{{ url_for('vendor.index') }}">
                 <i class="caret left icon"></i>
                 Back to dashboard
             </a>
             <h2 class="ui header">
-                Add New User
-                <div class="sub header">Create a new user account</div>
+                Add New Item
+                <div class="sub header">Create a new item</div>
             </h2>
 
             {% set flashes = {
@@ -25,32 +25,34 @@
 
             {{ f.begin_form(form, flashes) }}
 
-                {{ f.render_form_field(form.role) }}
+                {{ f.render_form_field(form.category_id) }}
 
-                {% if form.first_name %}
-                <div class="two fields">
-                    {{ f.render_form_field(form.first_name) }}
-                    {{ f.render_form_field(form.last_name) }}
+                {% if form.listing_name %}
+                <div class="one field">
+                    {{ f.render_form_field(form.listing_name) }}
                 </div>
                 {% endif %}
 
-                {% if form.company_name %}
-                    {{ f.render_form_field(form.company_name) }}
+                {% if form.listing_description %}
+
+                 {{ f.render_form_field(form.listing_description) }}
+
                 {% endif %}
 
-                {{ f.render_form_field(form.email) }}
+                {% if form.listing_price %}
 
-                {% if form.password %}
+                        {{ f.render_form_field(form.listing_price) }}
 
-                    <div class="two fields">
-                        {{ f.render_form_field(form.password) }}
-                        {{ f.render_form_field(form.password2) }}
-                    </div>
+                {% endif %}
+
+                 {% if form.listing_available %}
+
+                        {{ f.render_form_field(form.listing_available) }}
 
                 {% endif %}
 
                 {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
-                {{ f.form_message(flashes['warning'], header='Check your email.', class='warning') }}
+                {{ f.form_message(flashes['warning'], header='Check your item information.', class='warning') }}
                 {{ f.form_message(flashes['info'], header='Information', class='info') }}
                 {{ f.form_message(flashes['success'], header='Success!', class='success') }}
 
@@ -61,15 +63,4 @@
             {{ f.end_form() }}
         </div>
     </div>
-
-    <script type="text/javascript">
-        $('#role').change(function() {
-            var selectedRole = $("#role option:selected").text();
-            if (selectedRole === "Administrator") {
-                $('#company_name').prop('disabled', true);
-            } else {
-                $('#company_name').prop('disabled', false);
-            }
-        });
-    </script>
 {% endblock %}

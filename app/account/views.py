@@ -6,6 +6,7 @@ from flask.ext.login import (
     current_user
 )
 from . import account
+from ..decorators import merchant_or_vendor_required
 from .. import db
 from ..email import send_email
 from ..models import User
@@ -15,7 +16,10 @@ from .forms import (
     ChangePasswordForm,
     ChangeEmailForm,
     RequestResetPasswordForm,
-    ResetPasswordForm
+    ResetPasswordForm,
+    ChangeCompanyNameForm,
+    ChangeNameForm,
+    CreateMerchantVendorFromInviteForm
 )
 
 
@@ -190,11 +194,16 @@ def join_from_invite(user_id, token):
         return redirect(url_for('main.index'))
 
     if new_user.confirm_account(token):
-            form = CreateUserFromInviteForm()
+            if new_user.is_admin():
+                form = CreateUserFromInviteForm()
+            else:
+                form = CreateMerchantVendorFromInviteForm()
             if form.validate_on_submit():
                 new_user.first_name = form.first_name.data
                 new_user.last_name = form.last_name.data
                 new_user.password = form.password.data
+                if 'company_name' in form:
+                    new_user.company_name = form.company_name.data
                 db.session.add(new_user)
                 db.session.commit()
                 flash('Your password has been set. After you log in, you can '
@@ -231,3 +240,31 @@ def unconfirmed():
     if current_user.is_anonymous() or current_user.confirmed:
         return redirect(url_for('main.index'))
     return render_template('account/unconfirmed.html')
+
+
+@account.route('/manage/change-company-name', methods=['GET', 'POST'])
+@login_required
+@merchant_or_vendor_required
+def change_company_name():
+    """Change an existing user's company name."""
+    form = ChangeCompanyNameForm()
+    if form.validate_on_submit():
+        current_user.company_name = form.company_name.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('Your company name has been updated.', 'form-success')
+    return render_template('account/manage.html', form=form)
+
+
+@account.route('/manage/change-name', methods=['GET', 'POST'])
+@login_required
+def change_name():
+    """Change an existing user's name."""
+    form = ChangeNameForm()
+    if form.validate_on_submit():
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
+        db.session.add(current_user)
+        db.session.commit()
+        flash('Your name has been updated.', 'form-success')
+    return render_template('account/manage.html', form=form)

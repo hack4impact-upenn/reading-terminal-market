@@ -1,0 +1,75 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+
+    <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
+            {% block before %}
+            {% endblock %}
+
+            {% if header is defined %}
+              <h2 class="ui header">
+                  {{ header }}
+              </h2>
+            {% endif %}
+
+            {# Actual table #}
+            {# Use overflow-x: scroll so that mobile views don't freak out
+             # when the table is too wide #}
+            <div style="overflow-x: scroll;">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                        <tr>
+                            <th class="sorted ascending">Item name</th>
+                            <th>Item Price</th>
+                            <th class="truncate">Description</th>
+                            <th>Availability</th>
+                            <th>Category</th>
+                            <th>Add to Cart</th>
+                            <th>Favorite</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for l in listings | sort(attribute='name') %}
+                        {% if current_user.is_vendor() %}
+                            <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
+                        {% else %}
+                            <tr onclick="window.location.href = '{{ url_for('merchant.listing_info', listing_id=l.id) }}';">
+                        {% endif %}
+
+                            <td>{{ l.name }}</td>
+                            <td>${{ l.price }}/{{l.category.unit}}</td>
+                            <td class="truncate">{{ l.description }}</td>
+                            <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                            <td class="item category">{{ l.category.name }}</td>
+
+                            <td class="center aligned">
+                                <a href="{{ url_for('merchant.add_to_cart', current_listing_id=l.id, quantity_needed=1) }}">
+                                    <i class="cart icon"></i>
+                                </a>
+                            </td>
+                            <td class="center aligned">
+                                <a href="{{ url_for('merchant.favorite', listing_id=l.id) }}">
+                                    <i class="favorite icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% block after %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <style>
+    .truncate {
+      max-width: 100px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    </style>
+{% endblock %}

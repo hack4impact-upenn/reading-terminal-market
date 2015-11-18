@@ -10,7 +10,7 @@ class Permission:
     GENERAL = 0x01
     VENDOR = 0x02
     MERCHANT = 0x04
-    ADMINISTER = 0xff
+    ADMINISTER = 0x08
 
 
 class Role(db.Model):
@@ -32,7 +32,7 @@ class Role(db.Model):
                 Permission.GENERAL | Permission.VENDOR, 'vendor', False
             ),
             'Administrator': (
-                Permission.ADMINISTER, 'admin', False  # grants all permissions
+                Permission.ADMINISTER, 'admin', False
             )
         }
         for r in roles:
@@ -83,6 +83,15 @@ class User(UserMixin, db.Model):
 
     def is_admin(self):
         return self.can(Permission.ADMINISTER)
+
+    def is_vendor(self):
+        return self.can(Permission.VENDOR)
+
+    def is_merchant(self):
+        return self.can(Permission.MERCHANT)
+
+    def is_merchant_or_vendor(self):
+        return self.can(Permission.MERCHANT) or self.can(Permission.VENDOR)
 
     @property
     def password(self):
@@ -162,8 +171,9 @@ class User(UserMixin, db.Model):
         """Generate a number of fake users for testing."""
         from sqlalchemy.exc import IntegrityError
         from random import seed, choice
-        import forgery_py
+        from faker import Faker
 
+        fake = Faker()
         roles = Role.query.all()
 
         seed()
@@ -171,30 +181,30 @@ class User(UserMixin, db.Model):
             role = choice(roles)
             if role.index == 'merchant':
                 u = Merchant(
-                    first_name=forgery_py.name.first_name(),
-                    last_name=forgery_py.name.last_name(),
-                    email=forgery_py.internet.email_address(),
-                    password=forgery_py.lorem_ipsum.word(),
+                    first_name=fake.first_name(),
+                    last_name=fake.last_name(),
+                    email=fake.email(),
+                    password=fake.password(),
                     confirmed=True,
                     role=choice(roles),
                     **kwargs
                 )
             elif role.index == 'vendor':
                 u = Vendor(
-                    first_name=forgery_py.name.first_name(),
-                    last_name=forgery_py.name.last_name(),
-                    email=forgery_py.internet.email_address(),
-                    password=forgery_py.lorem_ipsum.word(),
+                    first_name=fake.first_name(),
+                    last_name=fake.last_name(),
+                    email=fake.email(),
+                    password=fake.password(),
                     confirmed=True,
                     role=choice(roles),
                     **kwargs
                 )
             else:
                 u = User(
-                    first_name=forgery_py.name.first_name(),
-                    last_name=forgery_py.name.last_name(),
-                    email=forgery_py.internet.email_address(),
-                    password=forgery_py.lorem_ipsum.word(),
+                    first_name=fake.first_name(),
+                    last_name=fake.last_name(),
+                    email=fake.email(),
+                    password=fake.password(),
                     confirmed=True,
                     role=choice(roles),
                     **kwargs
@@ -216,6 +226,15 @@ class AnonymousUser(AnonymousUserMixin):
     def is_admin(self):
         return False
 
+    def is_vendor(self):
+        return False
+
+    def is_merchant(self):
+        return False
+
+    def is_merchant_or_vendor(self):
+        return False
+
 
 class Vendor(User):
     __mapper_args__ = {'polymorphic_identity': 'vendor'}
@@ -223,7 +242,8 @@ class Vendor(User):
 
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
-    listings = db.relationship("Listing", backref="vendor")
+    listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
+    company_name = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
@@ -234,18 +254,27 @@ class Vendor(User):
         return '<Vendor %s>' % self.full_name()
 
 
-bookmarks_table = db.Table('association', db.Model.metadata,
-    db.Column('merchant_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('listing_id', db.Integer, db.ForeignKey('listings.id'))
-)
+bookmarks_table = db.Table('bookmarks', db.Model.metadata,
+                           db.Column('merchant_id', db.Integer,
+                                     db.ForeignKey('users.id')),
+                           db.Column('listing_id', db.Integer,
+                                     db.ForeignKey('listings.id'))
+                           )
 
 
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
-    purchases = db.relationship("Purchase")
     bookmarks = db.relationship("Listing", secondary=bookmarks_table)
+    cart_items = db.relationship("CartItem")
+    company_name = db.Column(db.String(64), default="")
+
+    def get_cart(self):
+        return self.cart_items
+
+    def add_to_cart(self, listing):
+        pass
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
