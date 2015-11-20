@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import User, Role, Vendor, Merchant, Listing, Category
+from app.models import (User, Role, Vendor, Merchant, Listing, Category,
+                        CartItem)
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import Config
@@ -87,6 +88,16 @@ def setup_test_listings():
 
 
 @manager.command
+def setup_test_cart_items():
+    c1 = CartItem()
+    c1.merchant_id = Merchant.query.filter_by(first_name="Merch").first().id
+    c1.listing_id = Listing.query.filter_by(name="Eggs").first().id
+    c1.quantity = 2
+    db.session.add(c1)
+    db.session.commit()
+
+
+@manager.command
 def recreate_db():
     """
     Recreates a local database. You probably should not use this on
@@ -98,6 +109,7 @@ def recreate_db():
     setup_default_user()
     setup_test_vendor_merchant()
     setup_test_listings()
+    setup_test_cart_items()
 
 
 @manager.command
