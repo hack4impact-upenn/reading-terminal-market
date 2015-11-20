@@ -1,11 +1,15 @@
 from .. import db
 from datetime import datetime
 import pytz
+from sqlalchemy import CheckConstraint
 
 
 class CartItem(db.Model):
     ''' Functions as association table between listings and merchants '''
     __tablename__ = "cartItems"
+    __table_args__ = (
+        CheckConstraint('quantity > 0'),
+    )
     merchant_id = db.Column(db.Integer, db.ForeignKey('users.id'),
                             primary_key=True)
     listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'),
