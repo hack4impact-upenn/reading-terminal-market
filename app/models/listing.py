@@ -1,6 +1,8 @@
 from .. import db
 from purchase import CartItem
 from sqlalchemy import or_
+from user import Vendor
+from flask.ext.login import current_user
 
 
 class Listing(db.Model):
@@ -52,14 +54,25 @@ class Listing(db.Model):
     def search(**kwargs):
         """ Returns all listings matching the criteria """
         filter_list = []
-        if 'term' in kwargs:
-            term = kwargs['term']
+        if 'main_search_term' in kwargs:
+            term = kwargs['main_search_term']
             filter_list.append(or_(
                 Listing.name.like('%{}%'.format(term)),
                 Listing.description.like('%{}%'.format(term)))
             )
+        if 'name_search_term' in kwargs:
+            term = kwargs['name_search_term']
+            filter_list.append(or_(
+                Vendor.first_name.like('%{}%'.format(term)),
+                Vendor.last_name.like('%{}%'.format(term)),
+                Vendor.company_name.like('%{}%'.format(term)))
+            )
         if 'available' in kwargs:
             filter_list.append(Listing.available == kwargs['available'])
+
+        if 'favorite' in kwargs and kwargs['favorite']:
+            bookmark_ids = [listing.id for listing in current_user.bookmarks]
+            filter_list.append(Listing.id.in_(bookmark_ids))
 
         return Listing.query.filter(*filter_list).all()
 

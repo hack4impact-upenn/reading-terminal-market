@@ -2,7 +2,6 @@ from ..decorators import vendor_required
 
 from flask import render_template, abort, redirect, flash, url_for
 from flask.ext.login import login_required, current_user
-from sqlalchemy.exc import IntegrityError
 from forms import (
     ChangeListingInformation,
     NewItemForm

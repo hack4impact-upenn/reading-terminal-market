@@ -50,7 +50,7 @@
 {% endmacro %}
 
 {# If `count` and `endpoints` are specified, the endpoints will be put into a
- # secondary menu. `count` should be the string (e.g. 'four') number of endpoints. #}
+     # secondary menu. `count` should be the string (e.g. 'four') number of endpoints. #}
 {% macro desktop_nav(current_user, endpoints=None, count=None) %}
     <div class="computer tablet only row">
         <div class="ui fixed inverted black main menu">
@@ -78,4 +78,52 @@
         {{ mobile_nav(current_user, endpoints=endpoints) }}
         {{ desktop_nav(current_user, endpoints=endpoints, count=count) }}
     </nav>
+{% endmacro %}
+
+{#<div class="ui pagination menu">#}
+{#  <a class="active item">#}
+{#    1#}
+{#  </a>#}
+{#  <div class="disabled item">#}
+{#    ...#}
+{#  </div>#}
+{#  <a class="item">#}
+{#    10#}
+{#  </a>#}
+{#  <a class="item">#}
+{#    11#}
+{#  </a>#}
+{#  <a class="item">#}
+{#    12#}
+{#  </a>#}
+{#</div>#}
+{% macro pagination_widget(pagination, endpoint) %}
+    <ul class="ui pagination menu">
+        <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
+            <a href="{% if pagination.has_prev %}{{ url_for(endpoint,
+                            page = pagination.page - 1, **kwargs) }}{% else %}#{% endif %}">
+                &laquo;
+            </a>
+        </li>
+        {% for p in pagination.iter_pages() %}
+            {% if p %}
+                {% if p == pagination.page %}
+                    <li class="active">
+                        <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="disabled"><a href="#">&hellip;</a></li>
+            {% endif %}
+        {% endfor %}
+        <li{% if not pagination.has_next %} class="disabled"{% endif %}> <a href="{% if pagination.has_next %}{{ url_for(endpoint,
+    page = pagination.page + 1, **kwargs) }}{% else %}#{% endif %}">
+            &raquo;
+        </a>
+        </li>
+    </ul>
 {% endmacro %}

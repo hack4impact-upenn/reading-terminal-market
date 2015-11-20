@@ -266,7 +266,9 @@ class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
-    bookmarks = db.relationship("Listing", secondary=bookmarks_table)
+    bookmarks = db.relationship("Listing",
+                                secondary=bookmarks_table,
+                                backref="bookmarked_by")
     cart_items = db.relationship("CartItem")
     company_name = db.Column(db.String(64), default="")
 

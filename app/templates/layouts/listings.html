@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+{% import 'macros/nav_macros.html' as n %}
 
 {% block content %}
 
@@ -80,6 +81,10 @@
                     </tbody>
                 </table>
             </div>
+
+{#        <div class="pagination">#}
+{#            {{ n.pagination_widget(pagination, '.index') }}#}
+{#        </div>#}
 
             {% block after %}
             {% endblock %}
