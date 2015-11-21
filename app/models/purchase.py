@@ -2,6 +2,7 @@ from .. import db
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
+from flask.ext.login import current_user
 
 
 class CartItem(db.Model):
@@ -17,6 +18,12 @@ class CartItem(db.Model):
     quantity = db.Column(db.Integer)
 
     listing = db.relationship("Listing")
+
+    @staticmethod
+    def delete_cart_items():
+        for cart_item in current_user.cart_items:
+            db.session.delete(cart_item)
+        db.session.commit()
 
 
 class Status:
@@ -45,7 +52,7 @@ class Order(db.Model):
             p = Purchase(vendor_id, listing_id, self, quantity, item_name, item_price)
             db.session.add(p)
 
-        db.session.commit()
+        # db.session.commit()
 
     def __repr__(self):
         return "<Order: {}>".format(self.id)

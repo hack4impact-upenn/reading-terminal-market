@@ -2,7 +2,7 @@ from flask import render_template, abort, request, redirect, url_for
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem
+from ..models import Listing, CartItem, Order
 from .. import db
 # from forms import SearchForm
 
@@ -48,7 +48,7 @@ def listing_view_all():
 @login_required
 @merchant_required
 def cart_action():
-    if request.form['submit'] == "Save Cart":
+    def save_cart():
         for item in current_user.cart_items:
             qty = int(request.form[str(item.listing_id)])
             if qty == 0:
@@ -57,10 +57,17 @@ def cart_action():
                 item.quantity = qty
         db.session.commit()
 
+    if request.form['submit'] == "Save Cart":
+        save_cart()
         return redirect(url_for('.manage_cart'))
 
     elif request.form['submit'] == "Order Items":
-        pass  # order items (dubin)
+        save_cart()
+        order = Order(current_user.cart_items)
+        db.session.add(order)
+        CartItem.delete_cart_items()
+        db.session.commit()
+        return redirect(url_for('.manage_cart'))
 
 
 @merchant.route('/manage-cart')
