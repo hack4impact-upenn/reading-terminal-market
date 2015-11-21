@@ -53,7 +53,10 @@ def manage_cart():
 @merchant_required
 def cart_action():
     if request.form['submit'] == "Save Cart":
-        pass  # save cart
+        for item in current_user.cart_items:
+            item.quantity = request.form[item.listing_id]
+        db.session.commit()
+        return redirect(url_for('.manage_cart'))
     elif request.form['submit'] == "Order Items":
         pass  # order items (dubin)
 
