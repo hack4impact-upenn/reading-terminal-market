@@ -19,7 +19,6 @@ def index():
 @merchant_required
 def listing_view_all():
     """Search for listings"""
-    # page = request.args.get('page', 1, type=int)
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
     name_search_term = request.args.get('name-search', "", type=str)
@@ -31,10 +30,6 @@ def listing_view_all():
                               max_price=max_price,
                               name_search_term=name_search_term,
                               main_search_term=main_search_term)
-    # pagination = Listing.query.paginate(
-    #         page, per_page=20,
-    #         error_out=False)
-    # listings = pagination.items
     return render_template('merchant/view_listings.html',
                            listings=listings,
                            main_search_term=main_search_term,
