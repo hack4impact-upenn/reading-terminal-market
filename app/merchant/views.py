@@ -81,7 +81,6 @@ def cart_action():
 @merchant_required
 def manage_cart():
     form = CartQuantityForm()
-    print "HELLOOOOOOO?"
     return render_template('merchant/manage_cart.html',
                            cart=current_user.cart_items,
                            form=form)
