@@ -27,8 +27,12 @@ def listing_view_all():
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
     name_search_term = request.args.get('name-search', "", type=str)
+    min_price = request.args.get('min-price', "", type=float)
+    max_price = request.args.get('max-price', "", type=float)
     listings = Listing.search(available=True,
                               favorite=favorite,
+                              min_price=min_price,
+                              max_price=max_price,
                               name_search_term=name_search_term,
                               main_search_term=main_search_term)
     # pagination = Listing.query.paginate(
@@ -38,6 +42,8 @@ def listing_view_all():
     return render_template('merchant/view_listings.html',
                            listings=listings,
                            main_search_term=main_search_term,
+                           min_price=min_price,
+                           max_price=max_price,
                            name_search_term=name_search_term,
                            favorite=favorite,
                            cart_listings=current_user.get_cart_listings(),
@@ -89,17 +95,6 @@ def listing_info(listing_id):
     """View a listing's info."""
     """TODO: Create listing's info view for merchants"""
     abort(404)
-
-
-@merchant.route('/view/search/<string:search>')
-@login_required
-@merchant_required
-def listing_search(search):
-    """Search for listings"""
-    listings = Listing.search(term=search)
-    return render_template('merchant/view_listings.html',
-                           listings=listings,
-                           header="Search results for \"{}\"".format(search))
 
 
 @merchant.route('/add_to_cart')

@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        {% if not name_search_term %}
+        {% if not name_search_term and not min_price and not max_price%}
             {% set display = 'display:none' %}
         {% endif %}
             <div class="twelve wide field advanced-search" style="{{ display }}">
@@ -35,14 +35,14 @@
             </div>
 
             <div class="two fields advanced-search" style="{{ display }}">
-                <div class="four wide field">
-                    <label>Minmimum unit price</label>
+                <div class="three wide field">
+                    <label>Minimum unit price</label>
 
-                    <input value="{{ min_price }}" type="text" name="min-price">
+                    <input value="{{ min_price }}" type="text" name="min-price" placeholder="e.g. $0">
                 </div>
-                <div class="four wide field">
+                <div class="three wide field">
                     <label>Maximum unit price</label>
-                    <input value="{{ max_price }}" type="text" name="max-price">
+                    <input value="{{ max_price }}" type="text" name="max-price" placeholder="e.g. $10">
                 </div>
             </div>
         <div>

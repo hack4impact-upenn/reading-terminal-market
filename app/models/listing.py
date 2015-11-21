@@ -74,6 +74,12 @@ class Listing(db.Model):
             bookmark_ids = [listing.id for listing in current_user.bookmarks]
             filter_list.append(Listing.id.in_(bookmark_ids))
 
+        if 'min_price' in kwargs and kwargs['min_price']:
+            filter_list.append(Listing.price >= kwargs['min_price'])
+
+        if 'max_price' in kwargs and kwargs['max_price']:
+            filter_list.append(Listing.price <= kwargs['max_price'])
+
         return Listing.query.filter(*filter_list).all()
 
     def __repr__(self):
