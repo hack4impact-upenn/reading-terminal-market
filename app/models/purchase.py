@@ -52,7 +52,7 @@ class Order(db.Model):
             p = Purchase(vendor_id, listing_id, self, quantity, item_name, item_price)
             db.session.add(p)
 
-        # db.session.commit()
+        db.session.commit()
 
     def __repr__(self):
         return "<Order: {}>".format(self.id)
