@@ -1,7 +1,14 @@
-from flask import render_template
+from flask import render_template, redirect, url_for
 from . import main
-
+from flask.ext.login import current_user
 
 @main.route('/')
 def index():
-    return render_template('main/index.html')
+    if current_user.is_merchant():
+        return redirect(url_for('merchant.index'))
+    elif current_user.is_admin():
+        return redirect(url_for('admin.index'))
+    elif current_user.is_vendor():
+        return redirect(url_for('vendor.index'))
+    else:
+        return redirect(url_for('account.login'))

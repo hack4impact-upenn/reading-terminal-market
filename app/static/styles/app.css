@@ -23,3 +23,7 @@ nav .mobile.only.row .ui.vertical.menu {
 table.selectable tr:hover {
   cursor: pointer !important;
 }
+
+#cart_buttons {
+	float: right;
+}

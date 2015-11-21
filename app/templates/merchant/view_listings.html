@@ -1,38 +1,65 @@
 {% extends 'layouts/listings.html' %}
+{% import 'macros/form_macros.html' as f %}
 
 {% block before %}
-<div class="ui menu">
-    <div class="ui search item">
-        <div class="ui transparent icon input">
-            <input id="search-items" type="text" placeholder="Filter page...">
-            <i class="search icon"></i>
+    {% set flashes = {
+        'error':   get_flashed_messages(category_filter=['form-error']),
+        'warning': get_flashed_messages(category_filter=['form-check-email']),
+        'info':    get_flashed_messages(category_filter=['form-info']),
+        'success': get_flashed_messages(category_filter=['form-success'])
+     } %}
+
+
+    <form class="ui form segment">
+        <div class="twelve wide field">
+            <label>Search names and descriptions</label>
+            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
         </div>
-    </div>
-</div>
+
+        <div class="inline field">
+            <div class="ui checkbox">
+                {% if favorite %}
+                    {% set checked = 'checked="checked"' %}
+                {% endif %}
+                <input type="checkbox" name="favorite" tabindex="0" {{ checked }}>
+                <label>Only show favorites</label>
+            </div>
+        </div>
+
+        {% if not name_search_term and not min_price and not max_price%}
+            {% set display = 'display:none' %}
+        {% endif %}
+            <div class="twelve wide field advanced-search" style="{{ display }}">
+                <label>Search company and vendor names</label>
+                <input value="{{ name_search_term }}"type="text" name="name-search" placeholder="e.g. John's corned beef">
+            </div>
+
+            <div class="two fields advanced-search" style="{{ display }}">
+                <div class="three wide field">
+                    <label>Minimum unit price</label>
+
+                    <input value="{{ min_price }}" type="text" name="min-price" placeholder="e.g. $0">
+                </div>
+                <div class="three wide field">
+                    <label>Maximum unit price</label>
+                    <input value="{{ max_price }}" type="text" name="max-price" placeholder="e.g. $10">
+                </div>
+            </div>
+        <div>
+            <a href="#" id="toggle-advanced">Toggle advanced search</a>
+        </div>
+        <br>
+        <button class="ui button" type="submit">Search</button>
+    </form>
 {% endblock %}
 
 {% block after %}
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#search-items').keyup(function () {
-                var searchText = $(this).val();
-                if (searchText.length > 0) {
-                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
-                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
-                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
-                } else {
-                    $('td.positive').removeClass('positive');
-                    $('tr.hidden').removeClass('hidden').show();
-                }
+            $('#toggle-advanced').click(function() {
+                $('.advanced-search').toggle();
             });
 
-            $('#select-role').dropdown({
-                onChange: function (value, text, $selectedItem) {
-                    $('td.item.category:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-                    $('td.item.category').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
-                }
-            });
         });
     </script>
 {% endblock %}

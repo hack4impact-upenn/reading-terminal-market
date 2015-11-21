@@ -15,6 +15,10 @@
         {% set href = url_for(current_user.role.index + '.index') %}
         <a class="item" href="{{ href }}">{{ current_user.role.name }} Dashboard</a>
     {% endif %}
+    {% if current_user.is_merchant() %}
+        {% set href = url_for('merchant.manage_cart') %}
+        <a class="item" href="{{ href }}">Manage cart</a>
+    {% endif %}
 {% endmacro %}
 
 {% macro account_items(current_user) %}
@@ -46,7 +50,7 @@
 {% endmacro %}
 
 {# If `count` and `endpoints` are specified, the endpoints will be put into a
- # secondary menu. `count` should be the string (e.g. 'four') number of endpoints. #}
+     # secondary menu. `count` should be the string (e.g. 'four') number of endpoints. #}
 {% macro desktop_nav(current_user, endpoints=None, count=None) %}
     <div class="computer tablet only row">
         <div class="ui fixed inverted black main menu">
