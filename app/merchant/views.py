@@ -6,6 +6,7 @@ from ..models import Listing, CartItem
 from .. import db
 # from forms import SearchForm
 
+
 @merchant.route('/')
 @login_required
 @merchant_required
@@ -43,7 +44,18 @@ def listing_view_all():
 @login_required
 @merchant_required
 def manage_cart():
-    return render_template('merchant/manage_cart.html', cart=current_user.cart_items)
+    return render_template('merchant/manage_cart.html',
+                           cart=current_user.cart_items)
+
+
+@merchant.route('/cart-action', methods=['POST'])
+@login_required
+@merchant_required
+def cart_action():
+    if request.form['submit'] == "Save Cart":
+        pass  # save cart
+    elif request.form['submit'] == "Order Items":
+        pass  # order items (dubin)
 
 
 @merchant.route('/items/<int:listing_id>')
@@ -76,7 +88,9 @@ def add_to_cart():
     if not current_listing_id or not quantity_needed:
         return redirect(url_for('.index'))
     listing = Listing.query.filter_by(id=current_listing_id).first()
-    cart_item = CartItem.query.filter_by(merchant_id=current_user.id).filter_by(listing_id=current_listing_id).first()
+    cart_item = CartItem.query.filter_by(
+        merchant_id=current_user.id).filter_by(
+        listing_id=current_listing_id).first()
 
     if listing is None:
         abort(404)
