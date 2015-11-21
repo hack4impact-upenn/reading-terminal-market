@@ -50,7 +50,11 @@ def listing_view_all():
 def cart_action():
     if request.form['submit'] == "Save Cart":
         for item in current_user.cart_items:
-            item.quantity = request.form[str(item.listing_id)]
+            qty = int(request.form[str(item.listing_id)])
+            if qty == 0:
+                db.session.delete(item)
+            else:
+                item.quantity = qty
         db.session.commit()
 
         return redirect(url_for('.manage_cart'))

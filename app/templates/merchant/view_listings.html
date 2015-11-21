@@ -26,13 +26,27 @@
             </div>
         </div>
 
-         {% if not name_search_term %}
-             {% set display = 'display:none' %}
-         {% endif %}
-        <div class="twelve wide field" id="advanced-search" style="{{ display }}">
-            <label>Search company and vendor names</label>
-            <input value="{{ name_search_term }}"type="text" name="name-search" placeholder="e.g. John's corned beef">
-        </div>
+        {% if not name_search_term %}
+            {% set display = 'display:none' %}
+        {% endif %}
+{#        <div id="advanced-search" style="{{ display }}">#}
+            <div class="twelve wide field advanced-search" style="{{ display }}">
+                <label>Search company and vendor names</label>
+                <input value="{{ name_search_term }}"type="text" name="name-search" placeholder="e.g. John's corned beef">
+            </div>
+
+            <div class="two fields advanced-search" style="{{ display }}">
+                <div class="four wide field">
+                    <label>Minmimum unit price</label>
+
+                    <input value="{{ min_price }}" type="text" name="min-price">
+                </div>
+                <div class="four wide field">
+                    <label>Maximum unit price</label>
+                    <input value="{{ max_price }}" type="text" name="max-price">
+                </div>
+            </div>
+{#        </div>#}
         <div>
             <a href="#" id="toggle-advanced">Toggle advanced search</a>
         </div>
@@ -51,7 +65,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#toggle-advanced').click(function() {
-                $('#advanced-search').toggle();
+                $('.advanced-search').toggle();
             });
 
         });
