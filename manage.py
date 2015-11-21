@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import User, Role, Vendor, Merchant
+from app.models import (User, Role, Vendor, Merchant, Listing, Category,
+                        CartItem)
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import Config
+from random import randint
 
 # Import settings from .env file. Must define FLASK_CONFIG
 if os.path.exists('.env'):
@@ -43,6 +45,7 @@ def setup_test_vendor_merchant():
         last_name="Ant",
         email="merchant@example.com",
         password="password",
+        company_name="Hunter's Diner",
         confirmed=True,
         role=Role.query.filter_by(index='merchant').first(),
     )
@@ -51,11 +54,69 @@ def setup_test_vendor_merchant():
         last_name="Dor",
         email="vendor@example.com",
         password="password",
+        company_name="Jonny's Bagels",
         confirmed=True,
         role=Role.query.filter_by(index='vendor').first(),
     )
     db.session.add(u1)
     db.session.add(u2)
+    db.session.commit()
+
+
+@manager.command
+def setup_test_listings():
+    c = Category(name="Milk", unit="Gallons")
+    db.session.add(c)
+    u1 = Listing(
+        vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
+        category_id=Category.query.filter_by(name="Milk").first().id,
+        name="Broccoli",
+        description="Best Broccoli Around",
+        price=5.00,
+        available=True
+    )
+    u2 = Listing(
+        vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
+        category_id=Category.query.filter_by(name="Milk").first().id,
+        name="Eggs",
+        description="Best Eggs Around",
+        price=12.00,
+        available=True
+    )
+    db.session.add(u1)
+    db.session.add(u2)
+    db.session.commit()
+    from sqlalchemy.exc import IntegrityError
+    from random import seed, choice
+    from faker import Faker
+
+    fake = Faker()
+
+    seed()
+    for i in range(100):
+        u = Listing(
+            vendor_id=3,
+            category_id=1,
+            name=fake.word(),
+            description=fake.sentence(nb_words=10, variable_nb_words=True),
+            price=randint(1,100),
+            available=True
+        )
+        db.session.add(u)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+
+
+
+@manager.command
+def setup_test_cart_items():
+    c1 = CartItem()
+    c1.merchant_id = Merchant.query.filter_by(first_name="Merch").first().id
+    c1.listing_id = Listing.query.filter_by(name="Eggs").first().id
+    c1.quantity = 2
+    db.session.add(c1)
     db.session.commit()
 
 
@@ -70,6 +131,8 @@ def recreate_db():
     db.session.commit()
     setup_default_user()
     setup_test_vendor_merchant()
+    setup_test_listings()
+    setup_test_cart_items()
 
 
 @manager.command
@@ -105,7 +168,7 @@ def add_fake_data(number_users):
     Adds fake data to the database.
     """
     User.generate_fake(count=number_users)
-
+    Listing.generate_fake_listings(count=number_users)
 
 @manager.command
 def setup_dev():

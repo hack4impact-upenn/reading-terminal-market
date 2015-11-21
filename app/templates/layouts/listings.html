@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+{% import 'macros/nav_macros.html' as n %}
 
 {% block content %}
 
@@ -21,30 +22,79 @@
                     <thead>
                         <tr>
                             <th class="sorted ascending">Item name</th>
-                            <th>Item Price</th>
+                            {% if current_user.is_merchant() %}
+                                <th>Company</th>
+                            {% endif %}
+                            <th>Price</th>
                             <th class="truncate">Description</th>
-                            <th>Availability</th>
+                            {% if current_user.is_vendor() %}
+                                <th>Availability</th>
+                            {% endif %}
                             <th>Category</th>
+                            {% if current_user.is_merchant() %}
+                                <th>Add to Cart</th>
+                                <th>Favorite</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
-                    {% for l in listings | sort(attribute='name') %}
+                    {% for l in listings.items | sort(attribute='name') %}
                         {% if current_user.is_vendor() %}
                             <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
-                        {% else %}
-                            <tr onclick="window.location.href = '{{ url_for('merchant.listing_info', listing_id=l.id) }}';">
+                        {% elif current_user.is_merchant() %}
+                            <tr onclick="window.location.href = '{{ url_for('merchant.index', listing_id=l.id) }}';">
                         {% endif %}
 
                             <td>{{ l.name }}</td>
+                            {% if current_user.is_merchant() %}
+                                <td>{{ l.vendor.company_name }}</td>
+                            {% endif %}
                             <td>${{ l.price }}/{{l.category.unit}}</td>
                             <td class="truncate">{{ l.description }}</td>
-                            <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                            {% if current_user.is_vendor() %}
+                                <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                            {% endif %}
                             <td class="item category">{{ l.category.name }}</td>
+
+                            {% if current_user.is_merchant() %}
+                                <td class="center aligned">
+                                    <a href="{{ url_for('merchant.add_to_cart', current_listing_id=l.id, quantity_needed=1) }}">
+                                        {% if l in cart_listings %}
+                                            <i class="cart icon blue"></i>
+                                        {% else %}
+                                            <i class="cart icon grey"></i>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                                <td class="center aligned">
+                                    <a href="{{ url_for('merchant.favorite', listing_id=l.id) }}">
+                                        {% if l in current_user.bookmarks %}
+                                            <i class="favorite icon yellow"></i>
+                                        {% else %}
+                                            <i class="favorite icon grey"></i>
+                                        {% endif %}
+                                    </a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
+
+        <div class="pagination">
+            {%- for page in listings.iter_pages() %}
+                {% if page %}
+                    {% if page != listings.page %}
+                         <a href="{{ url_for('merchant.listing_view_all', page=page) }}">{{ page }}</a>
+                    {% else %}
+                        <strong>{{ page }}</strong>
+                    {% endif %}
+                {% else %}
+                    <span class=ellipsis>...</span>
+                {% endif %}
+            {%- endfor %}
+        </div>
 
             {% block after %}
             {% endblock %}

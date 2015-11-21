@@ -1,5 +1,8 @@
 from .. import db
+from purchase import CartItem
 from sqlalchemy import or_
+from user import Vendor
+from flask.ext.login import current_user
 
 
 class Listing(db.Model):
@@ -25,6 +28,24 @@ class Listing(db.Model):
         self.price = price
         self.available = available
 
+    def remove_from_carts(self):
+        cart_items = CartItem.query.filter_by(listing_id=self.id).all()
+        for cart_item in cart_items:
+            db.session.delete(cart_item)
+        db.session.commit()
+
+    def disable_listing(self):
+        """Disable the listing and remove from all carts"""
+        self.available = False
+        self.remove_from_carts()
+        db.session.commit()
+
+    def delete_listing(self):
+        """Delete the listing and remove from all carts"""
+        self.remove_from_carts()
+        db.session.delete(self)
+        db.session.commit()
+
     @property
     def category_name(self):
         return self.category_id.name
@@ -33,14 +54,53 @@ class Listing(db.Model):
     def search(**kwargs):
         """ Returns all listings matching the criteria """
         filter_list = []
-        if 'term' in kwargs:
-            term = kwargs['term']
+        if 'main_search_term' in kwargs:
+            term = kwargs['main_search_term']
             filter_list.append(or_(
-                            Listing.name.like('%{}%'.format(term)),
-                            Listing.description.like('%{}%'.format(term)))
+                Listing.name.like('%{}%'.format(term)),
+                Listing.description.like('%{}%'.format(term)))
             )
+        if 'name_search_term' in kwargs:
+            term = kwargs['name_search_term']
+            filter_list.append(or_(
+                Vendor.first_name.like('%{}%'.format(term)),
+                Vendor.last_name.like('%{}%'.format(term)),
+                Vendor.company_name.like('%{}%'.format(term)))
+            )
+        if 'available' in kwargs:
+            filter_list.append(Listing.available == kwargs['available'])
+
+        if 'favorite' in kwargs and kwargs['favorite']:
+            bookmark_ids = [listing.id for listing in current_user.bookmarks]
+            filter_list.append(Listing.id.in_(bookmark_ids))
 
         return Listing.query.filter(*filter_list).all()
+
+    @staticmethod
+    def return_paginator(**kwargs):
+        """ Returns all listings matching the criteria """
+        filter_list = []
+        if 'main_search_term' in kwargs:
+            term = kwargs['main_search_term']
+            filter_list.append(or_(
+                Listing.name.like('%{}%'.format(term)),
+                Listing.description.like('%{}%'.format(term)))
+            )
+        if 'name_search_term' in kwargs:
+            term = kwargs['name_search_term']
+            filter_list.append(or_(
+                Vendor.first_name.like('%{}%'.format(term)),
+                Vendor.last_name.like('%{}%'.format(term)),
+                Vendor.company_name.like('%{}%'.format(term)))
+            )
+        if 'available' in kwargs:
+            filter_list.append(Listing.available == kwargs['available'])
+
+        if 'favorite' in kwargs and kwargs['favorite']:
+            bookmark_ids = [listing.id for listing in current_user.bookmarks]
+            filter_list.append(Listing.id.in_(bookmark_ids))
+
+        return Listing.query.filter(*filter_list)
 
     def __repr__(self):
         return "<Listing: {} Vendor: {} Category: {}>".format(self.name,

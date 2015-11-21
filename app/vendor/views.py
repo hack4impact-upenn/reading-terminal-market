@@ -2,7 +2,6 @@ from ..decorators import vendor_required
 
 from flask import render_template, abort, redirect, flash, url_for
 from flask.ext.login import login_required, current_user
-from sqlalchemy.exc import IntegrityError
 from forms import (
     ChangeListingInformation,
     NewItemForm
@@ -83,7 +82,10 @@ def change_listing_info(listing_id):
         listing.category_id = form.category_id.data.id
         listing.name = form.listing_name.data
         listing.description = form.listing_description.data
-        listing.available = form.listing_available.data
+        if form.listing_available.data:
+            listing.available = True
+        else:
+            listing.disable_listing()
         listing.price = form.listing_price.data
         listing.vendor_id = current_user.id
         flash('Information for item {} successfully changed.'
@@ -114,7 +116,6 @@ def delete_listing_request(listing_id):
 def delete_listing(listing_id):
     """Delete an item."""
     listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
-    db.session.delete(listing)
-    db.session.commit()
+    listing.delete_listing()
     flash('Successfully deleted item %s.' % listing.name, 'success')
     return redirect(url_for('vendor.current_listings'))
