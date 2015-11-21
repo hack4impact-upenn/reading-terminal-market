@@ -4,11 +4,7 @@ from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
 from ..models import Listing, CartItem, Order
 from .. import db
-# from forms import SearchForm
-
-from forms import (
-    CartQuantityForm
-)
+from forms import CartQuantityForm
 
 
 @merchant.route('/')
