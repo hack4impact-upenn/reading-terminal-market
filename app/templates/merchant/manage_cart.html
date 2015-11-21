@@ -9,8 +9,7 @@
                     View and manage your cart.
                 </div>
             </h2>
-
-            <form action="/cart-action" method="post">
+            <form action="{{ url_for('merchant.cart_action') }}" method="post">
                 <div style="overflow-x: scroll;">
                     <table class="ui searchable sortable unstackable selectable celled table">
                         <thead>
@@ -34,7 +33,7 @@
                                 <td>${{ item.listing.price }}</td>
                                 <td>
                                     <div class="ui input fluid">
-                                        <input id="quantity" name={{ item.listing.id }} type="number" min="0" step="1" value={{ item.quantity }}>
+                                        <input id="quantity" name="{{ item.listing.id }}" type="number" min="0" step="1" value={{ item.quantity }}>
                                     </div>
                                 </td>
                                 <td id="total_price">${{ item.quantity * item.listing.price }}</td>
@@ -49,6 +48,7 @@
                         <input type="submit" class="ui positive button" name="submit" value="Order Items">
                     </div>
                 </div>
+                {{ form.csrf_token }}
             </form>
         </div>  
     </div>

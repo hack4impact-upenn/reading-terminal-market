@@ -6,6 +6,10 @@ from ..models import Listing, CartItem
 from .. import db
 # from forms import SearchForm
 
+from forms import (
+    CartQuantityForm
+)
+
 
 @merchant.route('/')
 @login_required
@@ -40,25 +44,30 @@ def listing_view_all():
                            header="All listings")
 
 
-@merchant.route('/manage-cart')
-@login_required
-@merchant_required
-def manage_cart():
-    return render_template('merchant/manage_cart.html',
-                           cart=current_user.cart_items)
-
-
 @merchant.route('/cart-action', methods=['POST'])
 @login_required
 @merchant_required
 def cart_action():
     if request.form['submit'] == "Save Cart":
         for item in current_user.cart_items:
-            item.quantity = request.form[item.listing_id]
+            item.quantity = request.form[str(item.listing_id)]
         db.session.commit()
+
         return redirect(url_for('.manage_cart'))
+
     elif request.form['submit'] == "Order Items":
         pass  # order items (dubin)
+
+
+@merchant.route('/manage-cart')
+@login_required
+@merchant_required
+def manage_cart():
+    form = CartQuantityForm()
+    print "HELLOOOOOOO?"
+    return render_template('merchant/manage_cart.html',
+                           cart=current_user.cart_items,
+                           form=form)
 
 
 @merchant.route('/items/<int:listing_id>')
