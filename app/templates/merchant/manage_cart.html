@@ -34,7 +34,7 @@
                                 <td>${{ item.listing.price }}</td>
                                 <td>
                                     <div class="ui input fluid">
-                                        <input id="quantity" type="number" min="0" step="1" value={{ item.quantity }}>
+                                        <input id="quantity" name={{ item.listing.id }} type="number" min="0" step="1" value={{ item.quantity }}>
                                     </div>
                                 </td>
                                 <td id="total_price">${{ item.quantity * item.listing.price }}</td>
