@@ -87,33 +87,6 @@ def listing_info(listing_id):
     abort(404)
 
 
-# @merchant.route('/add_to_cart')
-# @login_required
-# @merchant_required
-# def add_to_cart():
-#     current_listing_id = request.args.get('current_listing_id')
-#     quantity_needed = request.args.get('quantity_needed')
-#     if not current_listing_id or not quantity_needed:
-#         return redirect(url_for('.index'))
-#     listing = Listing.query.filter_by(id=current_listing_id).first()
-#     cart_item = CartItem.query.filter_by(
-#         merchant_id=current_user.id).filter_by(
-#         listing_id=current_listing_id).first()
-#
-#     if listing is None:
-#         abort(404)
-#
-#     if cart_item is None:
-#         db.session.add(CartItem(
-#             merchant_id=current_user.id,
-#             listing_id=current_listing_id,
-#             quantity=quantity_needed
-#         ))
-#     else:
-#         db.session.delete(cart_item)
-#
-#     db.session.commit()
-#     return redirect(url_for('.listing_view_all'))
 @merchant.route('/change_in_cart/<int:listing_id>', methods=["PUT"])
 @login_required
 @merchant_required
