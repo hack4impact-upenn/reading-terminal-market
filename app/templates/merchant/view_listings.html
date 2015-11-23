@@ -94,6 +94,20 @@
             var inCart = toggledLink.data("incart");
             var listingId = toggledLink.data("id");
             var newValue = inCart === true ? false : true;
+
+            $('.cart-quantity').each(function() {
+                if ($( this ).data("id") == listingId) {
+                    if (newValue) {
+                        $( this ).prop('disabled', false);
+                        $( this ).prop('value', 1);
+                    }
+                    else {
+                        $( this ).prop('disabled', true);
+                        $( this ).prop('value', '');
+                    }
+                }
+            });
+
             $.ajax({
                 url: '/merchant/change_in_cart/' + listingId,
                 data: JSON.stringify({
