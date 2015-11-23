@@ -2,7 +2,7 @@ from flask import render_template, abort, request, redirect, url_for
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem
+from ..models import Listing, CartItem, Order
 from .. import db
 # from forms import SearchForm
 
@@ -48,15 +48,39 @@ def listing_view_all():
 @login_required
 @merchant_required
 def cart_action():
-    if request.form['submit'] == "Save Cart":
+
+    def save_cart():
         for item in current_user.cart_items:
-            item.quantity = request.form[str(item.listing_id)]
+            qty = int(request.form[str(item.listing_id)])
+            if qty == 0:
+                db.session.delete(item)
+            else:
+                item.quantity = qty
         db.session.commit()
 
+    if request.form['submit'] == "Save Cart":
+        save_cart()
+        return redirect(url_for('.manage_cart'))
+
+    elif "Remove" in request.form['submit']:
+
+        remove_id = request.form['submit'].split()[1]
+
+        remove_item = CartItem.query.filter_by(
+            merchant_id=current_user.id).filter_by(
+            listing_id=remove_id).first()
+
+        db.session.delete(remove_item)
+        db.session.commit()
         return redirect(url_for('.manage_cart'))
 
     elif request.form['submit'] == "Order Items":
-        pass  # order items (dubin)
+        save_cart()
+        order = Order(current_user.cart_items)
+        db.session.add(order)
+        CartItem.delete_cart_items()
+        db.session.commit()
+        return redirect(url_for('.manage_cart'))
 
 
 @merchant.route('/manage-cart')
@@ -64,7 +88,6 @@ def cart_action():
 @merchant_required
 def manage_cart():
     form = CartQuantityForm()
-    print "HELLOOOOOOO?"
     return render_template('merchant/manage_cart.html',
                            cart=current_user.cart_items,
                            form=form)
