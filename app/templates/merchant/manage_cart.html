@@ -13,15 +13,15 @@
                 <div style="overflow-x: scroll;">
                     <table class="ui searchable sortable unstackable selectable celled table">
                         <thead>
-                            <tr>
-                                <th class="five wide">Item name</th>
-                                <th class="three wide">Company</th>
-                                <th class="three wide">Vendor</th>
-                                <th class="two wide">Unit price</th>
-                                <th class="two wide">Quantity</th>
-                                <th class="two wide">Total price</th>
-    {#                            <th class="one wide">Remove</th> #}
-                            </tr>
+                        <tr>
+                            <th class="five wide">Item name</th>
+                            <th class="three wide">Company</th>
+                            <th class="three wide">Vendor</th>
+                            <th class="two wide">Unit price</th>
+                            <th class="two wide">Quantity</th>
+                            <th class="two wide">Total price</th>
+                            <th class="one wide">Remove</th>
+                        </tr>
                         </thead>
                         <tbody>
 
@@ -38,6 +38,11 @@
                                 </td>
                                 <td id="total_price">${{ item.quantity * item.listing.price }}</td>
                                 <meta id="unit_price" content={{ item.listing.price }}>
+                                <td class="center aligned">
+                                    <a class="remove-from-cart" data-id="{{ item.listing.id }}" href="#">
+                                        <i class="red large trash icon"></i>
+                                    </a>
+                                </td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -50,14 +55,33 @@
                 </div>
                 {{ form.csrf_token }}
             </form>
-        </div>  
+        </div>
     </div>
     <script>
-    $(document).ready(function() {
-        $("#quantity").on('input', function() {
-            var new_quantity = $("#quantity").val();
-            $("#total_price").text("$" + parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
+        $(document).ready(function() {
+            $("#quantity").on('input', function() {
+                var new_quantity = $("#quantity").val();
+                $("#total_price").text("$" + parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
+            });
         });
-    });
+
+        $('.remove-from-cart').click(function() {
+            var toggledItemIcon = $( this );
+            var listingId = toggledItemIcon.data("id");
+           $.ajax({
+                url: '/merchant/change_in_cart/' + listingId,
+                data: JSON.stringify({
+                    inCart: false,
+                    quantity: 0
+                }),
+                contentType: "application/json",
+                dataType:"json",
+                success: function(data) {
+                    toggledItemIcon.parent().parent().remove();
+                },
+                method: 'PUT'
+            });
+        });
+
     </script>
 {% endblock %}
