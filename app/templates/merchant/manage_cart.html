@@ -39,7 +39,9 @@
                                 <td id="total_price">${{ item.quantity * item.listing.price }}</td>
                                 <meta id="unit_price" content={{ item.listing.price }}>
                                 <td class="center aligned">
-                                    <button type="submit" name="submit" class="remove-from-cart ui icon button" data="{{ item.listing.id }}" value="Remove {{ item.listing.id }}"><i class="red large trash icon"></i></button>
+                                    <button type="submit" name="submit" class="remove-from-cart ui icon button" data="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
+                                        <i class="red large trash icon"></i>
+                                    </button>
                                 </td>
                             </tr>
                         {% endfor %}

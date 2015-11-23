@@ -34,6 +34,14 @@ class Listing(db.Model):
             db.session.delete(cart_item)
         db.session.commit()
 
+    def get_quantity_in_cart(self):
+        cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
+                                              listing_id=self.id).first()
+        if cart_item:
+            return cart_item.quantity
+        else:
+            return 0
+
     def disable_listing(self):
         """Disable the listing and remove from all carts"""
         self.available = False

@@ -2,6 +2,7 @@ from .. import db
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
+from sqlalchemy.orm import backref
 from flask.ext.login import current_user
 
 
@@ -24,6 +25,12 @@ class CartItem(db.Model):
         for cart_item in current_user.cart_items:
             db.session.delete(cart_item)
         db.session.commit()
+
+    def __repr__(self):
+        return "<CartItem: merchant_id {}, " \
+               "listing_id {}, quantity {}>".format(self.merchant_id,
+                                                    self.listing_id,
+                                                    self.quantity)
 
 
 class Status:
