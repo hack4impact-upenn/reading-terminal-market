@@ -60,17 +60,17 @@
                             {% if current_user.is_merchant() %}
                                 <td class="center aligned">
                                     {% if l in cart_listings %}
-                                        <a class="toggle-cart" data-id="{{ l.id }}" data-incart="true" href="#">
+                                        <a class="toggle-cart" data-id="{{ l.id }}" data-incart="true">
                                             <i class="cart icon blue"></i>
                                         </a>
-                                        <div class="ui input fluid">
+                                        <div class="ui input fluid add_quant">
                                             <input class="cart-quantity" data-id="{{ l.id }}" type="number" min="0" step="1" value="-1">
                                         </div>
                                     {% else %}
                                         <a class="toggle-cart" data-id="{{ l.id }}" data-incart="false" href="#">
                                             <i class="cart icon grey"></i>
                                         </a>
-                                        <div class="ui input fluid">
+                                        <div class="ui input fluid add_quant">
                                             <input class="cart-quantity" data-id="{{ l.id }}" type="number" min="0" step="1" disabled>
                                         </div>
                                     {% endif %}

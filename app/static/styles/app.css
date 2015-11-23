@@ -27,3 +27,13 @@ table.selectable tr:hover {
 #cart_buttons {
 	float: right;
 }
+
+.toggle-cart {
+	float: left;
+	width: 30%;
+}
+
+.add_quant {
+	float: left;
+	width: 70%;
+}
