@@ -4,7 +4,6 @@ from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
 from ..models import Listing, CartItem, Order
 from .. import db
-# from forms import SearchForm
 
 from forms import CartQuantityForm
 
@@ -36,6 +35,8 @@ def listing_view_all():
     return render_template('merchant/view_listings.html',
                            listings=listings,
                            main_search_term=main_search_term,
+                           min_price=min_price,
+                           max_price=max_price,
                            name_search_term=name_search_term,
                            favorite=favorite,
                            cart_listings=current_user.get_cart_listings(),
