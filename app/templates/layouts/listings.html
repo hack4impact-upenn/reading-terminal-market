@@ -18,7 +18,7 @@
             {# Use overflow-x: scroll so that mobile views don't freak out
              # when the table is too wide #}
             <div style="overflow-x: scroll;">
-                <table class="ui searchable sortable unstackable selectable celled table">
+                <table id="listings-table" class="ui searchable sortable unstackable selectable celled table">
                     <thead>
                     <tr>
                         <th class="sorted ascending">Item name</th>
@@ -57,31 +57,36 @@
                             {% endif %}
                             <td class="item category">{{ l.category.name }}</td>
 
-                            {% if current_user.is_merchant() %}
-                                <td class="center aligned">
-{#                                    {% if l in cart_listings %}#}
-                                        {% if l in cart_listings %}
-                                            {% set in_cart = "true" %}
-                                        {% else %}
-                                            {% set in_cart = "false" %}
-                                        {% endif %}
 
-                                        <a class="toggle-cart" data-id="{{ l.id }}" data-incart="{{ in_cart }}">
-                                            <i class="cart icon blue"></i>
-                                        </a>
-                                        <div class="ui input fluid add_quant">
-                                            <input class="cart-quantity" data-id="{{ l.id }}" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
-                                        </div>
-{#                                    {% else %}#}
-{#                                        <a class="toggle-cart" data-id="{{ l.id }}" data-incart="false" href="#">#}
-{#                                            <i class="cart icon grey"></i>#}
-{#                                        </a>#}
-{#                                        <div class="ui input fluid add_quant">#}
-{#                                            <input class="cart-quantity" data-id="{{ l.id }}" type="number" min="0" step="1" disabled>#}
-{#                                        </div>#}
-{#                                    {% endif %}#}
+
+                            {% if current_user.is_merchant() %}
+                                {% if l in cart_listings %}
+                                    {% set in_cart = "true" %}
+                                    {% set cart_color = "blue" %}
+                                {% else %}
+                                    {% set in_cart = "false" %}
+                                    {% set cart_color = "grey" %}
+                                {% endif %}
+                                <td class="center aligned cartCell" data-id="{{ l.id }}" data-incart="{{ in_cart }}">
+                                    {#                                    {% if l in cart_listings %}#}
+
+
+                                    <a class="toggle-cart">
+                                        <i class="cart icon {{ cart_color }}"></i>
+                                    </a>
+                                    <div class="ui input fluid add_quant">
+                                        <input class="cart-quantity" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
+                                    </div>
+                                    {#                                    {% else %}#}
+                                    {#                                        <a class="toggle-cart" data-id="{{ l.id }}" data-incart="false" href="#">#}
+                                    {#                                            <i class="cart icon grey"></i>#}
+                                    {#                                        </a>#}
+                                    {#                                        <div class="ui input fluid add_quant">#}
+                                    {#                                            <input class="cart-quantity" data-id="{{ l.id }}" type="number" min="0" step="1" disabled>#}
+                                    {#                                        </div>#}
+                                    {#                                    {% endif %}#}
                                 </td>
-                                <td class="center aligned">
+                                <td class="center aligned favoriteCell">
                                     {% if l in current_user.bookmarks %}
                                         <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="true" href="#">
                                             <i class="favorite icon yellow"></i>

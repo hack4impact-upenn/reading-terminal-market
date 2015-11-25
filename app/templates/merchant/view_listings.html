@@ -89,46 +89,131 @@
 
         });
 
-        $('.toggle-cart').click(function(event) {
-            var toggledLink = $( this );
-            var inCart = toggledLink.data("incart");
-            var listingId = toggledLink.data("id");
-            var newValue = inCart === true ? false : true;
+        var changeInputQuantity = function(inputSelector, newQuantity) {
+            inputSelector.val(newQuantity);
+        }
 
-            $('.cart-quantity').each(function() {
-                if ($( this ).data("id") == listingId) {
-                    if (newValue) {
-                        $( this ).prop('disabled', false);
-                        $( this ).prop('value', 1);
-                    }
-                    else {
-                        $( this ).prop('disabled', true);
-                        $( this ).prop('value', '');
-                    }
-                }
-            });
+        var enableCartIcon = function(cartIconSelector) {
+            cartIconSelector.removeClass("grey");
+            cartIconSelector.addClass("blue");
+
+        }
+
+        var disableCartIcon = function(cartIconSelector) {
+            cartIconSelector.removeClass("blue");
+            cartIconSelector.addClass("grey");
+        }
+
+
+        $('.cart-quantity').change(function(event) {
+            var newQuantity = parseInt($( this ).val());
+            var td = $(this).closest('td')
+            var listingID = td.data('id');
+            updateCartItem(listingID, newQuantity);
+
+            {#            var toggledLink = $( this );#}
+            {#            var inCart = toggledLink.data("incart");#}
+            {#            var listingId = toggledLink.data("id");#}
+            {#            var newValue = inCart === true ? false : true;#}
+            {##}
+            {#            $('.cart-quantity').each(function() {#}
+            {#                if ($( this ).data("id") == listingId) {#}
+            {#                    if (newValue) {#}
+            {#                        $( this ).prop('disabled', false);#}
+            {#                        $( this ).prop('value', 1);#}
+            {#                    }#}
+            {#                    else {#}
+            {#                        $( this ).prop('disabled', true);#}
+            {#                        $( this ).prop('value', '');#}
+            {#                    }#}
+            {#                }#}
+        });
+
+        var updateCartItem = function(listingID, newQuantity) {
+            var dataSelector = "[data-id='" + listingID + "']";
+            var td = $('#listings-table td.cartCell' + dataSelector);
+            var icon = td.find("i");
+            var quantityInput = td.find("input");
+            var newInCart;
+            quantityInput.val(newQuantity);
+
+            console.log(newQuantity);
+
+            if (newQuantity === 0){
+                disableCartIcon(icon);
+                newInCart = false;
+                td.data("incart", false);
+            } else {
+                enableCartIcon(icon);
+                newInCart = true;
+                td.data("incart", true);
+            }
+            // make sure new Quantity is int
+
+            // send put
+            // make icon and listing consistent
 
             $.ajax({
-                url: '/merchant/change_in_cart/' + listingId,
+                url: '/merchant/change_in_cart/' + listingID,
                 data: JSON.stringify({
-                    inCart: newValue,
-                    quantity: 1
+                    inCart: newInCart,
+                    quantity: newQuantity
                 }),
                 contentType: "application/json",
                 dataType:"json",
                 success: function(data) {
-                    toggledLink.data("incart", data.inCart);
-                    icon = toggledLink.find("i");
-                    icon.removeClass("grey");
-                    icon.removeClass("blue");
-                    if (data.inCart) {
-                        icon.addClass("blue");
-                    } else {
-                        icon.addClass("grey");
-                    }
+                    console.log("woo");
                 },
                 method: 'PUT'
             });
+
+        }
+
+
+        $('.toggle-cart').click(function(event) {
+            var toggleCartIcon = $( this );
+            var inCart = toggleCartIcon.parent().data("incart");
+            var listingId = toggleCartIcon.parent().data("id");
+            var newValue = inCart === true ? false : true;
+            var newQuantity = newValue === true ? 1 : 0;
+            updateCartItem(listingId, newQuantity);
+
+            {#            $('.cart-quantity').each(function() {#}
+            {#                if ($( this ).data("id") == listingId) {#}
+            {#                    if (newValue) {#}
+            {#                        $( this ).prop('disabled', false);#}
+            {#                        $( this ).prop('value', 1);#}
+            {#                    }#}
+            {#                    else {#}
+            {#                        $( this ).prop('disabled', true);#}
+            {#                        $( this ).prop('value', '');#}
+            {#                    }#}
+            {#                }#}
+            {#            });#}
+
+            {#            $.ajax({#}
+            {#                url: '/merchant/change_in_cart/' + listingId,#}
+            {#                data: JSON.stringify({#}
+            {#                    inCart: newValue,#}
+            {#                    quantity: 1#}
+            {#                }),#}
+            {#                contentType: "application/json",#}
+            {#                dataType:"json",#}
+            {#                success: function(data) {#}
+            {#                    toggledLink.data("incart", data.inCart);#}
+            {#                    icon = toggledLink.find("i");#}
+            {#                    quantityInput = icon.parent().parent().find("input");#}
+            {#                    console.log(icon.parent());#}
+            {#                    if (data.inCart) {#}
+            {#                        enableCartIcon(icon);#}
+            {#                        changeInputQuantity(quantityInput, 1);#}
+            {#                    } else {#}
+            {#                        disableCartIcon(icon);#}
+            {#                        changeInputQuantity(quantityInput, 0);#}
+            {#                    }#}
+            {#                },#}
+            {#                method: 'PUT'#}
+            {#            });#}
         });
     </script>
 {% endblock %}

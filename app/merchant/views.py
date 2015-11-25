@@ -119,6 +119,7 @@ def change_in_cart(listing_id):
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
                                          listing_id=listing_id).first()
     quantity = request.json['quantity']
+    print quantity
     current_status = cart_item is not None
     new_status = request.json.get('inCart', current_status)
     if new_status and not current_status:
