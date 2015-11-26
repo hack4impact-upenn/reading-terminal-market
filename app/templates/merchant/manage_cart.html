@@ -30,13 +30,13 @@
                                 <td>{{ item.listing.name }}</td>
                                 <td>{{ item.listing.vendor.company_name }}</td>
                                 <td>{{ item.listing.vendor.full_name() }}</td>
-                                <td>${{ item.listing.price }}</td>
+                                <td>${{ '%0.2f' | format(item.listing.price) }}</td>
                                 <td>
                                     <div class="ui input fluid">
                                         <input id="quantity" name="{{ item.listing.id }}" type="number" min="0" step="1" value={{ item.quantity }}>
                                     </div>
                                 </td>
-                                <td id="total_price">${{ item.quantity * item.listing.price }}</td>
+                                <td id="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>
                                 <meta id="unit_price" content={{ item.listing.price }}>
                             </tr>
                         {% endfor %}
@@ -56,7 +56,7 @@
     $(document).ready(function() {
         $("#quantity").on('input', function() {
             var new_quantity = $("#quantity").val();
-            $("#total_price").text("$" + parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
+            $("#total_price").text("$" + (parseInt(new_quantity)*parseFloat($("#unit_price").attr("content"))).toFixed(2))
         });
     });
     </script>
