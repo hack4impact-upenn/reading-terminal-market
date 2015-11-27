@@ -26,11 +26,11 @@
                         <tbody>
 
                         {% for item in cart | sort(attribute='listing.name') %}
-                            <tr>
-                                <td>{{ item.listing.name }}</td>
-                                <td>{{ item.listing.vendor.company_name }}</td>
-                                <td>{{ item.listing.vendor.full_name() }}</td>
-                                <td>${{ item.listing.price }}</td>
+                        <tr >
+                                <td onclick="window.location.href='{{ url_for('merchant.listing_info', listing_id=item.listing.id) }}';">{{ item.listing.name }}</td>
+                                <td onclick="window.location.href='{{ url_for('merchant.listing_info', listing_id=item.listing.id) }}';">{{ item.listing.vendor.company_name }}</td>
+                                <td onclick="window.location.href='{{ url_for('merchant.listing_info', listing_id=item.listing.id) }}';">{{ item.listing.vendor.full_name() }}</td>
+                                <td onclick="window.location.href='{{ url_for('merchant.listing_info', listing_id=item.listing.id) }}';">${{ item.listing.price }}</td>
                                 <td>
                                     <div class="ui input fluid">
                                         <input id="quantity" name="{{ item.listing.id }}" type="number" min="0" step="1" value={{ item.quantity }}>

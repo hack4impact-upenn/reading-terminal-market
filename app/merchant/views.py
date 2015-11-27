@@ -83,8 +83,17 @@ def manage_cart():
 @merchant_required
 def listing_info(listing_id):
     """View a listing's info."""
-    """TODO: Create listing's info view for merchants"""
-    abort(404)
+    listing = Listing.query.filter_by(id=listing_id).first()
+    if listing is None:
+        abort(404)
+    item = current_user.get_cart_item(listing_id)
+    if item is None:
+        quantity = 0
+    else:
+        quantity = item.quantity
+
+    return render_template('merchant/listing_info.html', listing=listing,
+                           quantity=quantity)
 
 
 @merchant.route('/add_to_cart')
@@ -116,6 +125,46 @@ def add_to_cart():
     return redirect(url_for('.listing_view_all'))
 
 
+@merchant.route('/add_quantity_to_cart')
+@login_required
+@merchant_required
+def add_quantity_to_cart():
+    listing_id = request.args.get('listing_id')
+    quantity = int(request.args.get('quantity'))
+    return_to = request.args.get('return_to')
+    if not quantity:
+        quantity = 0
+
+    if not listing_id:
+        return redirect(url_for('.index'))
+    listing = Listing.query.filter_by(id=listing_id).first()
+    cart_item = CartItem.query.filter_by(
+        merchant_id=current_user.id).filter_by(
+        listing_id=listing_id).first()
+
+    if listing is None:
+        abort(404)
+
+    if cart_item is not None:
+        db.session.delete(cart_item)
+        db.session.commit()
+
+    if quantity >= 1:
+        db.session.add(CartItem(
+            merchant_id=current_user.id,
+            listing_id=listing_id,
+            quantity=quantity
+        ))
+        db.session.commit()
+
+    if return_to == 'listing_view_all':
+        return redirect(url_for('.listing_view_all'))
+    elif return_to == 'listing_info':
+        return redirect(url_for('.listing_info', listing_id=listing_id))
+    else:
+        return redirect(url_for('.listing_view_all'))
+
+
 @merchant.route('/add_to_favorites')
 @login_required
 @merchant_required
@@ -129,4 +178,10 @@ def favorite():
     else:
         current_user.bookmarks.append(listing)
     db.session.commit()
+    if request.args.get('return_to') is not None:
+        return_to = request.args.get('return_to')
+        if return_to == 'listing_view_all':
+            return redirect(url_for('.listing_view_all'))
+        if return_to == 'listing_info':
+            return redirect(url_for('.listing_info', listing_id=listing_id))
     return redirect(url_for('.listing_view_all'))

@@ -1,0 +1,69 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% macro listing_info(listing) %}
+    <table class="ui compact definition table">
+
+        <tr><td>Product Name</td><td>{{ listing.name }} </td></tr>
+        <tr><td>Company</td><td>{{ listing.vendor.company_name }} </td></tr>
+        <tr><td>Vendor</td><td>{{ listing.vendor.full_name() }} </td></tr>
+        <tr><td>Vendor email</td><td>{{ listing.vendor.email }} </td></tr>
+        <tr><td>Price</td><td>${{ listing.price }}/{{listing.category.unit}}</td></tr>
+        <tr><td>Description</td><td>{{ listing.description }}</td></tr>
+        <tr><td>Category</td><td>{{ listing.category.name }}</td></tr>
+
+    </table>
+{% endmacro %}
+
+
+{% block content %}
+    <div class="ui stackable centered grid container">
+        <div class="twelve wide column">
+            <a class="ui basic compact button" href="{{ url_for('merchant.listing_view_all') }}">
+                <i class="caret left icon"></i>
+                Back to all listings
+            </a>
+            <h2 class="ui header">
+                {{ listing.name }}
+                <div style="padding-bottom: 8px;" class="sub header">View and buy {{listing.name}}.</div>
+                <a href="{{ url_for('merchant.favorite', listing_id=listing.id, return_to="listing_info") }}">
+                  <button class="ui yellow button {% if listing not in current_user.bookmarks %}basic{% endif %}" id="favorite">
+                    {% if listing in current_user.bookmarks %}Unfavorite
+                    {% else %}Favorite
+                    {% endif %}this</button>
+                </a>
+            </h2>
+        </div>
+        <div class="stretched divided very relaxed row">
+     <div class="twelve wide column">
+                {{ listing_info(listing)}}
+
+                <div class="ui left action right labeled input">
+                  <a id="buy-anchor" href="{{ url_for('merchant.add_quantity_to_cart', listing_id=listing.id, quantity=quantity, return_to="listing_info") }}">
+                  <button id="buy" class="ui grey labeled icon button">
+                    <i class="cart icon"></i>
+                    Put in cart
+                  </button>
+                </a>
+                  <input type="number" id="quantity" min="0" step="1" value={{ quantity }}>
+                  <div class="ui basic label">
+                    {{ listing.category.plural() }}
+                    of {{ listing.name }}
+                  </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+      $("#quantity").on('change', function (e) {
+        var amount = $("#quantity").val();
+        var params = 'return_to=listing_info';
+        params = params + '&listing_id=' + {{ listing.id }};
+        params = params + '&quantity=' + amount;
+        $("#buy-anchor").attr('href', '/merchant/add_quantity_to_cart?' + params);
+      });
+    </script>
+
+{% endblock %}

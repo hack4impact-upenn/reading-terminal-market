@@ -275,6 +275,13 @@ class Merchant(User):
     def get_cart_listings(self):
         return [cart_item.listing for cart_item in self.cart_items]
 
+    def get_cart_item(self, listing_id):
+        """ Returns a cart_item based on its listing_id """
+        for cart_item in self.cart_items:
+            if(cart_item.listing.id == listing_id):
+                return cart_item
+        return None
+
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
         self.role = Role.query.filter_by(index='merchant').first()
