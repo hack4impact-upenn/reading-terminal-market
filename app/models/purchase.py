@@ -65,7 +65,6 @@ class Order(db.Model):
         return "<Order: {}>".format(self.id)
 
 
-
 class Purchase(db.Model):
     __tablename__ = 'purchases'
     id = db.Column(db.Integer, primary_key=True)

@@ -119,18 +119,18 @@ def change_in_cart(listing_id):
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
                                          listing_id=listing_id).first()
     quantity = request.json['quantity']
-    print quantity
-    current_status = cart_item is not None
-    new_status = request.json.get('inCart', current_status)
-    if new_status and not current_status:
+    already_exists = cart_item is not None
+    should_be_in_cart = request.json.get('inCart', already_exists)
+    if should_be_in_cart and not already_exists:
         db.session.add(CartItem(merchant_id=current_user.id,
                                 listing_id=listing_id,
                                 quantity=quantity))
-    elif not new_status and current_status:
-        print cart_item
+    elif should_be_in_cart and already_exists:
+        cart_item.quantity = quantity
+    elif not should_be_in_cart and already_exists:
         db.session.delete(cart_item)
     db.session.commit()
-    return jsonify({'inCart': new_status, 'quantity': quantity})
+    return jsonify({'inCart': should_be_in_cart, 'quantity': quantity})
 
 
 @merchant.route('/change_favorite/<int:listing_id>', methods=['PUT'])

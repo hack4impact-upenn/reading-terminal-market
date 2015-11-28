@@ -110,23 +110,6 @@
             var td = $(this).closest('td')
             var listingID = td.data('id');
             updateCartItem(listingID, newQuantity);
-
-            {#            var toggledLink = $( this );#}
-            {#            var inCart = toggledLink.data("incart");#}
-            {#            var listingId = toggledLink.data("id");#}
-            {#            var newValue = inCart === true ? false : true;#}
-            {##}
-            {#            $('.cart-quantity').each(function() {#}
-            {#                if ($( this ).data("id") == listingId) {#}
-            {#                    if (newValue) {#}
-            {#                        $( this ).prop('disabled', false);#}
-            {#                        $( this ).prop('value', 1);#}
-            {#                    }#}
-            {#                    else {#}
-            {#                        $( this ).prop('disabled', true);#}
-            {#                        $( this ).prop('value', '');#}
-            {#                    }#}
-            {#                }#}
         });
 
         var updateCartItem = function(listingID, newQuantity) {
@@ -137,8 +120,6 @@
             var newInCart;
             quantityInput.val(newQuantity);
 
-            console.log(newQuantity);
-
             if (newQuantity === 0){
                 disableCartIcon(icon);
                 newInCart = false;
@@ -148,8 +129,6 @@
                 newInCart = true;
                 td.data("incart", true);
             }
-            // make sure new Quantity is int
-
             // send put
             // make icon and listing consistent
 
@@ -162,7 +141,7 @@
                 contentType: "application/json",
                 dataType:"json",
                 success: function(data) {
-                    console.log("woo");
+                    // todo
                 },
                 method: 'PUT'
             });
@@ -177,43 +156,6 @@
             var newValue = inCart === true ? false : true;
             var newQuantity = newValue === true ? 1 : 0;
             updateCartItem(listingId, newQuantity);
-
-            {#            $('.cart-quantity').each(function() {#}
-            {#                if ($( this ).data("id") == listingId) {#}
-            {#                    if (newValue) {#}
-            {#                        $( this ).prop('disabled', false);#}
-            {#                        $( this ).prop('value', 1);#}
-            {#                    }#}
-            {#                    else {#}
-            {#                        $( this ).prop('disabled', true);#}
-            {#                        $( this ).prop('value', '');#}
-            {#                    }#}
-            {#                }#}
-            {#            });#}
-
-            {#            $.ajax({#}
-            {#                url: '/merchant/change_in_cart/' + listingId,#}
-            {#                data: JSON.stringify({#}
-            {#                    inCart: newValue,#}
-            {#                    quantity: 1#}
-            {#                }),#}
-            {#                contentType: "application/json",#}
-            {#                dataType:"json",#}
-            {#                success: function(data) {#}
-            {#                    toggledLink.data("incart", data.inCart);#}
-            {#                    icon = toggledLink.find("i");#}
-            {#                    quantityInput = icon.parent().parent().find("input");#}
-            {#                    console.log(icon.parent());#}
-            {#                    if (data.inCart) {#}
-            {#                        enableCartIcon(icon);#}
-            {#                        changeInputQuantity(quantityInput, 1);#}
-            {#                    } else {#}
-            {#                        disableCartIcon(icon);#}
-            {#                        changeInputQuantity(quantityInput, 0);#}
-            {#                    }#}
-            {#                },#}
-            {#                method: 'PUT'#}
-            {#            });#}
         });
     </script>
 {% endblock %}
