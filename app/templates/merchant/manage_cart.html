@@ -65,23 +65,23 @@
             });
         });
 
-        $('.remove-from-cart').click(function() {
-            var toggledItemIcon = $( this );
-            var listingId = toggledItemIcon.data("id");
-           $.ajax({
-                url: '/merchant/change_in_cart/' + listingId,
-                data: JSON.stringify({
-                    inCart: false,
-                    quantity: 0
-                }),
-                contentType: "application/json",
-                dataType:"json",
-                success: function(data) {
-                    toggledItemIcon.parent().parent().remove();
-                },
-                method: 'PUT'
-            });
-        });
+{#        $('.remove-from-cart').click(function() {#}
+{#            var toggledItemIcon = $( this );#}
+{#            var listingId = toggledItemIcon.data("id");#}
+{#           $.ajax({#}
+{#                url: '/merchant/change_in_cart/' + listingId,#}
+{#                data: JSON.stringify({#}
+{#                    inCart: false,#}
+{#                    quantity: 0#}
+{#                }),#}
+{#                contentType: "application/json",#}
+{#                dataType:"json",#}
+{#                success: function(data) {#}
+{#                    toggledItemIcon.parent().parent().remove();#}
+{#                },#}
+{#                method: 'PUT'#}
+{#            });#}
+{#        });#}
 
     </script>
 {% endblock %}
