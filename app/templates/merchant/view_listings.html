@@ -54,6 +54,9 @@
 {% endblock %}
 
 {% block after %}
+
+    <script src="{{ url_for('static', filename='merchant.js') }}"></script>
+
     <script type="text/javascript">
         $('#toggle-advanced').click(function() {
             $('.advanced-search').toggle();
@@ -104,56 +107,38 @@
             cartIconSelector.addClass("grey");
         }
 
+        var updateCartFrontend = function(listingID, quantity) {
+            var dataSelector = "[data-id='" + listingID + "']";
+            var td = $('#listings-table td.cartCell' + dataSelector);
+            var icon = td.find("i");
+            var quantityInput = td.find("input");
+            quantityInput.val(quantity);
+
+            if (quantity === 0){
+                disableCartIcon(icon);
+                td.data("incart", false);
+            } else {
+                enableCartIcon(icon);
+                td.data("incart", true);
+            }
+        }
 
         $('.cart-quantity').change(function(event) {
             var newQuantity = parseInt($( this ).val());
             var td = $(this).closest('td')
             var listingID = td.data('id');
-            updateCartItem(listingID, newQuantity);
+            updateCartQuantity(listingID, newQuantity);
+            updateCartFrontend(listingID, newQuantity);
         });
-
-        var updateCartItem = function(listingID, newQuantity) {
-            var dataSelector = "[data-id='" + listingID + "']";
-            var td = $('#listings-table td.cartCell' + dataSelector);
-            var icon = td.find("i");
-            var quantityInput = td.find("input");
-            var newInCart;
-            quantityInput.val(newQuantity);
-
-            if (newQuantity === 0){
-                disableCartIcon(icon);
-                newInCart = false;
-                td.data("incart", false);
-            } else {
-                enableCartIcon(icon);
-                newInCart = true;
-                td.data("incart", true);
-            }
-
-            $.ajax({
-                url: '/merchant/change_in_cart/' + listingID,
-                data: JSON.stringify({
-                    inCart: newInCart,
-                    quantity: newQuantity
-                }),
-                contentType: "application/json",
-                dataType:"json",
-                success: function(data) {
-                    // todo
-                },
-                method: 'PUT'
-            });
-
-        }
-
 
         $('.toggle-cart').click(function(event) {
             var toggleCartIcon = $( this );
             var inCart = toggleCartIcon.parent().data("incart");
-            var listingId = toggleCartIcon.parent().data("id");
+            var listingID = toggleCartIcon.parent().data("id");
             var newValue = inCart === true ? false : true;
             var newQuantity = newValue === true ? 1 : 0;
-            updateCartItem(listingId, newQuantity);
+            updateCartQuantity(listingID, newQuantity);
+            updateCartFrontend(listingID, newQuantity);
         });
     </script>
 {% endblock %}

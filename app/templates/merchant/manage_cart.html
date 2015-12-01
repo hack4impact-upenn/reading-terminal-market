@@ -9,7 +9,7 @@
                     View and manage your cart.
                 </div>
             </h2>
-            <form action="{{ url_for('merchant.cart_action') }}" method="post">
+            <form action="{{ url_for('merchant.order_items') }}" method="post">
                 <div style="overflow-x: scroll;">
                     <table class="ui searchable sortable unstackable selectable celled table">
                         <thead>
@@ -33,13 +33,13 @@
                                 <td>${{ item.listing.price }}</td>
                                 <td>
                                     <div class="ui input fluid">
-                                        <input id="quantity" name="{{ item.listing.id }}" type="number" min="0" step="1" value={{ item.quantity }}>
+                                        <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
                                     </div>
                                 </td>
-                                <td id="total_price">${{ item.quantity * item.listing.price }}</td>
-                                <meta id="unit_price" content={{ item.listing.price }}>
+                                <td class="total_price">${{ item.quantity * item.listing.price }}</td>
+                                <meta class="unit_price" content={{ item.listing.price }}>
                                 <td class="center aligned">
-                                    <button type="submit" name="submit" class="remove-from-cart ui icon button" data="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
+                                    <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
                                         <i class="red large trash icon"></i>
                                     </button>
                                 </td>
@@ -48,40 +48,38 @@
                         </tbody>
                     </table>
                     <div class="ui buttons" id="cart_buttons">
-                        <input type="submit" class="ui button" name="submit" value="Save Cart">
-                        <div class="or"></div>
                         <input type="submit" class="ui positive button" name="submit" value="Order Items">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     </div>
                 </div>
-                {{ form.csrf_token }}
             </form>
         </div>
     </div>
+
+    <script src="{{ url_for('static', filename='merchant.js') }}"></script>
+
     <script>
-        $(document).ready(function() {
-            $("#quantity").on('input', function() {
-                var new_quantity = $("#quantity").val();
-                $("#total_price").text("$" + parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
-            });
+        var getCallback = function(tableRow) {
+            // Takes a table row and retuns a function that
+            // will remove it from the DOM
+            var deleteListing = function() {
+                tableRow.remove()
+            }
+            return deleteListing
+        }
+
+        $('.remove-from-cart').click(function() {
+            var toggledItemButton = $( this );
+            var listingID = toggledItemButton.data('id');
+            var tableRow = toggledItemButton.parent().parent();
+            updateCartQuantity(listingID, 0, getCallback(tableRow));
         });
 
-{#        $('.remove-from-cart').click(function() {#}
-{#            var toggledItemIcon = $( this );#}
-{#            var listingId = toggledItemIcon.data("id");#}
-{#           $.ajax({#}
-{#                url: '/merchant/change_in_cart/' + listingId,#}
-{#                data: JSON.stringify({#}
-{#                    inCart: false,#}
-{#                    quantity: 0#}
-{#                }),#}
-{#                contentType: "application/json",#}
-{#                dataType:"json",#}
-{#                success: function(data) {#}
-{#                    toggledItemIcon.parent().parent().remove();#}
-{#                },#}
-{#                method: 'PUT'#}
-{#            });#}
-{#        });#}
+        $('.cart-quantity').change(function(event) {
+            var newQuantity = parseInt($( this ).val());
+            var listingID = $( this ).data('id');
+            updateCartQuantity(listingID, newQuantity);
+        });
 
     </script>
 {% endblock %}

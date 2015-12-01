@@ -5,8 +5,6 @@ from flask.ext.login import login_required, current_user
 from ..models import Listing, CartItem, Order
 from .. import db
 
-from forms import CartQuantityForm
-
 
 @merchant.route('/')
 @login_required
@@ -43,38 +41,38 @@ def listing_view_all():
                            header="All listings")
 
 
-@merchant.route('/cart-action', methods=['POST'])
+@merchant.route('/order-items', methods=['POST'])
 @login_required
 @merchant_required
-def cart_action():
+def order_items():
 
-    def save_cart():
-        for item in current_user.cart_items:
-            qty = int(request.form[str(item.listing_id)])
-            if qty == 0:
-                db.session.delete(item)
-            else:
-                item.quantity = qty
-        db.session.commit()
+    # def save_cart():
+    #     for item in current_user.cart_items:
+    #         qty = int(request.form[str(item.listing_id)])
+    #         if qty == 0:
+    #             db.session.delete(item)
+    #         else:
+    #             item.quantity = qty
+    #     db.session.commit()
+    #
+    # if request.form['submit'] == "Save Cart":
+    #     save_cart()
+    #     return redirect(url_for('.manage_cart'))
+    #
+    # elif "Remove" in request.form['submit']:
+    #
+    #     remove_id = request.form['submit'].split()[1]
+    #
+    #     remove_item = CartItem.query.filter_by(
+    #         merchant_id=current_user.id).filter_by(
+    #             listing_id=remove_id).first()
+    #
+    #     db.session.delete(remove_item)
+    #     db.session.commit()
+    #     return redirect(url_for('.manage_cart'))
 
-    if request.form['submit'] == "Save Cart":
-        save_cart()
-        return redirect(url_for('.manage_cart'))
-
-    elif "Remove" in request.form['submit']:
-
-        remove_id = request.form['submit'].split()[1]
-
-        remove_item = CartItem.query.filter_by(
-            merchant_id=current_user.id).filter_by(
-                listing_id=remove_id).first()
-
-        db.session.delete(remove_item)
-        db.session.commit()
-        return redirect(url_for('.manage_cart'))
-
-    elif request.form['submit'] == "Order Items":
-        save_cart()
+    # elif request.form['submit'] == "Order Items":
+    #     save_cart()
         order = Order(current_user.cart_items)
         db.session.add(order)
         CartItem.delete_cart_items()
@@ -86,10 +84,8 @@ def cart_action():
 @login_required
 @merchant_required
 def manage_cart():
-    form = CartQuantityForm()
     return render_template('merchant/manage_cart.html',
-                           cart=current_user.cart_items,
-                           form=form)
+                           cart=current_user.cart_items)
 
 
 @merchant.route('/items/<int:listing_id>')
@@ -102,35 +98,34 @@ def listing_info(listing_id):
     abort(404)
 
 
-@merchant.route('/change_in_cart/<int:listing_id>', methods=["PUT"])
+@merchant.route('/add_to_cart/<int:listing_id>', methods=["PUT"])
 @login_required
 @merchant_required
-def change_in_cart(listing_id):
+def add_to_cart(listing_id):
+    """Adds listing to cart with specified quantity"""
     listing = Listing.query.filter_by(id=listing_id, available=True).first()
     if not listing:
         abort(404)
     if not request.json:
-        abort(400)
-    if 'inCart' in request.json and type(request.json['inCart']) is not bool:
         abort(400)
     if ('quantity' in request.json and
             type(request.json['quantity']) is not int):
         abort(400)
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
                                          listing_id=listing_id).first()
-    quantity = request.json['quantity']
-    already_exists = cart_item is not None
-    should_be_in_cart = request.json.get('inCart', already_exists)
-    if should_be_in_cart and not already_exists:
+    new_quantity = request.json['quantity']
+    is_currently_incart = cart_item is not None
+
+    if new_quantity == 0 and is_currently_incart:
+        db.session.delete(cart_item)
+    elif new_quantity != 0 and is_currently_incart:
+        cart_item.quantity = new_quantity
+    elif new_quantity != 0 and not is_currently_incart:
         db.session.add(CartItem(merchant_id=current_user.id,
                                 listing_id=listing_id,
-                                quantity=quantity))
-    elif should_be_in_cart and already_exists:
-        cart_item.quantity = quantity
-    elif not should_be_in_cart and already_exists:
-        db.session.delete(cart_item)
+                                quantity=new_quantity))
     db.session.commit()
-    return jsonify({'inCart': should_be_in_cart, 'quantity': quantity})
+    return jsonify({'quantity': new_quantity})
 
 
 @merchant.route('/change_favorite/<int:listing_id>', methods=['PUT'])
