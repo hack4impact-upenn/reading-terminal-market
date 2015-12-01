@@ -3,10 +3,14 @@ from purchase import CartItem
 from sqlalchemy import or_
 from user import Vendor
 from flask.ext.login import current_user
-
+from sqlalchemy import UniqueConstraint
 
 class Listing(db.Model):
     __tablename__ = "listings"
+    __table_args__ = (
+        UniqueConstraint('id', 'name')
+    )
+    
     id = db.Column(db.Integer, primary_key=True)
 
     # model relationships
