@@ -106,7 +106,7 @@ def listing_info(listing_id):
 @login_required
 @merchant_required
 def change_in_cart(listing_id):
-    listing = Listing.query.filter_by(id=listing_id).first()
+    listing = Listing.query.filter_by(id=listing_id, available=True).first()
     if not listing:
         abort(404)
     if not request.json:
