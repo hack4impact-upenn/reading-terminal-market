@@ -8,9 +8,9 @@ from sqlalchemy import UniqueConstraint
 class Listing(db.Model):
     __tablename__ = "listings"
     __table_args__ = (
-        UniqueConstraint('id', 'name')
+        UniqueConstraint('id', 'name'),
     )
-    
+
     id = db.Column(db.Integer, primary_key=True)
 
     # model relationships
