@@ -45,39 +45,11 @@ def listing_view_all():
 @login_required
 @merchant_required
 def order_items():
-
-    # def save_cart():
-    #     for item in current_user.cart_items:
-    #         qty = int(request.form[str(item.listing_id)])
-    #         if qty == 0:
-    #             db.session.delete(item)
-    #         else:
-    #             item.quantity = qty
-    #     db.session.commit()
-    #
-    # if request.form['submit'] == "Save Cart":
-    #     save_cart()
-    #     return redirect(url_for('.manage_cart'))
-    #
-    # elif "Remove" in request.form['submit']:
-    #
-    #     remove_id = request.form['submit'].split()[1]
-    #
-    #     remove_item = CartItem.query.filter_by(
-    #         merchant_id=current_user.id).filter_by(
-    #             listing_id=remove_id).first()
-    #
-    #     db.session.delete(remove_item)
-    #     db.session.commit()
-    #     return redirect(url_for('.manage_cart'))
-
-    # elif request.form['submit'] == "Order Items":
-    #     save_cart()
-        order = Order(current_user.cart_items)
-        db.session.add(order)
-        CartItem.delete_cart_items()
-        db.session.commit()
-        return redirect(url_for('.manage_cart'))
+    order = Order(current_user.cart_items)
+    db.session.add(order)
+    CartItem.delete_cart_items()
+    db.session.commit()
+    return redirect(url_for('.manage_cart'))
 
 
 @merchant.route('/manage-cart')
@@ -109,7 +81,7 @@ def add_to_cart(listing_id):
     if not request.json:
         abort(400)
     if ('quantity' in request.json and
-            type(request.json['quantity']) is not int):
+                type(request.json['quantity']) is not int):
         abort(400)
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
                                          listing_id=listing_id).first()
@@ -138,7 +110,7 @@ def change_favorite(listing_id):
     if not request.json:
         abort(400)
     if ('isFavorite' in request.json and
-            type(request.json['isFavorite']) is not bool):
+                type(request.json['isFavorite']) is not bool):
         abort(400)
     old_status = listing in current_user.bookmarks
     new_status = request.json.get('isFavorite', old_status)
