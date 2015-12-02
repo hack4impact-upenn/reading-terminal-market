@@ -25,18 +25,17 @@
                     <tbody>
 
                     {% for item in cart | sort(attribute='listing.name') %}
-                        <tr>
+                        <tr data-id="{{ item.listing.id }}">
                             <td>{{ item.listing.name }}</td>
                             <td>{{ item.listing.vendor.company_name }}</td>
                             <td>{{ item.listing.vendor.full_name() }}</td>
-                            <td>${{ item.listing.price }}</td>
+                            <td class="unit_price" data-price="{{ item.listing.price  }}">${{ item.listing.price }}</td>
                             <td>
                                 <div class="ui input fluid">
                                     <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
                                 </div>
                             </td>
                             <td class="total_price">${{ item.quantity * item.listing.price }}</td>
-                            <meta class="unit_price" content={{ item.listing.price }}>
                             <td class="center aligned">
                                 <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
                                     <i class="red large trash icon"></i>
@@ -70,14 +69,23 @@
 
         $('.remove-from-cart').click(function() {
             var toggledItemButton = $( this );
-            var listingID = toggledItemButton.data('id');
+            var listingID = toggledItemButton.data( 'id' );
             var tableRow = toggledItemButton.parent().parent();
             updateCartQuantity(listingID, 0, getCallback(tableRow));
         });
 
+        var updateTotalPrice = function(listingID, newQuantity) {
+            var tr = $( 'tr' ).filterByData( 'id', listingID );
+            var totalPrice = tr.find( '.total_price' );
+            var unitPrice = parseFloat( tr.find( '.unit_price' ).data( 'price' ) );
+            totalPrice.text( "$" + newQuantity * unitPrice );
+        }
+
         $('.cart-quantity').change(function(event) {
-            var newQuantity = parseInt($( this ).val());
-            var listingID = $( this ).data('id');
+            var newQuantity = parseInt( $( this ).val() );
+            var listingID = $( this ).data( 'id' );
+
+            updateTotalPrice(listingID, newQuantity);
             updateCartQuantity(listingID, newQuantity);
         });
 
