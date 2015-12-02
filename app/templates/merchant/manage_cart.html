@@ -58,20 +58,15 @@
     <script src="{{ url_for('static', filename='merchant.js') }}"></script>
 
     <script>
-        var getCallback = function(tableRow) {
-            // Takes a table row and retuns a function that
-            // will remove it from the DOM
-            var deleteListing = function() {
-                tableRow.remove()
-            }
-            return deleteListing
+        var deleteListing = function(tableRow) {
+            tableRow.remove()
         }
 
         $('.remove-from-cart').click(function() {
             var toggledItemButton = $( this );
             var listingID = toggledItemButton.data( 'id' );
             var tableRow = toggledItemButton.parent().parent();
-            updateCartQuantity(listingID, 0, getCallback(tableRow));
+            updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));
         });
 
         var updateTotalPrice = function(listingID, newQuantity) {
