@@ -80,7 +80,7 @@ def add_to_cart(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if ('quantity' in request.json and
+    if ('quantity' not in request.json or
                 type(request.json['quantity']) is not int):
         abort(400)
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
@@ -109,7 +109,7 @@ def change_favorite(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if ('isFavorite' in request.json and
+    if ('isFavorite' not in request.json or
                 type(request.json['isFavorite']) is not bool):
         abort(400)
     old_status = listing in current_user.bookmarks
