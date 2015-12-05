@@ -13,7 +13,7 @@
     <form class="ui form segment">
         <div class="twelve wide field">
             <label>Search names and descriptions</label>
-            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
+            <input value="{{ main_search_term }}" type="text" name="mainsearch" placeholder="e.g. corned beef">
         </div>
 
         <div class="inline field">
@@ -24,14 +24,44 @@
                 <input type="checkbox" name="favorite" tabindex="0" {{ checked }}>
                 <label>Only show favorites</label>
             </div>
+            <br>
+            <select class="ui selection dropdown" name="sortby">
+                {% if sortby == "low_high" %}
+                    {% set checked2 = 'selected' %}
+                {% elif sortby == "high_low" %}
+                    {% set checked3 = 'selected' %}
+                {% elif sortby == "alphaAZ" %}
+                    {% set checked4 = 'selected' %}
+                {% elif sortby == "alphaZA" %}
+                    {% set checked5 = 'selected' %}
+                {% endif %}
+                <option value="low_high" {{ checked2 }}>Low to High</option>
+                <option value="high_low" {{ checked3 }}>High to Low</option>
+                <option value="alphaAZ" {{ checked4 }}>Alphabetical (A-Z)</option>
+                <option value="alphaZA" {{ checked5 }}>Alphabetical (Z-A)</option>
+
+            </select>
+
         </div>
 
-         {% if not name_search_term %}
-             {% set display = 'display:none' %}
-         {% endif %}
-        <div class="twelve wide field" id="advanced-search" style="{{ display }}">
-            <label>Search company and vendor names</label>
+        {% if not name_search_term and not min_price and not max_price%}
+            {% set display = 'display:none' %}
+        {% endif %}
+        <div class="twelve wide field advanced-search" style="{{ display }}">
+            <label>Search comany and vendor names</label>
             <input value="{{ name_search_term }}"type="text" name="name-search" placeholder="e.g. John's corned beef">
+        </div>
+
+        <div class="two fields advanced-search" style="{{ display }}">
+            <div class="three wide field">
+                <label>Minimum unit price</label>
+
+                <input value="{{ min_price }}" type="text" name="min-price" placeholder="e.g. $0">
+            </div>
+            <div class="three wide field">
+                <label>Maximum unit price</label>
+                <input value="{{ max_price }}" type="text" name="max-price" placeholder="e.g. $10">
+            </div>
         </div>
         <div>
             <a href="#" id="toggle-advanced">Toggle advanced search</a>
@@ -39,21 +69,112 @@
         <br>
         <button class="ui button" type="submit">Search</button>
     </form>
-    {#    <form class="ui form">#}
-    {#        <div class="ui fluid action input">#}
-    {#            <input type="text" placeholder="Search item names and descriptions...">#}
-    {#            <div class="ui button">Search </div>#}
-    {#        </div>#}
-    {#    </form>#}
 {% endblock %}
 
 {% block after %}
+
     <script type="text/javascript">
-        $(document).ready(function () {
-            $('#toggle-advanced').click(function() {
-                $('#advanced-search').toggle();
+        $('#toggle-advanced').click(function() {
+            $('.advanced-search').toggle();
+        });
+
+        $('.toggle-favorite').click(function(event) {
+            var toggledLink = $( this );
+            var isFavorite = toggledLink.data("isfavorite");
+            var listingId = toggledLink.data("id");
+            var newValue = isFavorite === true ? false : true;
+            $.ajax({
+                url: '/merchant/change_favorite/' + listingId,
+                data: JSON.stringify({
+                    isFavorite: newValue
+                }),
+                contentType: "application/json",
+                dataType:"json",
+                success: function(data) {
+                    toggledLink.data("isfavorite", data.isFavorite);
+                    icon = toggledLink.find("i");
+                    icon.removeClass("grey");
+                    icon.removeClass("yellow");
+
+                    if (data.isFavorite) {
+                        icon.addClass("yellow");
+                    } else {
+                        icon.addClass("grey");
+                    }
+
+                },
+                method: 'PUT'
             });
 
+        });
+
+        var changeInputQuantity = function(inputSelector, newQuantity) {
+            inputSelector.val(newQuantity);
+        }
+
+        var enableCartIcon = function(cartIconSelector) {
+            cartIconSelector.removeClass("grey");
+            cartIconSelector.addClass("blue");
+
+        }
+
+        var disableCartIcon = function(cartIconSelector) {
+            cartIconSelector.removeClass("blue");
+            cartIconSelector.addClass("grey");
+        }
+
+
+        $('.cart-quantity').change(function(event) {
+            var newQuantity = parseInt($( this ).val());
+            var td = $(this).closest('td')
+            var listingID = td.data('id');
+            updateCartItem(listingID, newQuantity);
+        });
+
+        var updateCartItem = function(listingID, newQuantity) {
+            var dataSelector = "[data-id='" + listingID + "']";
+            var td = $('#listings-table td.cartCell' + dataSelector);
+            var icon = td.find("i");
+            var quantityInput = td.find("input");
+            var newInCart;
+            quantityInput.val(newQuantity);
+
+            if (newQuantity === 0){
+                disableCartIcon(icon);
+                newInCart = false;
+                td.data("incart", false);
+            } else {
+                enableCartIcon(icon);
+                newInCart = true;
+                td.data("incart", true);
+            }
+            // send put
+            // make icon and listing consistent
+
+            $.ajax({
+                url: '/merchant/change_in_cart/' + listingID,
+                data: JSON.stringify({
+                    inCart: newInCart,
+                    quantity: newQuantity
+                }),
+                contentType: "application/json",
+                dataType:"json",
+                success: function(data) {
+                    // todo
+                },
+                method: 'PUT'
+            });
+
+        }
+
+
+        $('.toggle-cart').click(function(event) {
+            var toggleCartIcon = $( this );
+            var inCart = toggleCartIcon.parent().data("incart");
+            var listingId = toggleCartIcon.parent().data("id");
+            var newValue = inCart === true ? false : true;
+            var newQuantity = newValue === true ? 1 : 0;
+            updateCartItem(listingId, newQuantity);
         });
     </script>
 {% endblock %}

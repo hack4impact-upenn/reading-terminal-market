@@ -12,52 +12,46 @@
     </div>
 </h2>
 
-<div class="ui menu">
-    <div id="select-role" class="ui dropdown item">
-        <div class="text">
-            All item categories
+<form class="ui form segment">
+        <div class="twelve wide field">
+            <label>Search names and descriptions</label>
+            <input value="{{ main_search_term }}" type="text" name="mainsearch" placeholder="e.g. corned beef">
         </div>
-        <i class="dropdown icon"></i>
-        <div class="menu">
-            <div class="item" data-value="">All item types</div>
-            {% for c in categories %}
-                <script>
-                </script>
-                <div class="item" data-value="{{ c.name }}">{{ c.name }}</div>
-            {% endfor %}
+
+        <div class="inline field">
+            <div class="ui checkbox">
+                {% if favorite %}
+                    {% set checked = 'checked="checked"' %}
+                {% endif %}
+            </div>
+            <br>
+            <select class="ui selection dropdown" name="sortby">
+                {% if sortby == "low_high" %}
+                    {% set checked2 = 'selected' %}
+                {% elif sortby == "high_low" %}
+                    {% set checked3 = 'selected' %}
+                {% elif sortby == "alphaAZ" %}
+                    {% set checked4 = 'selected' %}
+                {% elif sortby == "alphaZA" %}
+                    {% set checked5 = 'selected' %}
+                {% endif %}
+                <option value="low_high" {{ checked2 }}>Low to High</option>
+                <option value="high_low" {{ checked3 }}>High to Low</option>
+                <option value="alphaAZ" {{ checked4 }}>Alphabetical (A-Z)</option>
+                <option value="alphaZA" {{ checked5 }}>Alphabetical (Z-A)</option>
+
+            </select>
+
         </div>
-    </div>
-    <div class="ui right search item">
-        <div class="ui transparent icon input">
-            <input id="search-items" type="text" placeholder="Search items...">
-            <i class="search icon"></i>
-        </div>
-    </div>
-</div>
+
+        {% if not name_search_term and not min_price and not max_price%}
+            {% set display = 'display:none' %}
+        {% endif %}
+        <br>
+        <button class="ui button" type="submit">Search</button>
+    </form>
 {% endblock %}
 
 {% block after %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#search-items').keyup(function () {
-                var searchText = $(this).val();
-                if (searchText.length > 0) {
-                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
-                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
-                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
-                } else {
-                    $('td.positive').removeClass('positive');
-                    $('tr.hidden').removeClass('hidden').show();
-                }
-            });
 
-            $('#select-role').dropdown({
-                onChange: function (value, text, $selectedItem) {
-                    $('td.item.category:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-                    $('td.item.category').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
-                }
-            });
-        });
-    </script>
 {% endblock %}

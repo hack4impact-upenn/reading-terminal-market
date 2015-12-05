@@ -5,6 +5,22 @@
     {% include 'partials/_head.html' %}
 
     <body>
+    <style>
+        #notifier {
+            z-index: 1000000;
+            position: fixed;
+            bottom: 20px;
+            width: 250px;
+            left: 50%;
+            margin-left: -37.5%;
+            height: 70px;
+            font-size: 12px
+        }
+    </style>
+    <div class="notifications">
+
+    </div>
+
         {% block nav %}
             {{ nav.render_nav(current_user) }}
         {% endblock %}
@@ -19,6 +35,41 @@
             <div style="visibility: hidden; display: none">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             </div>
+
+            <script>
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}")
+                        }
+                    }
+                });
+            $( document ).ajaxSuccess(function( event, request, settings ) {
+                message = "";
+                if(request.responseText) {
+
+                    event = (request.responseText).toString()
+                    if(event.includes("Favorite") && event.includes("false")) {
+                        message = "You have successfully unfavorited this item";
+                    }
+                    else if(event.includes("Favorite") && event.includes("true")) {
+                        message =  "You have successfully favorited this item";
+                    }
+                    else if(event.includes("Cart") && event.includes("true")) {
+                        num = event.match(/\d+/)[0];
+                        message = "You have added a total of "+ num +" of this item";
+                    }
+                    else if(event.includes("Cart") && event.includes("false")) {
+                        message = "You have removed this item from your cart";
+                    }
+
+                }
+                $("<div class='ui green message' id='notifier'><i class='close icon'>"  +
+                        "</i><div class='header' id='dynamicflash'>" + message + "</div></p></div>")
+                        .hide().appendTo(".notifications").fadeIn(500).delay(5000).fadeOut();
+
+            });
+            </script>
         {% endif %}
     </body>
 </html>

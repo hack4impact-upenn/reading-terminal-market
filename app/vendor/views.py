@@ -1,6 +1,6 @@
 from ..decorators import vendor_required
 
-from flask import render_template, abort, redirect, flash, url_for
+from flask import render_template, abort, redirect, flash, url_for, request
 from flask.ext.login import login_required, current_user
 from forms import (
     ChangeListingInformation,
@@ -26,14 +26,12 @@ def new_listing():
     form = NewItemForm()
     if form.validate_on_submit():
         category_id = form.category_id.data.id
-        listing = Listing(
-                name=form.listing_name.data,
-                description=form.listing_description.data,
-                available=True,
-                price=form.listing_price.data,
-                category_id=category_id,
-                vendor_id=current_user.id
-        )
+        listing = Listing(name=form.listing_name.data,
+                          description=form.listing_description.data,
+                          available=True,
+                          price=form.listing_price.data,
+                          category_id=category_id,
+                          vendor_id=current_user.id)
         db.session.add(listing)
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
@@ -42,16 +40,24 @@ def new_listing():
     return render_template('vendor/new_listing.html', form=form)
 
 
-@vendor.route('/items')
+@vendor.route('/itemslist')
+@vendor.route('/itemslist/<int:page>')
 @login_required
 @vendor_required
-def current_listings():
+def current_listings(page=1):
     """View all current listings."""
-    listings = current_user.listings.all()
-    categories = Category.query.all()
+    main_search_term = request.args.get('mainsearch', "", type=str)
+    sortby = request.args.get('sortby', "", type=str)
+    listings_raw = Listing.search(available=True,
+                              sortby=sortby,
+                              main_search_term=main_search_term)
+    listings_raw = listings_raw.filter(Listing.vendor_id == current_user.id)
+    listings_paginated = listings_raw.paginate(page,20,False)
     return render_template('vendor/current_listings.html',
-                           listings=listings,
-                           categories=categories)
+                           listings=listings_paginated,
+                           main_search_term=main_search_term,
+                           sortby=sortby,
+                           header="All listings")
 
 
 @vendor.route('/items/<int:listing_id>')
@@ -73,7 +79,8 @@ def listing_info(listing_id):
 @vendor_required
 def change_listing_info(listing_id):
     """Change a listings's info."""
-    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(id=listing_id,
+                                      vendor_id=current_user.id).first()
     if listing is None:
         abort(404)
     form = ChangeListingInformation()
@@ -96,7 +103,9 @@ def change_listing_info(listing_id):
     form.category_id.default = listing.category
     form.listing_available.default = listing.available
     form.process()
-    return render_template('vendor/manage_listing.html', listing=listing, form=form)
+    return render_template('vendor/manage_listing.html',
+                           listing=listing,
+                           form=form)
 
 
 @vendor.route('/item/<int:listing_id>/delete')
@@ -104,7 +113,8 @@ def change_listing_info(listing_id):
 @vendor_required
 def delete_listing_request(listing_id):
     """Request deletion of an item"""
-    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(id=listing_id,
+                                      vendor_id=current_user.id).first()
     if listing is None:
         abort(404)
     return render_template('vendor/manage_listing.html', listing=listing)
@@ -115,7 +125,8 @@ def delete_listing_request(listing_id):
 @vendor_required
 def delete_listing(listing_id):
     """Delete an item."""
-    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(id=listing_id,
+                                      vendor_id=current_user.id).first()
     listing.delete_listing()
     flash('Successfully deleted item %s.' % listing.name, 'success')
     return redirect(url_for('vendor.current_listings'))
