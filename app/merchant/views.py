@@ -47,8 +47,8 @@ def listing_view_all():
 def order_items():
     order = Order()
     db.session.add(order)
-    order.add_cart_to_order(current_user.cart_items, False)
-    CartItem.delete_cart_items()
+    order.add_cart_to_order(current_user.cart_items)
+    CartItem.delete_cart_items(False)
     db.session.commit()
     return redirect(url_for('.manage_cart'))
 
