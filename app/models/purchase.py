@@ -20,9 +20,12 @@ class CartItem(db.Model):
     listing = db.relationship("Listing")
 
     @staticmethod
-    def delete_cart_items():
+    def delete_cart_items(commit_flag):
         for cart_item in current_user.cart_items:
             db.session.delete(cart_item)
+        if (commit_flag):
+            db.session.commit()
+
 
     def __repr__(self):
         return "<CartItem: merchant_id {}, " \
