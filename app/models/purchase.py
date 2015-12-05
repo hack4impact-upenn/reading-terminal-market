@@ -41,7 +41,6 @@ class Order(db.Model):
 
     def __init__(self, cart_items):
         self.date = datetime.now(pytz.timezone('US/Eastern'))
-        self.status = Status.PENDING
 
         for item in cart_items:
             vendor_id = item.listing.vendor_id
@@ -49,7 +48,8 @@ class Order(db.Model):
             quantity = item.quantity
             item_name = item.listing.name
             item_price = item.listing.price
-            p = Purchase(vendor_id, listing_id, self, quantity, item_name, item_price)
+            p = Purchase(vendor_id, listing_id, self, quantity, item_name,
+                         item_price)
             db.session.add(p)
 
         db.session.commit()
@@ -57,11 +57,27 @@ class Order(db.Model):
     def __repr__(self):
         return "<Order: {}>".format(self.id)
 
+    def getAllPurchases(self):
+        return Purchase.query.filty_by(order_id=self.id)
+
+    def getPurchasesByVendor(self, vendor_id):
+        purchases = Purchase.query.filter_by(order_id=self.id,
+                                             vendor_id=vendor_id).all()
+
+        return purchases
+
+    def setStatusByVendor(self, vendor_id, status):
+        for purchase in self.getPurchasesByVendor(vendor_id):
+            purchase.status = status
+
+        db.session.commit()
 
 
 class Purchase(db.Model):
     __tablename__ = 'purchases'
     id = db.Column(db.Integer, primary_key=True)
+
+    status = db.Column(db.Integer)
 
     # model relationships
     vendor_id = db.Column(db.Integer)
@@ -74,14 +90,15 @@ class Purchase(db.Model):
     item_name = db.Column(db.String(64))
     item_price = db.Column(db.Float)
 
-    def __init__(self, vendor_id, listing_id, order, quantity, item_name, item_price):
+    def __init__(self, vendor_id, listing_id, order, quantity, item_name,
+                 item_price):
+        self.status = Status.PENDING
         self.vendor_id = vendor_id
         self.listing_id = listing_id
         self.order = order
         self.quantity = quantity
         self.item_name = item_name
         self.item_price = item_price
-
 
     def __repr__(self):
         return "<Purchase: {} Listing: {}>".format(self.id, self.listing_id)
