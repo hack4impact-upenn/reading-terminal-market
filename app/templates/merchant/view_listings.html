@@ -135,8 +135,7 @@
             var toggleCartIcon = $( this );
             var inCart = toggleCartIcon.parent().data("incart");
             var listingID = toggleCartIcon.parent().data("id");
-            var newValue = inCart === true ? false : true;
-            var newQuantity = newValue === true ? 1 : 0;
+            var newQuantity = inCart ? 0 : 1;
             updateCartQuantity(listingID, newQuantity);
             updateCartFrontend(listingID, newQuantity);
         });
