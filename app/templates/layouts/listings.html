@@ -45,7 +45,7 @@
                             {% if current_user.is_merchant() %}
                                 <td>{{ l.vendor.company_name }}</td>
                             {% endif %}
-                            <td>${{ l.price }}/{{l.category.unit}}</td>
+                            <td>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>
                             <td class="truncate">{{ l.description }}</td>
                             {% if current_user.is_vendor() %}
                                 <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
