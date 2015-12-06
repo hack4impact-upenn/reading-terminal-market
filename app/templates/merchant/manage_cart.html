@@ -9,41 +9,6 @@
                     View and manage your cart.
                 </div>
             </h2>
-<<<<<<< HEAD
-            <form action="{{ url_for('merchant.cart_action') }}" method="post">
-                <div style="overflow-x: scroll;">
-                    <table class="ui searchable sortable unstackable selectable celled table">
-                        <thead>
-                            <tr>
-                                <th class="five wide">Item name</th>
-                                <th class="three wide">Company</th>
-                                <th class="three wide">Vendor</th>
-                                <th class="two wide">Unit price</th>
-                                <th class="two wide">Quantity</th>
-                                <th class="two wide">Total price</th>
-    {#                            <th class="one wide">Remove</th> #}
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        {% for item in cart | sort(attribute='listing.name') %}
-                            <tr>
-                                <td>{{ item.listing.name }}</td>
-                                <td>{{ item.listing.vendor.company_name }}</td>
-                                <td>{{ item.listing.vendor.full_name() }}</td>
-                                <td>${{ '%0.2f' | format(item.listing.price) }}</td>
-                                <td>
-                                    <div class="ui input fluid">
-                                        <input id="quantity" name="{{ item.listing.id }}" type="number" min="0" step="1" value={{ item.quantity }}>
-                                    </div>
-                                </td>
-                                <td id="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>
-                                <meta id="unit_price" content={{ item.listing.price }}>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-=======
             <div style="overflow-x: scroll;">
                 <table class="ui searchable sortable unstackable selectable celled table">
                     <thead>
@@ -81,7 +46,6 @@
                     </tbody>
                 </table>
                 <form action="{{ url_for('merchant.order_items') }}" method="post">
->>>>>>> 3a97b206d06d2c4f32e8ad34cfe3501b972154e3
                     <div class="ui buttons" id="cart_buttons">
                         <input type="submit" class="ui positive button" name="submit" value="Order Items">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -94,12 +58,6 @@
     <script src="{{ url_for('static', filename='merchant.js') }}"></script>
 
     <script>
-<<<<<<< HEAD
-    $(document).ready(function() {
-        $("#quantity").on('input', function() {
-            var new_quantity = $("#quantity").val();
-            $("#total_price").text("$" + (parseInt(new_quantity)*parseFloat($("#unit_price").attr("content"))).toFixed(2))
-=======
 
         $(document).ready(function () {
             $('.remove-from-cart').click(function () {
@@ -116,7 +74,6 @@
                 updateTotalPrice(listingID, newQuantity);
                 updateCartQuantity(listingID, newQuantity);
             });
->>>>>>> 3a97b206d06d2c4f32e8ad34cfe3501b972154e3
         });
 
         function updateTotalPrice(listingID, newQuantity) {
