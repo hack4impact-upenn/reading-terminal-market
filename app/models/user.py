@@ -275,12 +275,6 @@ class Merchant(User):
     def get_cart_listings(self):
         return [cart_item.listing for cart_item in self.cart_items]
 
-    # def has_bookmark(self, listing):
-    #     return listing in bookmarks
-
-    # def add_to_cart(self, listing):
-    #     pass
-
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
         self.role = Role.query.filter_by(index='merchant').first()

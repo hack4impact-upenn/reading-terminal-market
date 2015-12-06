@@ -46,33 +46,37 @@
                 });
             $( document ).ajaxSuccess(function( event, request, settings ) {
                 message = "";
-                if(request.responseText) {
-
+                if (request.responseText) {
                     event = (request.responseText).toString();
+                    console.log(event);
                     var myArray = event.split('"');
-                    item = myArray[myArray.length-2];
-                    console.log(myArray);
-                    console.log(item);
-                    if(event.includes("Favorite") && event.includes("false")) {
+                    item = myArray[myArray.length - 2];
+                    if(event.includes("quantity")) {
+                        num = event.match(/\d+/)[0];
+                    }
+                    console.log(event.includes("Favorite"));
+                    console.log(event.includes("false"));
+                    console.log(num);
+                    if (event.includes("Favorite") && event.includes("false")) {
+                        console.log("hey");
                         message = "You have successfully unfavorited " + item;
                     }
-                    else if(event.includes("Favorite") && event.includes("true")) {
-
-                        message =  "You have successfully favorited " + item;
+                    else if (event.includes("Favorite") && event.includes("true")) {
+                        message = "You have successfully favorited " + item;
                     }
-                    item = myArray[myArray.length-4];
-                    console.log(myArray);
-                    console.log(item);
-                    if(event.includes("Cart") && event.includes("true")) {
-                        var num = event.match(/\d+/)[0];
-
-                        message = "You have added a total of "+ num +" of " + item;
+                    else if (event.includes("quantity") && (num > 0)) {
+                        item = myArray[3];
+                        console.log(myArray);
+                        console.log(item);
+                        message = "You are now ordering a total of " + num + " of " + item;
                     }
-                    else if(event.includes("Cart") && event.includes("false"))
-
+                    else if (event.includes("quantity") && (num == 0)) {
+                        item = myArray[3];
+                        console.log(myArray);
+                        console.log(item);
                         message = "You have removed " + item + " from your cart";
                     }
-
+                }
                 if($("#notifier").length) {
                     $("#notifier").remove();
                 }
@@ -80,6 +84,7 @@
                         "</i><div class='header' id='dynamicflash'>" + message + "</div></p></div>")
                         .appendTo(".notifications").fadeIn(500).delay(5000).fadeOut();
             });
+
             </script>
         {% endif %}
     </body>

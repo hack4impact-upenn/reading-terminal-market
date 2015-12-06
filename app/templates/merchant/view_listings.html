@@ -14,6 +14,7 @@
         <div class="twelve wide field">
             <label>Search names and descriptions</label>
             <input value="{{ main_search_term }}" type="text" name="mainsearch" placeholder="e.g. corned beef">
+
         </div>
 
         <div class="inline field">
@@ -48,7 +49,7 @@
             {% set display = 'display:none' %}
         {% endif %}
         <div class="twelve wide field advanced-search" style="{{ display }}">
-            <label>Search comany and vendor names</label>
+            <label>Search company names</label>
             <input value="{{ name_search_term }}"type="text" name="name-search" placeholder="e.g. John's corned beef">
         </div>
 
@@ -69,104 +70,69 @@
         <br>
         <button class="ui button" type="submit">Search</button>
         <a class="ui button red" href="{{ url_for('merchant.listing_view_all', page=1) }}">Clear Criteria</a>
+
     </form>
 {% endblock %}
 
 {% block after %}
 
+
+    <script src="{{ url_for('static', filename='merchant.js') }}"></script>
+
     <script type="text/javascript">
-        $('#toggle-advanced').click(function() {
-            $('.advanced-search').toggle();
-        });
-
-        $('.toggle-favorite').click(function(event) {
-            var toggledLink = $( this );
-            var isFavorite = toggledLink.data("isfavorite");
-            var listingId = toggledLink.data("id");
-            var newValue = isFavorite === true ? false : true;
-            $.ajax({
-                url: '/merchant/change_favorite/' + listingId,
-                data: JSON.stringify({
-                    isFavorite: newValue
-                }),
-                contentType: "application/json",
-                dataType:"json",
-                success: function(data) {
-                    toggledLink.data("isfavorite", data.isFavorite);
-                    icon = toggledLink.find("i");
-                    icon.removeClass("grey");
-                    icon.removeClass("yellow");
-
-                    if (data.isFavorite) {
-                        icon.addClass("yellow");
-                    } else {
-                        icon.addClass("grey");
-                    }
-
-                },
-                method: 'PUT'
+        $(document).ready(function () {
+            $('#toggle-advanced').click(function () {
+                $('.advanced-search').toggle();
             });
 
-        });
+            $('.toggle-favorite').click(function (event) {
+                var toggledLink = $(this);
+                var isFavorite = toggledLink.data("isfavorite");
+                var listingId = toggledLink.data("id");
+                var newValue = isFavorite === true ? false : true;
+                $.ajax({
+                    url: '/merchant/change_favorite/' + listingId,
+                    data: JSON.stringify({
+                        isFavorite: newValue
+                    }),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        toggledLink.data("isfavorite", data.isFavorite);
+                        icon = toggledLink.find("i");
+                        icon.removeClass("grey");
+                        icon.removeClass("yellow");
 
-        var changeInputQuantity = function(inputSelector, newQuantity) {
-            inputSelector.val(newQuantity);
-        }
+                        if (data.isFavorite) {
+                            icon.addClass("yellow");
+                        } else {
+                            icon.addClass("grey");
+                        }
 
-        var enableCartIcon = function(cartIconSelector) {
-            cartIconSelector.removeClass("grey");
-            cartIconSelector.addClass("blue");
+                    },
+                    method: 'PUT'
+                });
 
-        }
-
-        var disableCartIcon = function(cartIconSelector) {
-            cartIconSelector.removeClass("blue");
-            cartIconSelector.addClass("grey");
-        }
-
-
-        $('.cart-quantity').change(function(event) {
-            var newQuantity = parseInt($( this ).val());
-            var td = $(this).closest('td')
-            var listingID = td.data('id');
-            updateCartItem(listingID, newQuantity);
-        });
-
-        var updateCartItem = function(listingID, newQuantity) {
-            var dataSelector = "[data-id='" + listingID + "']";
-            var td = $('#listings-table td.cartCell' + dataSelector);
-            var icon = td.find("i");
-            var quantityInput = td.find("input");
-            var newInCart;
-            quantityInput.val(newQuantity);
-
-            if (newQuantity === 0){
-                disableCartIcon(icon);
-                newInCart = false;
-                td.data("incart", false);
-            } else {
-                enableCartIcon(icon);
-                newInCart = true;
-                td.data("incart", true);
-            }
-            // send put
-            // make icon and listing consistent
-
-            $.ajax({
-                url: '/merchant/change_in_cart/' + listingID,
-                data: JSON.stringify({
-                    inCart: newInCart,
-                    quantity: newQuantity
-                }),
-                contentType: "application/json",
-                dataType:"json",
-                success: function(data) {
-                    // todo
-                },
-                method: 'PUT'
             });
 
-        }
+            $('.cart-quantity').change(function (event) {
+                var newQuantity = parseInt($(this).val());
+                var td = $(this).closest('td')
+                var listingID = td.data('id');
+                updateCartQuantity(listingID, newQuantity);
+                updateCartFrontend(listingID, newQuantity);
+            });
+
+            $('.toggle-cart').click(function (event) {
+                var toggleCartIcon = $(this);
+                var inCart = toggleCartIcon.parent().data("incart");
+                var listingID = toggleCartIcon.parent().data("id");
+                var newQuantity = inCart ? 0 : 1;
+                updateCartQuantity(listingID, newQuantity);
+                updateCartFrontend(listingID, newQuantity);
+            });
+
+        })
 
 
         $('.toggle-cart').click(function(event) {
@@ -175,7 +141,38 @@
             var listingId = toggleCartIcon.parent().data("id");
             var newValue = inCart === true ? false : true;
             var newQuantity = newValue === true ? 1 : 0;
-            updateCartItem(listingId, newQuantity);
+            updateCartQuantity(listingId, newQuantity);
         });
+
+        function changeInputQuantity(inputSelector, newQuantity) {
+            inputSelector.val(newQuantity);
+        }
+
+        function enableCartIcon(cartIconSelector) {
+            cartIconSelector.removeClass("grey");
+            cartIconSelector.addClass("blue");
+
+        }
+
+        function disableCartIcon(cartIconSelector) {
+            cartIconSelector.removeClass("blue");
+            cartIconSelector.addClass("grey");
+        }
+
+        function updateCartFrontend(listingID, quantity) {
+            var dataSelector = "[data-id='" + listingID + "']";
+            var td = $('#listings-table td.cartCell' + dataSelector);
+            var icon = td.find("i");
+            var quantityInput = td.find("input");
+            quantityInput.val(quantity);
+
+            if (quantity === 0) {
+                disableCartIcon(icon);
+                td.data("incart", false);
+            } else {
+                enableCartIcon(icon);
+                td.data("incart", true);
+            }
+        }
     </script>
 {% endblock %}

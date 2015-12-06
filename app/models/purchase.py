@@ -2,7 +2,6 @@ from .. import db
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
-from sqlalchemy.orm import backref
 from flask.ext.login import current_user
 
 

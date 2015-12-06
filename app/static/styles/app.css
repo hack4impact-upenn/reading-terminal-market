@@ -65,15 +65,15 @@ table.selectable tr:hover {
 }
 
 #cart_buttons {
-    float: right;
+	float: right;
 }
 
 .toggle-cart {
-    float: left;
-    width: 30%;
+	float: left;
+	width: 30%;
 }
 
 .add_quant {
-    float: left;
-    width: 70%;
+	float: left;
+	width: 70%;
 }

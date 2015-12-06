@@ -109,7 +109,6 @@ def setup_test_listings():
             db.session.rollback()
 
 
-
 @manager.command
 def setup_test_cart_items():
     c1 = CartItem()

@@ -3,10 +3,14 @@ from purchase import CartItem
 from sqlalchemy import or_
 from user import Vendor
 from flask.ext.login import current_user
-
+from sqlalchemy import UniqueConstraint
 
 class Listing(db.Model):
     __tablename__ = "listings"
+    __table_args__ = (
+        UniqueConstraint('id', 'name'),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
 
     # model relationships
@@ -36,7 +40,7 @@ class Listing(db.Model):
 
     def get_quantity_in_cart(self):
         cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
-                                             listing_id=self.id).first()
+                                              listing_id=self.id).first()
         if cart_item:
             return cart_item.quantity
         else:

@@ -11,4 +11,4 @@ def index():
     elif current_user.is_vendor():
         return redirect(url_for('vendor.index'))
     else:
-        return render_template('main/index.html')
+        return redirect(url_for('account.login'))
