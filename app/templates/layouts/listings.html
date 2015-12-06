@@ -9,41 +9,37 @@
             {% endblock %}
 
             {% if header is defined %}
-              <h2 class="ui header">
-                  {{ header }}
-              </h2>
+                <h2 class="ui header">
+                    {{ header }}
+                </h2>
             {% endif %}
 
             {# Actual table #}
             {# Use overflow-x: scroll so that mobile views don't freak out
              # when the table is too wide #}
             <div style="overflow-x: scroll;">
-                <table class="ui searchable sortable unstackable selectable celled table">
+                <table id="listings-table" class="ui searchable sortable unstackable selectable celled table">
                     <thead>
-                        <tr>
-                            <th class="sorted ascending">Item name</th>
-                            {% if current_user.is_merchant() %}
-                                <th>Company</th>
-                            {% endif %}
-                            <th>Price</th>
-                            <th class="truncate">Description</th>
-                            {% if current_user.is_vendor() %}
-                                <th>Availability</th>
-                            {% endif %}
-                            <th>Category</th>
-                            {% if current_user.is_merchant() %}
-                                <th>Add to Cart</th>
-                                <th>Favorite</th>
-                            {% endif %}
-                        </tr>
+                    <tr>
+                        <th class="sorted ascending">Item name</th>
+                        {% if current_user.is_merchant() %}
+                            <th>Company</th>
+                        {% endif %}
+                        <th>Price</th>
+                        <th class="truncate">Description</th>
+                        {% if current_user.is_vendor() %}
+                            <th>Availability</th>
+                        {% endif %}
+                        <th>Category</th>
+                        {% if current_user.is_merchant() %}
+                            <th>Add to Cart</th>
+                            <th>Favorite</th>
+                        {% endif %}
+                    </tr>
                     </thead>
                     <tbody>
                     {% for l in listings | sort(attribute='name') %}
-                        {% if current_user.is_vendor() %}
-                            <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
-                        {% elif current_user.is_merchant() %}
-                            <tr onclick="window.location.href = '{{ url_for('merchant.index', listing_id=l.id) }}';">
-                        {% endif %}
+                        <tr>
 
                             <td>{{ l.name }}</td>
                             {% if current_user.is_merchant() %}
@@ -56,24 +52,34 @@
                             {% endif %}
                             <td class="item category">{{ l.category.name }}</td>
 
+
+
                             {% if current_user.is_merchant() %}
-                                <td class="center aligned">
-                                    <a href="{{ url_for('merchant.add_to_cart', current_listing_id=l.id, quantity_needed=1) }}">
-                                        {% if l in cart_listings %}
-                                            <i class="cart icon blue"></i>
-                                        {% else %}
-                                            <i class="cart icon grey"></i>
-                                        {% endif %}
+                                {% if l in cart_listings %}
+                                    {% set in_cart = "true" %}
+                                    {% set cart_color = "blue" %}
+                                {% else %}
+                                    {% set in_cart = "false" %}
+                                    {% set cart_color = "grey" %}
+                                {% endif %}
+                                <td class="center aligned cartCell" data-id="{{ l.id }}" data-incart="{{ in_cart }}">
+                                    <a class="toggle-cart">
+                                        <i class="cart icon {{ cart_color }}"></i>
                                     </a>
+                                    <div class="ui input fluid add_quant">
+                                        <input class="cart-quantity" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
+                                    </div>
                                 </td>
-                                <td class="center aligned">
-                                    <a href="{{ url_for('merchant.favorite', listing_id=l.id) }}">
-                                        {% if l in current_user.bookmarks %}
+                                <td class="center aligned favoriteCell">
+                                    {% if l in current_user.bookmarks %}
+                                        <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="true" href="#">
                                             <i class="favorite icon yellow"></i>
-                                        {% else %}
+                                        </a>
+                                    {% else %}
+                                        <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="false" href="#">
                                             <i class="favorite icon grey"></i>
-                                        {% endif %}
-                                    </a>
+                                        </a>
+                                    {% endif %}
                                 </td>
                             {% endif %}
                         </tr>
@@ -88,11 +94,11 @@
     </div>
 
     <style>
-    .truncate {
-      max-width: 100px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+        .truncate {
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 {% endblock %}
