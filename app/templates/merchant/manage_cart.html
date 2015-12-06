@@ -76,15 +76,15 @@
             });
         });
 
-        var updateTotalPrice = function(listingID, newQuantity) {
+        function updateTotalPrice(listingID, newQuantity) {
             var tr = $( 'tr' ).filterByData( 'id', listingID );
             var totalPrice = tr.find( '.total_price' );
             var unitPrice = parseFloat( tr.find( '.unit_price' ).data( 'price' ) );
             totalPrice.text( "$" + newQuantity * unitPrice );
         }
 
-        var deleteListing = function(tableRow) {
-            tableRow.remove()
+        function deleteListing(tableRow) {
+            tableRow.remove();
         }
 
     </script>

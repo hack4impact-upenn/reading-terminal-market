@@ -1,4 +1,4 @@
-var updateCartQuantity = function(listingID, newQuantity, callback) {
+function updateCartQuantity(listingID, newQuantity, callback) {
     $.ajax({
         url: '/merchant/add_to_cart/' + listingID,
         data: JSON.stringify({
@@ -8,7 +8,7 @@ var updateCartQuantity = function(listingID, newQuantity, callback) {
         dataType:"json",
         success: function(data) {
             if (callback !== undefined) {
-                callback()
+                callback();
             }
         },
         method: 'PUT'
