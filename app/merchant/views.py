@@ -20,7 +20,7 @@ def index():
 @merchant_required
 def listing_view_all(page=1, requestlink=""):
     """Search for listings"""
-    main_search_term = request.args.get('main-search', "", type=str)
+    main_search_term = request.args.get('mainsearch', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
     sortby = request.args.get('sortby', "", type=str)
     name_search_term = request.args.get('name-search', "", type=str)
