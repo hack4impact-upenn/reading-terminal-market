@@ -58,15 +58,22 @@
     <script src="{{ url_for('static', filename='merchant.js') }}"></script>
 
     <script>
-        var deleteListing = function(tableRow) {
-            tableRow.remove()
-        }
 
-        $('.remove-from-cart').click(function() {
-            var toggledItemButton = $( this );
-            var listingID = toggledItemButton.data( 'id' );
-            var tableRow = toggledItemButton.parent().parent();
-            updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));
+        $(document).ready(function () {
+            $('.remove-from-cart').click(function () {
+                var toggledItemButton = $(this);
+                var listingID = toggledItemButton.data('id');
+                var tableRow = toggledItemButton.parent().parent();
+                updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));
+            });
+
+            $('.cart-quantity').change(function (event) {
+                var newQuantity = parseInt($(this).val());
+                var listingID = $(this).data('id');
+
+                updateTotalPrice(listingID, newQuantity);
+                updateCartQuantity(listingID, newQuantity);
+            });
         });
 
         var updateTotalPrice = function(listingID, newQuantity) {
@@ -76,13 +83,9 @@
             totalPrice.text( "$" + newQuantity * unitPrice );
         }
 
-        $('.cart-quantity').change(function(event) {
-            var newQuantity = parseInt( $( this ).val() );
-            var listingID = $( this ).data( 'id' );
-
-            updateTotalPrice(listingID, newQuantity);
-            updateCartQuantity(listingID, newQuantity);
-        });
+        var deleteListing = function(tableRow) {
+            tableRow.remove()
+        }
 
     </script>
 {% endblock %}
