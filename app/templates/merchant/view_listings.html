@@ -111,22 +111,22 @@
             });
         });
 
-        var changeInputQuantity = function (inputSelector, newQuantity) {
+        function changeInputQuantity(inputSelector, newQuantity) {
             inputSelector.val(newQuantity);
         }
 
-        var enableCartIcon = function (cartIconSelector) {
+        function enableCartIcon(cartIconSelector) {
             cartIconSelector.removeClass("grey");
             cartIconSelector.addClass("blue");
 
         }
 
-        var disableCartIcon = function (cartIconSelector) {
+        function disableCartIcon(cartIconSelector) {
             cartIconSelector.removeClass("blue");
             cartIconSelector.addClass("grey");
         }
 
-        var updateCartFrontend = function (listingID, quantity) {
+        function updateCartFrontend(listingID, quantity) {
             var dataSelector = "[data-id='" + listingID + "']";
             var td = $('#listings-table td.cartCell' + dataSelector);
             var icon = td.find("i");
