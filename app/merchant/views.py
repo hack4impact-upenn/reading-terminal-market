@@ -12,14 +12,15 @@ from forms import CartQuantityForm
 @login_required
 @merchant_required
 def index():
-    return listing_view_all()
+    return listing_view_all(1,"")
 
 
 @merchant.route('/view/all')
+@merchant.route('/view/all/<int:page>')
 @merchant.route('/view/all/<int:page>/<string:requestlink>')
 @login_required
 @merchant_required
-def listing_view_all(page=1,requestlink=""):
+def listing_view_all(page=1, requestlink=""):
     """Search for listings"""
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
@@ -28,13 +29,13 @@ def listing_view_all(page=1,requestlink=""):
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
     listings_raw = Listing.search(available=True,
-                              favorite=favorite,
-                              sortby=sortby,
-                              min_price=min_price,
-                              max_price=max_price,
-                              name_search_term=name_search_term,
-                              main_search_term=main_search_term)
-    listings_paginated = listings_raw.paginate(page,20,False)
+                                  favorite=favorite,
+                                  sortby=sortby,
+                                  min_price=min_price,
+                                  max_price=max_price,
+                                  name_search_term=name_search_term,
+                                  main_search_term=main_search_term)
+    listings_paginated = listings_raw.paginate(page, 20, False)
     return render_template('merchant/view_listings.html',
                            listings=listings_paginated,
                            main_search_term=main_search_term,
@@ -134,7 +135,8 @@ def change_in_cart(listing_id):
     elif not should_be_in_cart and already_exists:
         db.session.delete(cart_item)
     db.session.commit()
-    return jsonify({'inCart': should_be_in_cart, 'quantity': quantity})
+    name = Listing.query.filter_by(id=listing_id).first().name
+    return jsonify({'inCart': should_be_in_cart, 'quantity': quantity, 'name': name})
 
 
 @merchant.route('/change_favorite/<int:listing_id>', methods=['PUT'])
@@ -156,4 +158,4 @@ def change_favorite(listing_id):
     elif not new_status and listing in current_user.bookmarks:
         current_user.bookmarks.remove(listing)
     db.session.commit()
-    return jsonify({'isFavorite': listing in current_user.bookmarks})
+    return jsonify({'isFavorite': listing in current_user.bookmarks, 'name': listing.name})

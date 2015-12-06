@@ -48,26 +48,37 @@
                 message = "";
                 if(request.responseText) {
 
-                    event = (request.responseText).toString()
+                    event = (request.responseText).toString();
+                    var myArray = event.split('"');
+                    item = myArray[myArray.length-2];
+                    console.log(myArray);
+                    console.log(item);
                     if(event.includes("Favorite") && event.includes("false")) {
-                        message = "You have successfully unfavorited this item";
+                        message = "You have successfully unfavorited " + item;
                     }
                     else if(event.includes("Favorite") && event.includes("true")) {
-                        message =  "You have successfully favorited this item";
+
+                        message =  "You have successfully favorited " + item;
                     }
-                    else if(event.includes("Cart") && event.includes("true")) {
-                        num = event.match(/\d+/)[0];
-                        message = "You have added a total of "+ num +" of this item";
+                    item = myArray[myArray.length-4];
+                    console.log(myArray);
+                    console.log(item);
+                    if(event.includes("Cart") && event.includes("true")) {
+                        var num = event.match(/\d+/)[0];
+
+                        message = "You have added a total of "+ num +" of " + item;
                     }
-                    else if(event.includes("Cart") && event.includes("false")) {
-                        message = "You have removed this item from your cart";
+                    else if(event.includes("Cart") && event.includes("false"))
+
+                        message = "You have removed " + item + " from your cart";
                     }
 
+                if($("#notifier").length) {
+                    $("#notifier").remove();
                 }
                 $("<div class='ui green message' id='notifier'><i class='close icon'>"  +
                         "</i><div class='header' id='dynamicflash'>" + message + "</div></p></div>")
-                        .hide().appendTo(".notifications").fadeIn(500).delay(5000).fadeOut();
-
+                        .appendTo(".notifications").fadeIn(500).delay(5000).fadeOut();
             });
             </script>
         {% endif %}
