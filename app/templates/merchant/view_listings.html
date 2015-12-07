@@ -143,16 +143,6 @@
 
         })
 
-
-        $('.toggle-cart').click(function(event) {
-            var toggleCartIcon = $( this );
-            var inCart = toggleCartIcon.parent().data("incart");
-            var listingId = toggleCartIcon.parent().data("id");
-            var newValue = inCart === true ? false : true;
-            var newQuantity = newValue === true ? 1 : 0;
-            updateCartQuantity(listingId, newQuantity);
-        });
-
         function changeInputQuantity(inputSelector, newQuantity) {
             inputSelector.val(newQuantity);
         }

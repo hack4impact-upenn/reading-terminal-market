@@ -1,6 +1,6 @@
 from .. import db
 from purchase import CartItem
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from user import Vendor
 from flask.ext.login import current_user
 from sqlalchemy import UniqueConstraint
@@ -65,8 +65,6 @@ class Listing(db.Model):
     @staticmethod
     def search(**kwargs):
         """ Returns all listings matching the criteria """
-        name = "%"
-        vendor = "%"
         if 'main_search_term' in kwargs:
             term = kwargs['main_search_term']
             name = '%{}%'.format(term)
@@ -77,7 +75,7 @@ class Listing(db.Model):
 
         price_min = 0
         # price_max some arbitrarily large number to ensure all price are shown unless a user specifies a price
-        price_max = 1000000
+        price_max = float('inf')
         bookmark_ids = [listing.id for listing in Listing.query.all()]
         sort_criteria = None
         if 'favorite' in kwargs and kwargs['favorite']:
@@ -97,14 +95,14 @@ class Listing(db.Model):
                 sort_criteria = 'name'
             else:
                 sort_criteria = 'name desc'
-        init_filter = Listing.query.filter((Listing.price >= price_min) &
-                                           (Listing.price <= price_max) &
-                                           (Listing.id.in_(bookmark_ids)) &
-                                           (Listing.available==True) &
-                                           or_((Listing.name.like(name)),
-                                               (Listing.description.like(name))),
-                                           or_(
-                                               Vendor.company_name.like(vendor))
+        init_filter = Listing.query.filter(and_(Listing.price >= price_min),
+                                           (Listing.price <= price_max),
+                                           (Listing.id.in_(bookmark_ids)),
+                                           (Listing.available==True),
+                                           (or_((Listing.name.like(name)),
+                                                (Listing.description.like(name)))),
+                                           (or_(
+                                               Vendor.company_name.like(vendor)))
                                            )
 
         final_filter = init_filter.order_by(sort_criteria)
