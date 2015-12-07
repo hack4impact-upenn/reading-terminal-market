@@ -101,10 +101,10 @@
                 updateCartFrontend(listingID, newQuantity);
             });
 
-            $('.toggle-cart').click(function (event) {
+            $('.toggle-cart.ui.button').click(function (event) {
                 var toggleCartIcon = $(this);
-                var inCart = toggleCartIcon.parent().data("incart");
-                var listingID = toggleCartIcon.parent().data("id");
+                var inCart = toggleCartIcon.parent().parent().data("incart");
+                var listingID = toggleCartIcon.parent().parent().data("id");
                 var newQuantity = inCart ? 0 : 1;
                 updateCartQuantity(listingID, newQuantity);
                 updateCartFrontend(listingID, newQuantity);

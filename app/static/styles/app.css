@@ -28,14 +28,11 @@ table.selectable tr:hover {
 	float: right;
 }
 
-.toggle-cart {
-	float: left;
-	width: 30%;
-  margin-right: 5px;
+#button_padding {
+  padding-left: 10px;
+  padding-right: 8px;
 }
 
-.add_quant {
-	float: right;
-	width: 60%;
+#input_size {
+  width: 60px;
 }
-
