@@ -9,7 +9,6 @@
         'success': get_flashed_messages(category_filter=['form-success'])
      } %}
 
-
     <form class="ui form segment">
         <div class="twelve wide field">
             <label>Search names and descriptions</label>
@@ -34,16 +33,19 @@
             <input value="{{ name_search_term }}"type="text" name="name-search" placeholder="e.g. John's corned beef">
         </div>
 
-        <div class="two fields advanced-search" style="{{ display }}">
-            <div class="three wide field">
-                <label>Minimum unit price</label>
-
-                <input value="{{ min_price }}" type="text" name="min-price" placeholder="e.g. $0">
+        <div class="twelve wide field advanced-search" style="{{ display }}">
+            <div class="two wide fields">
+                <div class="three wide field">
+                    <label>Minimum unit price</label>
+                    <input value="{{ min_price }}" type="number" id="min-price" name="min-price" placeholder="e.g. $0">
+                </div>
+                <div class="three wide field">
+                    <label>Maximum unit price</label>
+                    <input value="{{ max_price }}" type="number" id="max-price" name="max-price" placeholder="e.g. $500">
+                </div>
             </div>
-            <div class="three wide field">
-                <label>Maximum unit price</label>
-                <input value="{{ max_price }}" type="text" name="max-price" placeholder="e.g. $10">
-            </div>
+            <div id="slider-range"></div>
+            
         </div>
         <div>
             <a href="#" id="toggle-advanced">Toggle advanced search</a>
@@ -56,6 +58,10 @@
 {% block after %}
 
     <script src="{{ url_for('static', filename='merchant.js') }}"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -109,6 +115,36 @@
                 updateCartQuantity(listingID, newQuantity);
                 updateCartFrontend(listingID, newQuantity);
             });
+
+            $("#slider-range").slider({
+                range: true,
+                min: 0,
+                max: 500,
+                values: [$("#min-price").val(), $("#max-price").val()],
+                slide: function( event, ui ) {
+                    $("#min-price").val(ui.values[0]);
+                    $("#max-price").val(ui.values[1]);
+                }
+            });
+
+            $("#min-price").change(function() {
+                $("#slider-range").slider("values", 0, $(this).val())
+                if ($(this).val() > $("#max-price").val()) {
+                    $("#slider-range").slider("values", 1, $(this).val())
+                    $("#max-price").val($(this).val());
+                }
+            });
+
+            $("#max-price").change(function() {
+                $("#slider-range").slider("values", 1, $(this).val())
+                if ($("#min-price").val() > $(this).val()) {
+                    $("#slider-range").slider("values", 0, $(this).val())
+                    $("#min-price").val($(this).val());
+                }
+            });
+            
+
+
         });
 
         function changeInputQuantity(inputSelector, newQuantity) {

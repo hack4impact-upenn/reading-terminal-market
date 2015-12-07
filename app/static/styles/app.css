@@ -36,3 +36,7 @@ table.selectable tr:hover {
 #input_size {
   width: 60px;
 }
+
+#slider-range{
+  margin-top:10px;
+}
