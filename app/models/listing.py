@@ -65,6 +65,7 @@ class Listing(db.Model):
     @staticmethod
     def search(**kwargs):
         """ Returns all listings matching the criteria """
+        # TODO, fix filter list and fix vendor name searching
         if 'main_search_term' in kwargs:
             term = kwargs['main_search_term']
             name = '%{}%'.format(term)
