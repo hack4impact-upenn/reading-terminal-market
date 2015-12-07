@@ -35,7 +35,7 @@
                                     <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
                                 </div>
                             </td>
-                            <td class="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price * 1.0) }}</td>
+                            <td class="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>
                             <td class="center aligned">
                                 <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
                                     <i class="red large trash icon"></i>
