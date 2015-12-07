@@ -31,9 +31,11 @@ table.selectable tr:hover {
 .toggle-cart {
 	float: left;
 	width: 30%;
+  margin-right: 5px;
 }
 
 .add_quant {
-	float: left;
-	width: 70%;
+	float: right;
+	width: 60%;
 }
+
