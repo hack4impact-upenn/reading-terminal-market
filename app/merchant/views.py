@@ -46,44 +46,6 @@ def listing_view_all(page=1, requestlink=""):
                            header="All listings")
 
 
-@merchant.route('/cart-action', methods=['POST'])
-@login_required
-@merchant_required
-def cart_action():
-    def save_cart():
-        for item in current_user.cart_items:
-            qty = int(request.form[str(item.listing_id)])
-            if qty == 0:
-                db.session.delete(item)
-            else:
-                item.quantity = qty
-        db.session.commit()
-
-    if request.form['submit'] == "Save Cart":
-        save_cart()
-        return redirect(url_for('.manage_cart'))
-
-    elif "Remove" in request.form['submit']:
-
-        remove_id = request.form['submit'].split()[1]
-
-        remove_item = CartItem.query.filter_by(
-            merchant_id=current_user.id).filter_by(
-            listing_id=remove_id).first()
-
-        db.session.delete(remove_item)
-        db.session.commit()
-        return redirect(url_for('.manage_cart'))
-
-    elif request.form['submit'] == "Order Items":
-        save_cart()
-        order = Order(current_user.cart_items)
-        db.session.add(order)
-        CartItem.delete_cart_items()
-        db.session.commit()
-        return redirect(url_for('.manage_cart'))
-
-
 @merchant.route('/order-items', methods=['POST'])
 @login_required
 @merchant_required

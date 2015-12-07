@@ -48,17 +48,14 @@
                 message = "";
                 if (request.responseText) {
                     event = (request.responseText).toString();
-                    console.log(event);
                     var myArray = event.split('"');
                     item = myArray[myArray.length - 2];
                     if(event.includes("quantity")) {
                         num = event.match(/\d+/)[0];
+                    } else {
+                        num = -1
                     }
-                    console.log(event.includes("Favorite"));
-                    console.log(event.includes("false"));
-                    console.log(num);
                     if (event.includes("Favorite") && event.includes("false")) {
-                        console.log("hey");
                         message = "You have successfully unfavorited " + item;
                     }
                     else if (event.includes("Favorite") && event.includes("true")) {
@@ -66,14 +63,10 @@
                     }
                     else if (event.includes("quantity") && (num > 0)) {
                         item = myArray[3];
-                        console.log(myArray);
-                        console.log(item);
                         message = "You are now ordering a total of " + num + " of " + item;
                     }
                     else if (event.includes("quantity") && (num == 0)) {
                         item = myArray[3];
-                        console.log(myArray);
-                        console.log(item);
                         message = "You have removed " + item + " from your cart";
                     }
                 }
