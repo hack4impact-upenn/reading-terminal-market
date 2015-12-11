@@ -37,4 +37,10 @@
             {{ f.end_form() }}
         </div>
     </div>
+    <script>
+        $("form").submit(function() {
+            console.log("resetting");
+            $(this).find(":input:not(#csrf_token)").val("");
+        });
+    </script>
 {% endblock %}

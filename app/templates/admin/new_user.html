@@ -71,5 +71,10 @@
                 $('#company_name').prop('disabled', false);
             }
         });
+
+        $("form").submit(function() {
+            console.log("resetting");
+            $(this).find(":input:not(#csrf_token)").val("");
+        });
     </script>
 {% endblock %}
