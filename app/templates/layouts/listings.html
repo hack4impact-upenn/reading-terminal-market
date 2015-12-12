@@ -95,7 +95,7 @@
                             {% if current_user.user_type == "merchant" %}
                                  <a class="item" href="{{ url_for('merchant.listing_view_all', page=page) }}?{{ request.query_string }}&search=False">{{ page }}</a>
                                 {% elif current_user.user_type == "vendor" %}
-                                 <a class="item" href="{{ url_for('vendor.current_listings', page=page) }}?{{ request.query_string }}">{{ page }}</a>
+                                 <a class="item" href="{{ url_for('vendor.current_listings', page=page) }}?{{ request.query_string }}&search=False">{{ page }}</a>
 
                                 {% endif %}
 

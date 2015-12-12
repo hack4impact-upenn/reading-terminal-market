@@ -78,8 +78,17 @@ class Listing(db.Model):
             filter_list.append(
                 Vendor.company_name.like('%{}%'.format(term))
             )
-        if 'available' in kwargs:
-            filter_list.append(Listing.available == kwargs['available'])
+        if 'avail' in kwargs:
+            avail_criteria = kwargs['avail']
+            format(avail_criteria)
+            if avail_criteria == "both":
+                filter_list.append(Listing.available == True)
+                filter_list.append(Listing.available == False)
+            elif avail_criteria == "non_avail":
+                filter_list.append(Listing.available == False)
+            elif avail_criteria == "avail":
+                filter_list.append(Listing.available == True)
+
         sort_criteria = None
         if 'favorite' in kwargs and kwargs['favorite']:
             bookmark_ids = [listing.id for listing in current_user.bookmarks]
