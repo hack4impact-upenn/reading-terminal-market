@@ -15,10 +15,9 @@ def index():
 
 @merchant.route('/view/all')
 @merchant.route('/view/all/<int:page>')
-@merchant.route('/view/all/<int:page>/<string:requestlink>')
 @login_required
 @merchant_required
-def listing_view_all(page=1, requestlink=""):
+def listing_view_all(page=1):
     """Search for listings"""
     main_search_term = request.args.get('mainsearch', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
@@ -26,6 +25,7 @@ def listing_view_all(page=1, requestlink=""):
     name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
+    search = request.args.get('search', "", type=str)
     listings_raw = Listing.search(available=True,
                                   favorite=favorite,
                                   sortby=sortby,
@@ -33,17 +33,30 @@ def listing_view_all(page=1, requestlink=""):
                                   max_price=max_price,
                                   name_search_term=name_search_term,
                                   main_search_term=main_search_term)
+    if search != "False":
+        page = 1
     listings_paginated = listings_raw.paginate(page, 20, False)
-    return render_template('merchant/view_listings.html',
-                           listings=listings_paginated,
-                           main_search_term=main_search_term,
-                           min_price=min_price,
-                           max_price=max_price,
-                           sortby=sortby,
-                           name_search_term=name_search_term,
-                           favorite=favorite,
-                           cart_listings=current_user.get_cart_listings(),
-                           header="All listings")
+    result_count = listings_raw.count()
+
+    if result_count == 0:
+        return render_template('vendor/current_listings.html',
+                               listings=Listing.search(main_search_term='',
+                                                       sortby=sortby)
+                                               .paginate(page, 20, False),
+                               header="No Results: Showing All listings")
+    else:
+        return render_template('merchant/view_listings.html',
+                               listings=listings_paginated,
+                               main_search_term=main_search_term,
+                               min_price=min_price,
+                               max_price=max_price,
+                               sortby=sortby,
+                               name_search_term=name_search_term,
+                               favorite=favorite,
+                               cart_listings=current_user.get_cart_listings(),
+                               header="All listings: " + str(result_count) + " results in total",
+                               )
+
 
 
 @merchant.route('/order-items', methods=['POST'])

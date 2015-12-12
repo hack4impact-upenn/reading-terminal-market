@@ -48,11 +48,15 @@ def current_listings(page=1):
     """View all current listings."""
     main_search_term = request.args.get('mainsearch', "", type=str)
     sortby = request.args.get('sortby', "", type=str)
+    search = request.args.get('search', "", type=str)
     listings_raw = Listing.search(sortby=sortby,
                                   main_search_term=main_search_term)
     listings_raw = listings_raw.filter(Listing.vendor_id == current_user.id)
-    listings_paginated = listings_raw.paginate(page,20,False)
-    if listings_raw.count() == 0:
+    if search != "False":
+        page = 1
+    listings_paginated = listings_raw.paginate(page, 20, False)
+    result_count = listings_raw.count()
+    if result_count == 0:
         return render_template('vendor/current_listings.html',
                                listings=Listing.search(main_search_term='',
                                                        sortby=sortby)
@@ -61,10 +65,10 @@ def current_listings(page=1):
                                header="No Results: Showing All listings")
     else:
         return render_template('vendor/current_listings.html',
-                                listings=listings_paginated,
-                                main_search_term=main_search_term,
-                                sortby=sortby,
-                                header="All listings")
+                               listings=listings_paginated,
+                               main_search_term=main_search_term,
+                               sortby=sortby,
+                               header="All listings: " + result_count + "in total")
 
 
 @vendor.route('/items/<int:listing_id>')
