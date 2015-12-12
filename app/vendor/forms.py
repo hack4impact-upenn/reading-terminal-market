@@ -27,12 +27,11 @@ class ChangeListingInformation(Form):
     def validate_listing_name(self, field):
         is_same_name = Listing.name == field.data
         is_diff_id = Listing.id != self.listing_id
-        print is_diff_id
         if current_user.listings.filter(is_same_name, is_diff_id).first():
             raise ValidationError('You already have an item with name {}.'.format(field.data))
 
 
-class NewItemForm(Form):	
+class NewItemForm(Form):
     category_id = QuerySelectField('Category',
                                    validators=[DataRequired()],
                                    get_label='name',

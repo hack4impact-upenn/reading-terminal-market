@@ -26,14 +26,12 @@ def new_listing():
     form = NewItemForm()
     if form.validate_on_submit():
         category_id = form.category_id.data.id
-        listing = Listing(
-                name=form.listing_name.data,
-                description=form.listing_description.data,
-                available=True,
-                price=form.listing_price.data,
-                category_id=category_id,
-                vendor_id=current_user.id
-        )
+        listing = Listing(name=form.listing_name.data,
+                          description=form.listing_description.data,
+                          available=True,
+                          price=form.listing_price.data,
+                          category_id=category_id,
+                          vendor_id=current_user.id)
         db.session.add(listing)
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
@@ -73,7 +71,8 @@ def listing_info(listing_id):
 @vendor_required
 def change_listing_info(listing_id):
     """Change a listings's info."""
-    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(id=listing_id,
+                                      vendor_id=current_user.id).first()
     if listing is None:
         abort(404)
     form = ChangeListingInformation()
@@ -96,7 +95,9 @@ def change_listing_info(listing_id):
     form.category_id.default = listing.category
     form.listing_available.default = listing.available
     form.process()
-    return render_template('vendor/manage_listing.html', listing=listing, form=form)
+    return render_template('vendor/manage_listing.html',
+                           listing=listing,
+                           form=form)
 
 
 @vendor.route('/item/<int:listing_id>/delete')
@@ -104,7 +105,8 @@ def change_listing_info(listing_id):
 @vendor_required
 def delete_listing_request(listing_id):
     """Request deletion of an item"""
-    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(id=listing_id,
+                                      vendor_id=current_user.id).first()
     if listing is None:
         abort(404)
     return render_template('vendor/manage_listing.html', listing=listing)
@@ -115,7 +117,8 @@ def delete_listing_request(listing_id):
 @vendor_required
 def delete_listing(listing_id):
     """Delete an item."""
-    listing = Listing.query.filter_by(id=listing_id, vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(id=listing_id,
+                                      vendor_id=current_user.id).first()
     listing.delete_listing()
     flash('Successfully deleted item %s.' % listing.name, 'success')
     return redirect(url_for('vendor.current_listings'))
