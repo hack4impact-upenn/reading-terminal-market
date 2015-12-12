@@ -36,7 +36,6 @@ def view_categories():
 @login_required
 @admin_required
 def add_category():
-    print("ADD CATEGORY LINKED");
     form = NewCategoryForm()
     if form.validate_on_submit():
         category_name = form.category_name.data
