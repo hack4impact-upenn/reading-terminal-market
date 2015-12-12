@@ -40,7 +40,7 @@ class Listing(db.Model):
 
     def get_quantity_in_cart(self):
         cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
-                                              listing_id=self.id).first()
+                                             listing_id=self.id).first()
         if cart_item:
             return cart_item.quantity
         else:
@@ -65,25 +65,30 @@ class Listing(db.Model):
     @staticmethod
     def search(**kwargs):
         """ Returns all listings matching the criteria """
+        filter_list=[]
         if 'main_search_term' in kwargs:
             term = kwargs['main_search_term']
-            name = '%{}%'.format(term)
+            filter_list.append(or_(
+                Listing.name.like('%{}%'.format(term)),
+                Listing.description.like('%{}%'.format(term)))
+            )
 
         if 'name_search_term' in kwargs:
             term = kwargs['name_search_term']
-            vendor = '%{}%'.format(term)
-
-        price_min = 0
-        # price_max some arbitrarily large number to ensure all price are shown unless a user specifies a price
-        price_max = float('inf')
-        bookmark_ids = [listing.id for listing in Listing.query.all()]
+            filter_list.append(
+                Vendor.company_name.like('%{}%'.format(term))
+            )
+        if 'available' in kwargs:
+            filter_list.append(Listing.available == kwargs['available'])
         sort_criteria = None
         if 'favorite' in kwargs and kwargs['favorite']:
             bookmark_ids = [listing.id for listing in current_user.bookmarks]
+            filter_list.append(Listing.id.in_(bookmark_ids))
         if 'min_price' in kwargs and kwargs['min_price']:
-            price_min = kwargs['min_price']
+            filter_list.append(Listing.price >= kwargs['min_price'])
         if 'max_price' in kwargs and kwargs['max_price']:
-            price_max = kwargs['max_price']
+            filter_list.append(Listing.price <= kwargs['max_price'])
+
         if 'sortby' in kwargs and kwargs['sortby']:
             sort = kwargs['sortby']
             format(sort)
@@ -95,17 +100,9 @@ class Listing(db.Model):
                 sort_criteria = 'name'
             else:
                 sort_criteria = 'name desc'
-        init_filter = Listing.query.filter(and_(Listing.price >= price_min),
-                                           (Listing.price <= price_max),
-                                           (Listing.id.in_(bookmark_ids)),
-                                           (Listing.available==True),
-                                           (or_((Listing.name.like(name)),
-                                                (Listing.description.like(name)))),
-                                           (or_(
-                                               Vendor.company_name.like(vendor)))
-                                           )
-
+        init_filter = Listing.query.filter(*filter_list)
         final_filter = init_filter.order_by(sort_criteria)
+
         return final_filter
 
     def __repr__(self):
