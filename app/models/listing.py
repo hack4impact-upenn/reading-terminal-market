@@ -75,7 +75,7 @@ class Listing(db.Model):
 
         if 'name_search_term' in kwargs and kwargs['name_search_term']:
             term = kwargs['name_search_term']
-            results = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
+            results = Vendor.query.filter(Vendor.company_name == term).all()
             for r in results:
                 filter_list.append(
                     Listing.vendor_id == r.id
