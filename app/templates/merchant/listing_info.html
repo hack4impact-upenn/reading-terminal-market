@@ -26,13 +26,11 @@
             <h2 class="ui header">
                 {{ listing.name }}
                 <div style="padding-bottom: 8px;" class="sub header">View and buy {{listing.name}}.</div>
-                <a href="#">
                   <button data-isfavorite="{% if listing in current_user.bookmarks %}true{% else %}false{% endif %}"
                     class="ui yellow button {% if listing not in current_user.bookmarks %}basic{% endif %}" id="favorite">
                     {% if listing in current_user.bookmarks %}Unfavorite
                     {% else %}Favorite
                     {% endif %}this</button>
-                </a>
             </h2>
         </div>
         <div class="stretched divided very relaxed row">
