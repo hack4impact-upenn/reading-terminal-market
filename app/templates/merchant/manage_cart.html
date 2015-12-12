@@ -1,6 +1,41 @@
 {% extends 'layouts/base.html' %}
 
-{% block content %}
+{% block content %}    
+<script>
+    $(document).ready(function() {
+        $("#quantity").on('input', function() {
+            var new_quantity = $("#quantity").val();
+            $("#total_price").text("$" + parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
+        });
+    });
+
+    $('.ui.positive.button').click(function() {
+        console.log("hit submit button");
+    })
+
+    $('.ui.order.modal')
+    .modal({
+        closable: true,
+        onDeny: function() {
+            return true;
+        },
+        onApprove: function() {
+            {{ url_for('merchant.cart_action') | safe }};
+            return true;
+        }
+    })
+
+    function openModal() {
+        $('.ui.order.modal').modal('show');
+ /*       $.ajax({
+            url: '../merchant/get_totals',
+            success: function(result) {
+                console.log(result);
+                $("#total_price").html(result);
+            }
+        });*/
+    } 
+    </script>
     <div class="ui stackable grid container">
         <div class="sixteen wide tablet twelve wide computer centered column">
             <h2 class="ui header">
@@ -11,7 +46,7 @@
             </h2>
             <form action="{{ url_for('merchant.cart_action') }}" method="post">
                 <div style="overflow-x: scroll;">
-                    <table class="ui searchable sortable unstackable selectable celled table">
+                    <table class="ui searchable sortable unstackable selectable celled table" id="order_table">
                         <thead>
                             <tr>
                                 <th class="five wide">Item name</th>
@@ -43,21 +78,29 @@
                         </tbody>
                     </table>
                     <div class="ui buttons" id="cart_buttons">
-                        <input type="submit" class="ui button" name="submit" value="Save Cart">
-                        <div class="or"></div>
-                        <input type="submit" class="ui positive button" name="submit" value="Order Items">
+                        <input type="submit" class="ui cart submit button" name="submit" value="Save Cart">
+                        <div class="or"></div></form>
+                        <form action="javascript:openModal()">
+                            <input type="submit" class="ui positive button" name="submit" value="Order Items">
+                        </form>
+                    </div>
+                    <div class="ui order modal">
+                        <div class="header">Confirm Order</div>
+                        <div class="content">
+                            <p> You're about to place your order! <br> Please confirm the details below:</p>
+                            {% for item in cart | sort(attribute='listing_name') %}
+                                <p>{{ item.quantity }} {{ item.listing.name }} at a unit cost of ${{ item.listing.price }} for a total of ${{ item.quantity * item.listing.price }}
+                            {% endfor %}
+                            <p>The total price of your order is: ${{ total_price }}</p> 
+                        </div>    
+                        <div class="actions">
+                            <div class="ui approve button">Confirm</div>
+                            <div class="ui cancel button">Cancel</div>
+                        </div>                       
                     </div>
                 </div>
-                {{ form.csrf_token }}
-            </form>
+               {{ form.csrf_token }}   
         </div>  
     </div>
-    <script>
-    $(document).ready(function() {
-        $("#quantity").on('input', function() {
-            var new_quantity = $("#quantity").val();
-            $("#total_price").text("$" + parseInt(new_quantity)*parseFloat($("#unit_price").attr("content")))
-        });
-    });
-    </script>
+
 {% endblock %}

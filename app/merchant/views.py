@@ -72,9 +72,14 @@ def cart_action():
 @merchant_required
 def manage_cart():
     form = CartQuantityForm()
+    current_cart = current_user.cart_items
+    total_price = 0.0
+    for item in current_cart:
+        total_price += item.listing.price * item.quantity
     return render_template('merchant/manage_cart.html',
                            cart=current_user.cart_items,
-                           form=form)
+                           form=form,
+                           total_price=total_price)
 
 
 @merchant.route('/items/<int:listing_id>')

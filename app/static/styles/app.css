@@ -27,3 +27,26 @@ table.selectable tr:hover {
 #cart_buttons {
 	float: right;
 }
+
+#submit_button {
+	float: right;
+}
+
+#cancel_button {
+	float: right;
+}
+
+#order_modal {
+	z-index: 2;
+	position: absolute;
+	opacity: 50;
+	border-style: solid;
+	border-width: medium;
+	border-color: #D3D3D3;
+
+}
+
+#order_table {
+	position: relative;
+	z-index: 5;
+}

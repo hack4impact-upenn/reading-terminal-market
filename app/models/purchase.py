@@ -38,10 +38,12 @@ class Order(db.Model):
 
     date = db.Column(db.DateTime)
     status = db.Column(db.Integer)
+    total = db.Column(db.Float)
 
     def __init__(self, cart_items):
         self.date = datetime.now(pytz.timezone('US/Eastern'))
         self.status = Status.PENDING
+        self.total = 0.0
 
         for item in cart_items:
             vendor_id = item.listing.vendor_id
@@ -49,6 +51,7 @@ class Order(db.Model):
             quantity = item.quantity
             item_name = item.listing.name
             item_price = item.listing.price
+            self.total += quantity * item_price
             p = Purchase(vendor_id, listing_id, self, quantity, item_name, item_price)
             db.session.add(p)
 
