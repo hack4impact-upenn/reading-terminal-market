@@ -109,7 +109,6 @@ def add_to_cart(listing_id):
     return jsonify({'quantity': new_quantity})
 
 
-<<<<<<< HEAD
 @merchant.route('/add_quantity_to_cart')
 @login_required
 @merchant_required
