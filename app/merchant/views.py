@@ -90,7 +90,7 @@ def add_to_cart(listing_id):
     if not request.json:
         abort(400)
     if ('quantity' not in request.json or
-                type(request.json['quantity']) is not int):
+            type(request.json['quantity']) is not int):
         abort(400)
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
                                          listing_id=listing_id).first()
@@ -113,6 +113,7 @@ def add_to_cart(listing_id):
 @login_required
 @merchant_required
 def add_quantity_to_cart():
+    """ Does anything still depend on this route? """
     listing_id = request.args.get('listing_id')
     quantity = int(request.args.get('quantity'))
     return_to = request.args.get('return_to')

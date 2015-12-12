@@ -26,16 +26,17 @@
 
                     {% for item in cart | sort(attribute='listing.name') %}
                         <tr data-id="{{ item.listing.id }}">
-                            <td onclick="window.location.href='{{ url_for('merchant.listing_info', listing_id=item.listing.id) }}';">{{ item.listing.name }}</td>
-                            <td onclick="window.location.href='{{ url_for('merchant.listing_info', listing_id=item.listing.id) }}';">{{ item.listing.vendor.company_name }}</td>
-                            <td onclick="window.location.href='{{ url_for('merchant.listing_info', listing_id=item.listing.id) }}';">{{ item.listing.vendor.full_name() }}</td>
-                            <td onclick="window.location.href='{{ url_for('merchant.listing_info', listing_id=item.listing.id) }}';" class="unit_price" data-price="{{ item.listing.price  }}">${{ item.listing.price }}</td>
+                          {% set info_link = 'onclick=window.location.href=\'' + url_for('merchant.listing_info', listing_id=item.listing.id) + '\';' %}
+                            <td {{info_link}}>{{ item.listing.name }}</td>
+                            <td {{info_link}}>{{ item.listing.vendor.company_name }}</td>
+                            <td {{info_link}}>{{ item.listing.vendor.full_name() }}</td>
+                            <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ item.listing.price }}</td>
                             <td>
                                 <div class="ui input fluid">
                                     <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
                                 </div>
                             </td>
-                            <td class="total_price">${{ item.quantity * item.listing.price }}</td>
+                            <td {{info_link}} class="total_price">${{ item.quantity * item.listing.price }}</td>
                             <td class="center aligned">
                                 <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
                                     <i class="red large trash icon"></i>

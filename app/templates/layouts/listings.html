@@ -40,21 +40,21 @@
                     <tbody>
                     {% for l in listings | sort(attribute='name') %}
                         {% if current_user.is_vendor() %}
-                            <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
+                          {% set info_link = 'onclick=window.location.href=\'' + url_for('vendor.listing_info', listing_id=l.id) + '\';' %}
                         {% elif current_user.is_merchant() %}
-                            <tr onclick="window.location.href = '{{ url_for('merchant.listing_info', listing_id=l.id) }}';">
+                          {% set info_link = 'onclick=window.location.href=\'' + url_for('merchant.listing_info', listing_id=l.id) + '\';' %}
                         {% endif %}
-
-                            <td>{{ l.name }}</td>
+                        <tr>
+                          <td {{info_link}}>{{ l.name }}</td>
                             {% if current_user.is_merchant() %}
-                                <td>{{ l.vendor.company_name }}</td>
+                                <td {{info_link}}>{{ l.vendor.company_name }}</td>
                             {% endif %}
-                            <td>${{ l.price }}/{{l.category.unit}}</td>
-                            <td class="truncate">{{ l.description }}</td>
+                            <td {{info_link}}>${{ l.price }}/{{l.category.unit}}</td>
+                            <td {{info_link}} class="truncate">{{ l.description }}</td>
                             {% if current_user.is_vendor() %}
-                                <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                              <td {{info_link}}>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
                             {% endif %}
-                            <td class="item category">{{ l.category.name }}</td>
+                            <td {{info_link}} class="item category">{{ l.category.name }}</td>
 
 
 
