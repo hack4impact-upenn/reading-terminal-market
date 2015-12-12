@@ -2,7 +2,7 @@ from flask import render_template, abort, request, redirect, url_for, jsonify
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order
+from ..models import Listing, CartItem, Order, Vendor
 from .. import db
 
 
@@ -22,9 +22,10 @@ def listing_view_all(page=1):
     main_search_term = request.args.get('mainsearch', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
     sortby = request.args.get('sortby', "", type=str)
-    name_search_term = request.args.get('name-search', "", type=str)
+    name_search_term = request.args.get('namesearch', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
+    category_search = request.args.get('category-search', "", type=str)
     search = request.args.get('search', "", type=str)
     listings_raw = Listing.search(available=True,
                                   favorite=favorite,
@@ -32,18 +33,20 @@ def listing_view_all(page=1):
                                   min_price=min_price,
                                   max_price=max_price,
                                   name_search_term=name_search_term,
-                                  main_search_term=main_search_term)
+                                  main_search_term=main_search_term,
+                                  category_search=category_search)
     if search != "False":
         page = 1
     listings_paginated = listings_raw.paginate(page, 20, False)
     result_count = listings_raw.count()
-
+    companies = Vendor.query.all()
     if result_count == 0:
-        return render_template('vendor/current_listings.html',
+        return render_template('merchant/view_listings.html',
                                listings=Listing.search(main_search_term='',
                                                        sortby=sortby)
                                                .paginate(page, 20, False),
-                               header="No Results: Showing All listings")
+                               header="Search Results: Showing All listings",
+                               companies=companies)
     else:
         return render_template('merchant/view_listings.html',
                                listings=listings_paginated,
@@ -54,9 +57,9 @@ def listing_view_all(page=1):
                                name_search_term=name_search_term,
                                favorite=favorite,
                                cart_listings=current_user.get_cart_listings(),
-                               header="All listings: " + str(result_count) + " results in total",
+                               header="Search Results: " + str(result_count) + " results in total",
+                               companies=companies
                                )
-
 
 
 @merchant.route('/order-items', methods=['POST'])

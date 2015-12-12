@@ -1,7 +1,7 @@
 from .. import db
 from purchase import CartItem
 from sqlalchemy import or_, and_
-from user import Vendor
+from ..models import Category, User, Vendor
 from flask.ext.login import current_user
 from sqlalchemy import UniqueConstraint
 
@@ -73,10 +73,19 @@ class Listing(db.Model):
                 Listing.description.like('%{}%'.format(term)))
             )
 
-        if 'name_search_term' in kwargs:
+        if 'name_search_term' in kwargs and kwargs['name_search_term']:
             term = kwargs['name_search_term']
+            results = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
+            for r in results:
+                filter_list.append(
+                    Listing.vendor_id == r.id
+                )
+
+        if 'category_search' in kwargs and kwargs['category_search']:
+            term = kwargs['category_search']
+            result = Category.query.filter(Category.name.like('%{}%'.format(term))).first()
             filter_list.append(
-                Vendor.company_name.like('%{}%'.format(term))
+                Listing.category_id == result.id
             )
         if 'avail' in kwargs:
             avail_criteria = kwargs['avail']
@@ -88,7 +97,8 @@ class Listing(db.Model):
                 filter_list.append(Listing.available == False)
             elif avail_criteria == "avail":
                 filter_list.append(Listing.available == True)
-
+        if 'available' in kwargs:
+            filter_list.append(Listing.available == True)
         sort_criteria = None
         if 'favorite' in kwargs and kwargs['favorite']:
             bookmark_ids = [listing.id for listing in current_user.bookmarks]

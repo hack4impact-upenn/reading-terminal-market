@@ -64,13 +64,13 @@ def current_listings(page=1):
                                                        sortby=sortby)
                                                .filter(Listing.vendor_id == current_user.id)
                                                .paginate(page,20,False),
-                               header="No Search Results: Showing All listings")
+                               header="Search Results: Showing All listings")
     else:
         return render_template('vendor/current_listings.html',
                                listings=listings_paginated,
                                main_search_term=main_search_term,
                                sortby=sortby,
-                               header="All listings: " + str(result_count) + " in total")
+                               header="Search Results: " + str(result_count) + " in total")
 
 
 @vendor.route('/items/<int:listing_id>')
