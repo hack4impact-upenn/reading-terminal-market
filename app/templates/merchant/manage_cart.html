@@ -26,7 +26,10 @@
 
                     {% for item in cart | sort(attribute='listing.name') %}
                         <tr data-id="{{ item.listing.id }}">
-                          {% set info_link = 'onclick=window.location.href=\'' + url_for('merchant.listing_info', listing_id=item.listing.id) + '\';' %}
+                          {% set info_link = 'onclick=window.location.href=\'' +
+                              url_for('merchant.listing_info', backto=request.path +
+                              '?' + request.query_string,
+                              listing_id=item.listing.id) + '\';' %}
                             <td {{info_link}}>{{ item.listing.name }}</td>
                             <td {{info_link}}>{{ item.listing.vendor.company_name }}</td>
                             <td {{info_link}}>{{ item.listing.vendor.full_name() }}</td>
