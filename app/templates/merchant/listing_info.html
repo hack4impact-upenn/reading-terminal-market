@@ -8,7 +8,7 @@
         <tr><td>Company</td><td>{{ listing.vendor.company_name }} </td></tr>
         <tr><td>Vendor</td><td>{{ listing.vendor.full_name() }} </td></tr>
         <tr><td>Vendor email</td><td>{{ listing.vendor.email }} </td></tr>
-        <tr><td>Price</td><td>${{ listing.price }}/{{listing.category.unit}}</td></tr>
+        <tr><td>Price</td><td>${{ '%0.2f' | format(listing.price) }}/{{listing.category.unit}}</td></tr>
         <tr><td>Description</td><td>{{ listing.description }}</td></tr>
         <tr><td>Category</td><td>{{ listing.category.name }}</td></tr>
 
