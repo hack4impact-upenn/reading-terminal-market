@@ -33,13 +33,13 @@
                             <td {{info_link}}>{{ item.listing.name }}</td>
                             <td {{info_link}}>{{ item.listing.vendor.company_name }}</td>
                             <td {{info_link}}>{{ item.listing.vendor.full_name() }}</td>
-                            <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ item.listing.price }}</td>
+                            <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>
                             <td>
                                 <div class="ui input fluid">
                                     <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
                                 </div>
                             </td>
-                            <td {{info_link}} class="total_price">${{ item.quantity * item.listing.price }}</td>
+                            <td {{info_link}} class="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>
                             <td class="center aligned">
                                 <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
                                     <i class="red large trash icon"></i>
@@ -84,7 +84,7 @@
             var tr = $( 'tr' ).filterByData( 'id', listingID );
             var totalPrice = tr.find( '.total_price' );
             var unitPrice = parseFloat( tr.find( '.unit_price' ).data( 'price' ) );
-            totalPrice.text( "$" + newQuantity * unitPrice );
+            totalPrice.text( "$" + (newQuantity * unitPrice).toFixed(2) );
         }
 
         function deleteListing(tableRow) {
