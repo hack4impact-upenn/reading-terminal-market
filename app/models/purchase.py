@@ -58,7 +58,7 @@ class Order(db.Model):
         return "<Order: {}>".format(self.id)
 
     def get_all_purchases(self):
-        return Purchase.query.filter_by(order_id=self.id)
+        return Purchase.query.filter_by(order_id=self.id).all()
 
     def get_purchases_by_vendor(self, vendor_id):
         purchases = Purchase.query.filter_by(order_id=self.id,
