@@ -20,10 +20,12 @@ class CartItem(db.Model):
     listing = db.relationship("Listing")
 
     @staticmethod
-    def delete_cart_items():
+    def delete_cart_items(commit_flag):
         for cart_item in current_user.cart_items:
             db.session.delete(cart_item)
-        db.session.commit()
+        if (commit_flag):
+            db.session.commit()
+
 
     def __repr__(self):
         return "<CartItem: merchant_id {}, " \
@@ -45,10 +47,11 @@ class Order(db.Model):
     date = db.Column(db.DateTime)
     status = db.Column(db.Integer)
 
-    def __init__(self, cart_items):
+    def __init__(self):
         self.date = datetime.now(pytz.timezone('US/Eastern'))
         self.status = Status.PENDING
 
+    def add_cart_to_order(self, cart_items):
         for item in cart_items:
             vendor_id = item.listing.vendor_id
             listing_id = item.listing.id
@@ -57,8 +60,6 @@ class Order(db.Model):
             item_price = item.listing.price
             p = Purchase(vendor_id, listing_id, self, quantity, item_name, item_price)
             db.session.add(p)
-
-        db.session.commit()
 
     def __repr__(self):
         return "<Order: {}>".format(self.id)
