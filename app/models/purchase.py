@@ -57,16 +57,16 @@ class Order(db.Model):
     def __repr__(self):
         return "<Order: {}>".format(self.id)
 
-    def getAllPurchases(self):
-        return Purchase.query.filty_by(order_id=self.id)
+    def get_all_purchases(self):
+        return Purchase.query.filter_by(order_id=self.id)
 
-    def getPurchasesByVendor(self, vendor_id):
+    def get_purchases_by_vendor(self, vendor_id):
         purchases = Purchase.query.filter_by(order_id=self.id,
                                              vendor_id=vendor_id).all()
 
         return purchases
 
-    def setStatusByVendor(self, vendor_id, status):
+    def set_status_by_vendor(self, vendor_id, status):
         for purchase in self.getPurchasesByVendor(vendor_id):
             purchase.status = status
 
