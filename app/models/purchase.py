@@ -44,10 +44,14 @@ class Order(db.Model):
 
     date = db.Column(db.DateTime)
     status = db.Column(db.Integer)
+    merchant_id = db.Column(db.Integer)
 
-    def __init__(self, cart_items):
+    def __init__(self, merchant):
         self.date = datetime.now(pytz.timezone('US/Eastern'))
         self.status = Status.PENDING
+        self.merchant_id = current_user.id
+
+        cart_items = merchant.cart_items
 
         for item in cart_items:
             vendor_id = item.listing.vendor_id
@@ -59,6 +63,11 @@ class Order(db.Model):
             db.session.add(p)
 
         db.session.commit()
+
+    def get_date(self):
+        """Get date formatted as mm-dd-yyyy"""
+        date = self.date.date()
+        return '{}-{}-{}'.format(date.month, date.day, date.year)
 
     def __repr__(self):
         return "<Order: {}>".format(self.id)

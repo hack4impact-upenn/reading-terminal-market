@@ -1,0 +1,85 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
+            <h2 class="ui header">
+                Manage orders
+                <div class="sub header">
+                    View and manage your orders.
+                </div>
+            </h2>
+            <div style="overflow-x: scroll;">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                    <tr>
+                        <th class="four wide">Item name</th>
+                        <th class="three wide">Company</th>
+                        <th class="three wide">Vendor</th>
+                        <th class="two wide">Unit price</th>
+                        <th class="two wide">Quantity</th>
+                        <th class="one wide">Total price</th>
+                        <th class="one wide">Remove</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for item in cart | sort(attribute='listing.name') %}
+                        <tr data-id="{{ item.listing.id }}">
+                            <td>{{ item.listing.name }}</td>
+                            <td>{{ item.listing.vendor.company_name }}</td>
+                            <td>{{ item.listing.vendor.full_name() }}</td>
+                            <td class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>
+                            <td>
+                                <div class="ui input fluid">
+                                    <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
+                                </div>
+                            </td>
+                            <td class="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>
+                            <td class="center aligned">
+                                <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
+                                    <i class="red large trash icon"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{#    <script src="{{ url_for('static', filename='merchant.js') }}"></script>#}
+
+    <script>
+
+{#        $(document).ready(function () {#}
+{#            $('.remove-from-cart').click(function () {#}
+{#                var toggledItemButton = $(this);#}
+{#                var listingID = toggledItemButton.data('id');#}
+{#                var tableRow = toggledItemButton.parent().parent();#}
+{#                updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));#}
+{#            });#}
+{##}
+{#            $('.cart-quantity').change(function (event) {#}
+{#                var newQuantity = parseInt($(this).val());#}
+{#                var listingID = $(this).data('id');#}
+{##}
+{#                updateTotalPrice(listingID, newQuantity);#}
+{#                updateCartQuantity(listingID, newQuantity);#}
+{#            });#}
+{#        });#}
+{##}
+{#        function updateTotalPrice(listingID, newQuantity) {#}
+{#            var tr = $( 'tr' ).filterByData( 'id', listingID );#}
+{#            var totalPrice = tr.find( '.total_price' );#}
+{#            var unitPrice = parseFloat( tr.find( '.unit_price' ).data( 'price' ) );#}
+{#            totalPrice.text( "$" + (newQuantity * unitPrice).toFixed(2) );#}
+{#        }#}
+{##}
+{#        function deleteListing(tableRow) {#}
+{#            tableRow.remove();#}
+{#        }#}
+
+    </script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui stackable centered grid container">
+        <div class="twelve wide column">
+            <h2 class="ui header">
+                Order #{{ order.id }}
+                <div class="sub header">Order placed on {{ order.get_date() }}</div>
+            </h2>
+        </div>
+        <div class="stretched divided very relaxed row">
+            <div class="twelve wide column">
+                <table class="ui compact definition table">
+                    <tr><td>Full name</td><td></td></tr>
+                    <tr><td>Email address</td><td></td></tr>
+                    <tr><td>Account type</td><td></td></tr>
+                    {#    {% if user.is_merchant_or_vendor() %}#}
+                    <tr><td>Company name</td><td></td></tr>
+                    {#    {% endif %}#}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
