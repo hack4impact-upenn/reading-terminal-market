@@ -14,14 +14,13 @@
         <div class="two fields">
             <div class="eleven wide field">
                 <label>Search names and descriptions</label>
-                <input value="{{ main_search_term }}" type="text" name="mainsearch" placeholder="e.g. corned beef">
-
+                <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
             </div>
 
             <div class="three wide field">
                 <label>Order by</label>
 
-                <select class="ui selection dropdown" name="sortby">
+                <select class="ui selection dropdown" name="sort-by">
                     {% if sortby == "low_high" %}
                         {% set checked2 = 'selected' %}
                     {% elif sortby == "high_low" %}
@@ -57,16 +56,11 @@
         {% if not name_search_term and not min_price and not max_price%}
             {% set display = 'display:none' %}
         {% endif %}
-        <select class="ui selection dropdown" name="namesearch">
-            <option value="" disabled selected>{{ name_search_term }}</option>
-        {% for c in companies %}
-                    {% if namesearch == c.company_name %}
-                        {% set company_name = 'selected' %}
-                    {% endif %}
-                    <option value="{{ c.company_name }}" {{ company_name }}>{{ c.company_name }}</option>
-        {% endfor %}
-        </select>
 
+        <div class="eleven wide field">
+                <label>Search Company Names</label>
+                <input value="{{ name_search_term }}" type="text" name="name-search" placeholder="Bobby's Burgers">
+        </div>
         <div class="twelve wide field advanced-search" style="{{ display }}">
             <label>Search by Category Name</label>
             <input value="{{ category_search }}"type="text" name="category-search" placeholder="e.g. Milk">

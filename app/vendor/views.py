@@ -46,11 +46,11 @@ def new_listing():
 @vendor_required
 def current_listings(page=1):
     """View all current listings."""
-    main_search_term = request.args.get('mainsearch', "", type=str)
-    sortby = request.args.get('sortby', "", type=str)
+    main_search_term = request.args.get('main-search', "", type=str)
+    sort_by = request.args.get('sort_by', "", type=str)
     avail = request.args.get('avail', "", type=str)
     search = request.args.get('search', "", type=str)
-    listings_raw = Listing.search(sortby=sortby,
+    listings_raw = Listing.search(sort_by=sort_by,
                                   main_search_term=main_search_term,
                                   avail=avail)
     listings_raw = listings_raw.filter(Listing.vendor_id == current_user.id)
@@ -61,7 +61,7 @@ def current_listings(page=1):
     if result_count == 0:
         return render_template('vendor/current_listings.html',
                                listings=Listing.search(main_search_term='',
-                                                       sortby=sortby)
+                                                       sort_by=sort_by)
                                                .filter(Listing.vendor_id == current_user.id)
                                                .paginate(page,20,False),
                                header="Search Results: Showing All listings")
@@ -69,7 +69,7 @@ def current_listings(page=1):
         return render_template('vendor/current_listings.html',
                                listings=listings_paginated,
                                main_search_term=main_search_term,
-                               sortby=sortby,
+                               sort_by=sort_by,
                                header="Search Results: " + str(result_count) + " in total")
 
 

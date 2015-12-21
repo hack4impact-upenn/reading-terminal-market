@@ -19,46 +19,46 @@ def index():
 @merchant_required
 def listing_view_all(page=1):
     """Search for listings"""
-    main_search_term = request.args.get('mainsearch', "", type=str)
+    main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
-    sortby = request.args.get('sortby', "", type=str)
-    name_search_term = request.args.get('namesearch', "", type=str)
+    sort_by = request.args.get('sort-by', "", type=str)
+    name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
     category_search = request.args.get('category-search', "", type=str)
     search = request.args.get('search', "", type=str)
     listings_raw = Listing.search(available=True,
                                   favorite=favorite,
-                                  sortby=sortby,
+                                  sort_by=sort_by,
                                   min_price=min_price,
                                   max_price=max_price,
                                   name_search_term=name_search_term,
                                   main_search_term=main_search_term,
                                   category_search=category_search)
+    # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
     if search != "False":
         page = 1
+
     listings_paginated = listings_raw.paginate(page, 20, False)
     result_count = listings_raw.count()
-    companies = Vendor.query.all()
     if result_count == 0:
         return render_template('merchant/view_listings.html',
                                listings=Listing.search(main_search_term='',
-                                                       sortby=sortby)
+                                                       sort_by=sort_by)
                                                .paginate(page, 20, False),
                                header="Search Results: Showing All listings",
-                               companies=companies)
+                               )
     else:
         return render_template('merchant/view_listings.html',
                                listings=listings_paginated,
                                main_search_term=main_search_term,
                                min_price=min_price,
                                max_price=max_price,
-                               sortby=sortby,
+                               sort_by=sort_by,
                                name_search_term=name_search_term,
                                favorite=favorite,
                                cart_listings=current_user.get_cart_listings(),
                                header="Search Results: " + str(result_count) + " results in total",
-                               companies=companies
                                )
 
 

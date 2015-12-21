@@ -167,7 +167,6 @@ def add_fake_data(number_users):
     Adds fake data to the database.
     """
     User.generate_fake(count=number_users)
-    Listing.generate_fake_listings(count=number_users)
 
 @manager.command
 def setup_dev():

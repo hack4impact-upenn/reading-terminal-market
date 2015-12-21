@@ -80,6 +80,7 @@ class Listing(db.Model):
                 filter_list.append(
                     Listing.vendor_id == r.id
                 )
+                print r.id
 
         if 'category_search' in kwargs and kwargs['category_search']:
             term = kwargs['category_search']
