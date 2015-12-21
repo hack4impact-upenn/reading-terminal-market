@@ -53,8 +53,10 @@ def order_items():
 @login_required
 @merchant_required
 def manage_cart():
+    vendor_items_dict = CartItem.get_vendor_cart_items_dict()
+    print vendor_items_dict
     return render_template('merchant/manage_cart.html',
-                           cart=current_user.cart_items)
+                           vendor_items_dict=vendor_items_dict)
 
 
 @merchant.route('/items/<int:listing_id>')
