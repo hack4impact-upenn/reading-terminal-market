@@ -1,8 +1,10 @@
 from .. import db
+from ..models import User
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
 from flask.ext.login import current_user
+from collections import defaultdict
 
 
 class CartItem(db.Model):
@@ -45,20 +47,46 @@ class Order(db.Model):
     date = db.Column(db.DateTime)
     status = db.Column(db.Integer)
 
-    def __init__(self, cart_items):
-        self.date = datetime.now(pytz.timezone('US/Eastern'))
-        self.status = Status.PENDING
+    vendor_id = db.Column(db.Integer)
+    company_name = db.Column(db.String(64))
 
-        for item in cart_items:
+    @staticmethod
+    def order_cart_items():
+        """Takes the cart items and makes an order
+        for each vendor represented in the cart"""
+        date = datetime.now(pytz.timezone('US/Eastern'))
+        vendor_item_dict = defaultdict(list)
+
+        for item in current_user.cart_items:
             vendor_id = item.listing.vendor_id
-            listing_id = item.listing.id
-            quantity = item.quantity
-            item_name = item.listing.name
-            item_price = item.listing.price
-            p = Purchase(vendor_id, listing_id, self, quantity, item_name, item_price)
-            db.session.add(p)
+            vendor_item_dict[vendor_id].append(item)
+
+        for vendor_id in vendor_item_dict:
+            items = vendor_item_dict[vendor_id]
+            order = Order(items, date, vendor_id)
+            for item in items:
+                listing_id = item.listing.id
+                quantity = item.quantity
+                item_name = item.listing.name
+                item_price = item.listing.price
+                p = Purchase(
+                    order=order,
+                    listing_id=listing_id,
+                    quantity=quantity,
+                    item_name=item_name,
+                    item_price=item_price
+                )
+                db.session.add(p)
+            db.session.add(order)
 
         db.session.commit()
+
+    def __init__(self, cart_items, date, vendor_id):
+        self.status = Status.PENDING
+        self.date = date
+        self.vendor_id = vendor_id
+        vendor = User.query.get(vendor_id)
+        self.company_name = vendor.company_name
 
     def __repr__(self):
         return "<Order: {}>".format(self.id)
@@ -69,7 +97,6 @@ class Purchase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # model relationships
-    vendor_id = db.Column(db.Integer)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     order = db.relationship("Order", backref="purchases")
     listing_id = db.Column(db.Integer)
@@ -79,10 +106,9 @@ class Purchase(db.Model):
     item_name = db.Column(db.String(64))
     item_price = db.Column(db.Float)
 
-    def __init__(self, vendor_id, listing_id, order, quantity, item_name, item_price):
-        self.vendor_id = vendor_id
-        self.listing_id = listing_id
+    def __init__(self, order, listing_id, quantity, item_name, item_price):
         self.order = order
+        self.listing_id = listing_id
         self.quantity = quantity
         self.item_name = item_name
         self.item_price = item_price
