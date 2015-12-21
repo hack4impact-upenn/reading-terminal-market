@@ -4,7 +4,8 @@ from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
 from flask.ext.login import current_user
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
+
 
 class CartItem(db.Model):
     ''' Functions as association table between listings and merchants '''
@@ -19,6 +20,22 @@ class CartItem(db.Model):
     quantity = db.Column(db.Integer)
 
     listing = db.relationship("Listing")
+
+    @staticmethod
+    def get_vendor_cart_items_dict():
+        """returns a dict where the keys are
+        vendors and the fields are a list
+        of items in the cart from that vendor"""
+        vendor_items_dict = defaultdict(list)
+        for item in current_user.cart_items:
+            vendor = item.listing.vendor
+            vendor_items_dict[vendor].append(item)
+
+        # uses sorted dict so vendor order in cart
+        # is in alphabetical order of company names
+        sorted_dict = OrderedDict(sorted(vendor_items_dict.items(),
+                                        key=lambda pair: pair[0].company_name))
+        return sorted_dict
 
     @staticmethod
     def delete_cart_items(cart_items):
