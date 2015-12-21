@@ -21,10 +21,9 @@ class CartItem(db.Model):
     listing = db.relationship("Listing")
 
     @staticmethod
-    def delete_cart_items():
-        for cart_item in current_user.cart_items:
+    def delete_cart_items(cart_items):
+        for cart_item in cart_items:
             db.session.delete(cart_item)
-        db.session.commit()
 
     def __repr__(self):
         return "<CartItem: merchant_id {}, " \
@@ -44,24 +43,47 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     date = db.Column(db.DateTime)
+    status = db.Column(db.Integer)
     merchant_id = db.Column(db.Integer)
 
-    def __init__(self, merchant):
-        self.date = datetime.now(pytz.timezone('US/Eastern'))
-        self.merchant_id = current_user.id
+    vendor_id = db.Column(db.Integer)
+    company_name = db.Column(db.String(64))
 
-        for item in merchant.cart_items:
-            vendor_id = item.listing.vendor_id
-            vendor = User.query.get(vendor_id)
-            company_name = vendor.company_name
-            listing_id = item.listing.id
-            quantity = item.quantity
-            item_name = item.listing.name
-            item_price = item.listing.price
-            p = Purchase(vendor_id, listing_id, self, quantity, item_name,
-                         item_price, company_name)
+    def __init__(self, date, vendor_id):
+        self.status = Status.PENDING
+        self.date = date
+        self.vendor_id = vendor_id
+        self.merchant_id = current_user.id
+        vendor = User.query.get(vendor_id)
+        self.company_name = vendor.company_name
+
+    def __repr__(self):
+        return "<Order: {}>".format(self.id)
+
+    @staticmethod
+    def order_cart_items_from_vendor(vendor_id, date=None):
+        """Orders all the items in the cart from a given vendor"""
+
+        if date is None:
+            date = datetime.now(pytz.timezone('US/Eastern'))
+
+        cart_items = filter(lambda item: item.listing.vendor_id == vendor_id,
+                            current_user.cart_items)
+
+        order = Order(date, vendor_id)
+
+        for item in cart_items:
+            p = Purchase(
+                order=order,
+                listing_id=item.listing.id,
+                quantity=item.quantity,
+                item_name=item.listing.name,
+                item_price=item.listing.price
+            )
             db.session.add(p)
 
+        db.session.add(order)
+        CartItem.delete_cart_items(cart_items)
         db.session.commit()
 
     def get_date(self):
@@ -69,43 +91,37 @@ class Order(db.Model):
         date = self.date.date()
         return '{}-{}-{}'.format(date.month, date.day, date.year)
 
-    def __repr__(self):
-        return "<Order: {}>".format(self.id)
+    @staticmethod
+    def order_cart_items():
+        """Takes the cart items and makes an order
+        for each vendor represented in the cart"""
 
-    def get_all_purchases(self):
-        return Purchase.query.filter_by(order_id=self.id).all()
+        date = datetime.now(pytz.timezone('US/Eastern'))
+        vendor_ids = set([item.listing.vendor_id for item in current_user.cart_items])
 
-    def get_vendor_purchase_dict(self):
-        """Returns a dictionary where the keys are vendors
-        in the order and the values are a list of purchases"""
-        dictionary = defaultdict(list)
-        for purchase in self.purchases:
-            vendor_id = purchase.vendor_id
-            company_name = purchase.company_name
-            dictionary[(vendor_id, company_name)].append(purchase)
+        for vendor_id in vendor_ids:
+            Order.order_cart_items_from_vendor(vendor_id, date)
 
-        return dictionary
+    # def get_all_purchases(self):
+    #     return Purchase.query.filter_by(order_id=self.id).all()
 
-    def get_purchases_by_vendor(self, vendor_id):
-        purchases = Purchase.query.filter_by(order_id=self.id,
-                                             vendor_id=vendor_id).all()
+    # def get_vendor_purchase_dict(self):
+    #     """Returns a dictionary where the keys are vendors
+    #     in the order and the values are a list of purchases"""
+    #     dictionary = defaultdict(list)
+    #     for purchase in self.purchases:
+    #         vendor_id = purchase.vendor_id
+    #         company_name = purchase.company_name
+    #         dictionary[(vendor_id, company_name)].append(purchase)
+    #
+    #     return dictionary
 
-        return purchases
-
-    def set_status_by_vendor(self, vendor_id, status):
-        for purchase in self.getPurchasesByVendor(vendor_id):
-            purchase.status = status
-
-        db.session.commit()
 
 class Purchase(db.Model):
     __tablename__ = 'purchases'
     id = db.Column(db.Integer, primary_key=True)
 
-    status = db.Column(db.Integer)
-
     # model relationships
-    vendor_id = db.Column(db.Integer)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     order = db.relationship("Order", backref="purchases")
     listing_id = db.Column(db.Integer)
@@ -113,19 +129,14 @@ class Purchase(db.Model):
     # purchase properties
     quantity = db.Column(db.Integer)
     item_name = db.Column(db.String(64))
-    company_name = db.Column(db.String(64))
     item_price = db.Column(db.Float)
 
-    def __init__(self, vendor_id, listing_id, order, quantity, item_name,
-                 item_price, company_name):
-        self.status = Status.PENDING
-        self.vendor_id = vendor_id
-        self.listing_id = listing_id
+    def __init__(self, order, listing_id, quantity, item_name, item_price):
         self.order = order
+        self.listing_id = listing_id
         self.quantity = quantity
         self.item_name = item_name
         self.item_price = item_price
-        self.company_name = company_name
 
     def __repr__(self):
         return "<Purchase: {} Listing: {}>".format(self.id, self.listing_id)
