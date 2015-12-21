@@ -4,7 +4,6 @@ from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
 from flask.ext.login import current_user
-from collections import defaultdict
 
 
 class CartItem(db.Model):
@@ -61,7 +60,7 @@ class Order(db.Model):
 
     @staticmethod
     def order_cart_items_from_vendor(vendor_id, date=None):
-        '''Orders all the items in the cart from a given vendor'''
+        """Orders all the items in the cart from a given vendor"""
 
         if date is None:
             date = datetime.now(pytz.timezone('US/Eastern'))
@@ -72,19 +71,15 @@ class Order(db.Model):
             filter_by(User.id == vendor_id).\
             filter_by(CartItem.merchant_id == current_user.id)
 
-        order = Order(cart_items, date, vendor_id)
+        order = Order(date, vendor_id)
 
         for item in cart_items:
-            listing_id = item.listing.id
-            quantity = item.quantity
-            item_name = item.listing.name
-            item_price = item.listing.price
             p = Purchase(
                 order=order,
-                listing_id=listing_id,
-                quantity=quantity,
-                item_name=item_name,
-                item_price=item_price
+                listing_id=item.listing.id,
+                quantity=item.quantity,
+                item_name=item.listing.name,
+                item_price=item.listing.price
             )
             db.session.add(p)
         db.session.add(order)
@@ -97,7 +92,7 @@ class Order(db.Model):
         for each vendor represented in the cart"""
 
         date = datetime.now(pytz.timezone('US/Eastern'))
-        vendor_ids = [item.listing.vendor_id for item in current_user.cart_items]
+        vendor_ids = set([item.listing.vendor_id for item in current_user.cart_items])
 
         for vendor_id in vendor_ids:
             Order.order_cart_items_from_vendor(vendor_id, date)
@@ -123,7 +118,6 @@ class Purchase(db.Model):
         self.quantity = quantity
         self.item_name = item_name
         self.item_price = item_price
-
 
     def __repr__(self):
         return "<Purchase: {} Listing: {}>".format(self.id, self.listing_id)
