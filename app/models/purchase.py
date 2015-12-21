@@ -1,5 +1,5 @@
 from .. import db
-from ..models import User
+from ..models import User, Listing
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
@@ -22,10 +22,9 @@ class CartItem(db.Model):
     listing = db.relationship("Listing")
 
     @staticmethod
-    def delete_cart_items():
-        for cart_item in current_user.cart_items:
+    def delete_cart_items(cart_items):
+        for cart_item in cart_items:
             db.session.delete(cart_item)
-        db.session.commit()
 
     def __repr__(self):
         return "<CartItem: merchant_id {}, " \
@@ -50,38 +49,7 @@ class Order(db.Model):
     vendor_id = db.Column(db.Integer)
     company_name = db.Column(db.String(64))
 
-    @staticmethod
-    def order_cart_items():
-        """Takes the cart items and makes an order
-        for each vendor represented in the cart"""
-        date = datetime.now(pytz.timezone('US/Eastern'))
-        vendor_item_dict = defaultdict(list)
-
-        for item in current_user.cart_items:
-            vendor_id = item.listing.vendor_id
-            vendor_item_dict[vendor_id].append(item)
-
-        for vendor_id in vendor_item_dict:
-            items = vendor_item_dict[vendor_id]
-            order = Order(items, date, vendor_id)
-            for item in items:
-                listing_id = item.listing.id
-                quantity = item.quantity
-                item_name = item.listing.name
-                item_price = item.listing.price
-                p = Purchase(
-                    order=order,
-                    listing_id=listing_id,
-                    quantity=quantity,
-                    item_name=item_name,
-                    item_price=item_price
-                )
-                db.session.add(p)
-            db.session.add(order)
-
-        db.session.commit()
-
-    def __init__(self, cart_items, date, vendor_id):
+    def __init__(self, date, vendor_id):
         self.status = Status.PENDING
         self.date = date
         self.vendor_id = vendor_id
@@ -90,6 +58,49 @@ class Order(db.Model):
 
     def __repr__(self):
         return "<Order: {}>".format(self.id)
+
+    @staticmethod
+    def order_cart_items_from_vendor(vendor_id, date=None):
+        '''Orders all the items in the cart from a given vendor'''
+
+        if date is None:
+            date = datetime.now(pytz.timezone('US/Eastern'))
+
+        cart_items = CartItem.query.\
+            join(Listing).\
+            join(User).\
+            filter_by(User.id == vendor_id).\
+            filter_by(CartItem.merchant_id == current_user.id)
+
+        order = Order(cart_items, date, vendor_id)
+
+        for item in cart_items:
+            listing_id = item.listing.id
+            quantity = item.quantity
+            item_name = item.listing.name
+            item_price = item.listing.price
+            p = Purchase(
+                order=order,
+                listing_id=listing_id,
+                quantity=quantity,
+                item_name=item_name,
+                item_price=item_price
+            )
+            db.session.add(p)
+        db.session.add(order)
+        CartItem.delete_cart_items(cart_items)
+        db.session.commit()
+
+    @staticmethod
+    def order_cart_items():
+        """Takes the cart items and makes an order
+        for each vendor represented in the cart"""
+
+        date = datetime.now(pytz.timezone('US/Eastern'))
+        vendor_ids = [item.listing.vendor_id for item in current_user.cart_items]
+
+        for vendor_id in vendor_ids:
+            Order.order_cart_items_from_vendor(vendor_id, date)
 
 
 class Purchase(db.Model):
