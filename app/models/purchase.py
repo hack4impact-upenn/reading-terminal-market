@@ -1,5 +1,5 @@
 from .. import db
-from ..models import User, Listing
+from ..models import User
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
@@ -65,11 +65,8 @@ class Order(db.Model):
         if date is None:
             date = datetime.now(pytz.timezone('US/Eastern'))
 
-        cart_items = CartItem.query.\
-            join(Listing).\
-            join(User).\
-            filter_by(User.id == vendor_id).\
-            filter_by(CartItem.merchant_id == current_user.id)
+        cart_items = filter(current_user.cart_items,
+                            lambda item: item.listing.vendor_id == vendor_id)
 
         order = Order(date, vendor_id)
 
