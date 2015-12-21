@@ -65,7 +65,7 @@ class Listing(db.Model):
     @staticmethod
     def search(**kwargs):
         """ Returns all listings matching the criteria """
-        filter_list=[]
+        filter_list = []
         if 'main_search_term' in kwargs:
             term = kwargs['main_search_term']
             filter_list.append(or_(
