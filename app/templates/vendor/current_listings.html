@@ -23,7 +23,7 @@
 <form class="ui form segment">
         <div class="twelve wide field">
             <label>Search names and descriptions</label>
-            <input value="{{ main_search_term }}" type="text" name="mainsearch" placeholder="e.g. corned beef">
+            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
         </div>
 
         <div class="inline field">
@@ -42,7 +42,7 @@
             </select>
             <br>
             <br>
-            <select class="ui selection dropdown" name="sortby">
+            <select class="ui selection dropdown" name="sort-by">
                     {% if request.args.get('sortby') == "low_high" %}
                         {% set checked2 = 'selected' %}
                     {% elif request.args.get('sortby') == "high_low" %}

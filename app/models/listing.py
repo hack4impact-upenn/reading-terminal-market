@@ -1,7 +1,7 @@
 from .. import db
 from purchase import CartItem
-from sqlalchemy import or_, and_
-from ..models import Category, User, Vendor
+from sqlalchemy import or_, desc, func
+from ..models import Category, Vendor
 from flask.ext.login import current_user
 from sqlalchemy import UniqueConstraint
 
@@ -75,25 +75,30 @@ class Listing(db.Model):
 
         if 'name_search_term' in kwargs and kwargs['name_search_term']:
             term = kwargs['name_search_term']
-            results = Vendor.query.filter(Vendor.company_name == format(term)).all()
+            results = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
+            vendor_ids = []
             for r in results:
-                filter_list.append(
-                    Listing.vendor_id == r.id
-                )
-                print r.id
+                vendor_ids.append(r.id)
+            filter_list.append(
+                (Listing.vendor_id.in_(vendor_ids))
+            )
 
         if 'category_search' in kwargs and kwargs['category_search']:
             term = kwargs['category_search']
-            result = Category.query.filter(Category.name.like('%{}%'.format(term))).first()
+            results = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
+            category_ids = []
+            for r in results:
+                category_ids.append(r.id)
             filter_list.append(
-                Listing.category_id == result.id
+                (Listing.category_id.in_(category_ids))
             )
         if 'avail' in kwargs:
             avail_criteria = kwargs['avail']
             format(avail_criteria)
             if avail_criteria == "both":
-                filter_list.append(Listing.available == True)
-                filter_list.append(Listing.available == False)
+                filter_list.append(or_(Listing.available == True,
+                                       Listing.available == False)
+                                   )
             elif avail_criteria == "non_avail":
                 filter_list.append(Listing.available == False)
             elif avail_criteria == "avail":
@@ -108,21 +113,20 @@ class Listing(db.Model):
             filter_list.append(Listing.price >= kwargs['min_price'])
         if 'max_price' in kwargs and kwargs['max_price']:
             filter_list.append(Listing.price <= kwargs['max_price'])
-
-        if 'sortby' in kwargs and kwargs['sortby']:
-            sort = kwargs['sortby']
+        init_filter = Listing.query.filter(*filter_list)
+        if 'sort_by' in kwargs and kwargs['sort_by']:
+            sort = kwargs['sort_by']
             format(sort)
             if sort == "low_high":
-                sort_criteria = 'price'
+                final_filter = init_filter.order_by(Listing.price)
             elif sort == "high_low":
-                sort_criteria = 'price desc'
+                final_filter = init_filter.order_by(desc(Listing.price))
             elif sort == "alphaAZ":
-                sort_criteria = 'name'
+                final_filter = init_filter.order_by(func.lower(Listing.name))
             else:
-                sort_criteria = 'name desc'
-        init_filter = Listing.query.filter(*filter_list)
-        final_filter = init_filter.order_by(sort_criteria)
-
+                final_filter = init_filter.order_by(desc(func.lower(Listing.name)))
+        else:
+            final_filter = init_filter.order_by(Listing.price)
         return final_filter
 
     def __repr__(self):

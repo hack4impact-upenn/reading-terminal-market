@@ -93,11 +93,17 @@
                     {% if page %}
                         {% if page != listings.page %}
                             {% if current_user.user_type == "merchant" %}
+                                {% if '&search=False' in request.query_string %}
+                                    <a class="item" href="{{ url_for('merchant.listing_view_all', page=page) }}?{{ request.query_string }}">{{ page }}</a>
+                                {% else %}
                                     <a class="item" href="{{ url_for('merchant.listing_view_all', page=page) }}?{{ request.query_string }}&search=False">{{ page }}</a>
-
+                                {% endif %}
                             {% elif current_user.user_type == "vendor" %}
-                                        <a class="item" href="{{ url_for('vendor.current_listings', page=page) }}?{{ request.query_string }}&search=False">{{ page }}</a>
-
+                                {% if '&search=False' in request.query_string %}
+                                    <a class="item" href="{{ url_for('vendor.current_listings', page=page) }}?{{ request.query_string }}">{{ page }}</a>
+                                {% else %}
+                                    <a class="item" href="{{ url_for('vendor.current_listings', page=page) }}?{{ request.query_string }}&search=False">{{ page }}</a>
+                                {% endif %}
                             {% endif %}
                         {% else %}
                             <a class="active item">{{ page }}</a>

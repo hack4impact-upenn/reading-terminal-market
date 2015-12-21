@@ -20,14 +20,14 @@
             <div class="three wide field">
                 <label>Order by</label>
 
-                <select class="ui selection dropdown" name="sort-by">
-                    {% if sortby == "low_high" %}
+                <select class="ui selection dropdown" name="sortby">
+                    {% if request.args.get('sortby') == "low_high" %}
                         {% set checked2 = 'selected' %}
-                    {% elif sortby == "high_low" %}
+                    {% elif request.args.get('sortby') == "high_low" %}
                         {% set checked3 = 'selected' %}
-                    {% elif sortby == "alphaAZ" %}
+                    {% elif request.args.get('sortby') == "alphaAZ" %}
                         {% set checked4 = 'selected' %}
-                    {% elif sortby == "alphaZA" %}
+                    {% elif request.args.get('sortby') == "alphaZA" %}
                         {% set checked5 = 'selected' %}
                     {% endif %}
                     <option value="low_high" {{ checked2 }}>Low to High</option>
@@ -53,13 +53,13 @@
         </div>
 
 
-        {% if not name_search_term and not min_price and not max_price%}
+        {% if not name_search_term and not min_price and not max_price and not category_search%}
             {% set display = 'display:none' %}
         {% endif %}
 
-        <div class="eleven wide field">
+        <div class="twelve wide field advanced-search" style="{{ display }}">
                 <label>Search Company Names</label>
-                <input value="{{ name_search_term }}" type="text" name="name-search" placeholder="Bobby's Burgers">
+                <input value="{{ name_search_term }}" type="text" name="name-search" placeholder="e.g. Bobby's Burgers">
         </div>
         <div class="twelve wide field advanced-search" style="{{ display }}">
             <label>Search by Category Name</label>
@@ -69,7 +69,6 @@
         <div class="two fields advanced-search" style="{{ display }}">
             <div class="three wide field">
                 <label>Minimum unit price</label>
-
                 <input value="{{ min_price }}" type="text" name="min-price" placeholder="e.g. $0">
             </div>
             <div class="three wide field">

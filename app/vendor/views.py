@@ -47,7 +47,7 @@ def new_listing():
 def current_listings(page=1):
     """View all current listings."""
     main_search_term = request.args.get('main-search', "", type=str)
-    sort_by = request.args.get('sort_by', "", type=str)
+    sort_by = request.args.get('sortby', "", type=str)
     avail = request.args.get('avail', "", type=str)
     search = request.args.get('search', "", type=str)
     listings_raw = Listing.search(sort_by=sort_by,
@@ -63,8 +63,8 @@ def current_listings(page=1):
                                listings=Listing.search(main_search_term='',
                                                        sort_by=sort_by)
                                                .filter(Listing.vendor_id == current_user.id)
-                                               .paginate(page,20,False),
-                               header="Search Results: Showing All listings")
+                                               .paginate(page, 20, False),
+                               header="No Search Results: Showing All listings")
     else:
         return render_template('vendor/current_listings.html',
                                listings=listings_paginated,

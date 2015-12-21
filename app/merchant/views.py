@@ -21,7 +21,7 @@ def listing_view_all(page=1):
     """Search for listings"""
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
-    sort_by = request.args.get('sort-by', "", type=str)
+    sort_by = request.args.get('sortby', "", type=str)
     name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
@@ -46,7 +46,7 @@ def listing_view_all(page=1):
                                listings=Listing.search(main_search_term='',
                                                        sort_by=sort_by)
                                                .paginate(page, 20, False),
-                               header="Search Results: Showing All listings",
+                               header="No Search Results: Showing All listings",
                                )
     else:
         return render_template('merchant/view_listings.html',
@@ -57,6 +57,7 @@ def listing_view_all(page=1):
                                sort_by=sort_by,
                                name_search_term=name_search_term,
                                favorite=favorite,
+                               category_search=category_search,
                                cart_listings=current_user.get_cart_listings(),
                                header="Search Results: " + str(result_count) + " results in total",
                                )
