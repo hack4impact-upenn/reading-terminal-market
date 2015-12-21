@@ -1,9 +1,10 @@
 from .. import db
+from ..models import User
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
 from flask.ext.login import current_user
-
+from collections import defaultdict
 
 class CartItem(db.Model):
     ''' Functions as association table between listings and merchants '''
@@ -43,7 +44,6 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     date = db.Column(db.DateTime)
-    status = db.Column(db.Integer)
     merchant_id = db.Column(db.Integer)
 
     def __init__(self, merchant):
@@ -52,12 +52,14 @@ class Order(db.Model):
 
         for item in merchant.cart_items:
             vendor_id = item.listing.vendor_id
+            vendor = User.query.get(vendor_id)
+            company_name = vendor.company_name
             listing_id = item.listing.id
             quantity = item.quantity
             item_name = item.listing.name
             item_price = item.listing.price
             p = Purchase(vendor_id, listing_id, self, quantity, item_name,
-                         item_price)
+                         item_price, company_name)
             db.session.add(p)
 
         db.session.commit()
@@ -72,6 +74,17 @@ class Order(db.Model):
 
     def get_all_purchases(self):
         return Purchase.query.filter_by(order_id=self.id).all()
+
+    def get_vendor_purchase_dict(self):
+        """Returns a dictionary where the keys are vendors
+        in the order and the values are a list of purchases"""
+        dictionary = defaultdict(list)
+        for purchase in self.purchases:
+            vendor_id = purchase.vendor_id
+            company_name = purchase.company_name
+            dictionary[(vendor_id, company_name)].append(purchase)
+
+        return dictionary
 
     def get_purchases_by_vendor(self, vendor_id):
         purchases = Purchase.query.filter_by(order_id=self.id,
@@ -100,10 +113,11 @@ class Purchase(db.Model):
     # purchase properties
     quantity = db.Column(db.Integer)
     item_name = db.Column(db.String(64))
+    company_name = db.Column(db.String(64))
     item_price = db.Column(db.Float)
 
     def __init__(self, vendor_id, listing_id, order, quantity, item_name,
-                 item_price):
+                 item_price, company_name):
         self.status = Status.PENDING
         self.vendor_id = vendor_id
         self.listing_id = listing_id
@@ -111,6 +125,7 @@ class Purchase(db.Model):
         self.quantity = quantity
         self.item_name = item_name
         self.item_price = item_price
+        self.company_name = company_name
 
     def __repr__(self):
         return "<Purchase: {} Listing: {}>".format(self.id, self.listing_id)
