@@ -65,8 +65,8 @@ class Order(db.Model):
         if date is None:
             date = datetime.now(pytz.timezone('US/Eastern'))
 
-        cart_items = filter(current_user.cart_items,
-                            lambda item: item.listing.vendor_id == vendor_id)
+        cart_items = filter(lambda item: item.listing.vendor_id == vendor_id,
+                            current_user.cart_items)
 
         order = Order(date, vendor_id)
 
