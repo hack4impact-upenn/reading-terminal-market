@@ -1,0 +1,146 @@
+{% extends 'layouts/base.html' %}
+
+{#{% macro purchase_tagline(order) %}#}
+{#<p>With purchases from:#}
+{# {% for vendor, purchases in order.get_vendor_purchase_dict().iteritems() %}#}
+{#     {{ vendor[1] }}#}
+{# {% endfor %}#}
+{#    </p>#}
+{##}
+{#{% endmacro %}#}
+
+{% macro status_label(status) %}
+    {% if status == 0 %}
+        {% set text = 'Pending' %}
+        {% set color = 'grey' %}
+    {% elif status == 1 %}
+        {% set text = 'Approved' %}
+        {% set color = 'green' %}
+    {% elif status == 2 %}
+        {% set text = 'Declined' %}
+        {% set color = 'red' %}
+    {% endif %}
+
+    <div class="ui {{ color }} horizontal label">{{ text }}</div>
+{% endmacro %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+    <div class="sixteen wide tablet twelve wide computer centered column">
+        <h2 class="ui header">
+            Manage orders
+            <div class="sub header">
+                View and manage your orders.
+            </div>
+        </h2>
+        {% for order in orders %}
+            {% set vendor_info = order.get_vendor_info() %}
+            <div class="ui segment clearing order" id="order-{{ order.id }}">
+                <div class="ui left floated basic segment">
+                    <h3 class="ui header">
+                        Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ status_label(order.status) }}
+                        <div class="sub header">
+                            Placed on {{ order.get_date() }}
+                        </div>
+                    </h3>
+                    <div>{{ order.get_total() }}</div>
+                    <div><a class="toggle-details">Show purchases</a></div>
+
+                </div>
+                <div class="ui right floated basic segment">
+                    <div class="ui list right">
+                        <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
+                        {% if vendor_info['full_name'] %}
+                            <div class="item"><b>Vendor name: </b> {{  vendor_info['full_name'] }}</div>
+                        {% endif %}
+                        {% if vendor_info['email'] %}
+                            <div class="item"><b>Email: </b> {{  vendor_info['email'] }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+                <div class="details" style="display: none;">
+                    {% set purchase_info = order.get_purchase_info() %}
+                    <table class="ui celled table">
+                        <thead>
+                        <tr>
+                            <th>Item name</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for purchase in purchase_info %}
+                            <tr>
+                                <td>{{ purchase['name'] }}</td>
+                                <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
+                                <td>${{ '%0.2f' | format(purchase['price']) }} / {{ purchase['unit'] }}</td>
+                                <td>${{ '%0.2f' | format(purchase['price'] * purchase['quantity']) }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+
+        {% else %}
+            <h3>Your have not made any orders.</h3>
+        {% endfor %}
+    </div>
+
+    {#    <script src="{{ url_for('static', filename='merchant.js') }}"></script>#}
+
+    <script>
+
+        $(document).ready(function(){
+            $('.toggle-details').click(function () {
+                var order = $( this ).closest('.order');
+                var details = order.find('.details');
+                console.log($(this));
+                details.toggle();
+                if ($( this ).text() === 'Hide purchases') {
+                    $(this).text('Show purchases');
+                } else {
+                    $( this ).text('Hide purchases');
+                }
+                console.log($(this));
+
+            });
+
+        });
+
+        {#        $(document).ready(function () {#}
+        {#            $('.remove-from-cart').click(function () {#}
+        {#                var toggledItemButton = $(this);#}
+        {#                var listingID = toggledItemButton.data('id');#}
+        {#                var tableRow = toggledItemButton.parent().parent();#}
+        {#                updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));#}
+        {#            });#}
+        {##}
+        {#            $('.cart-quantity').change(function (event) {#}
+        {#                var newQuantity = parseInt($(this).val());#}
+        {#                var listingID = $(this).data('id');#}
+        {##}
+        {#                updateTotalPrice(listingID, newQuantity);#}
+        {#                updateCartQuantity(listingID, newQuantity);#}
+        {#            });#}
+        {#        });#}
+        {##}
+        {#        function updateTotalPrice(listingID, newQuantity) {#}
+        {#            var tr = $( 'tr' ).filterByData( 'id', listingID );#}
+        {#            var totalPrice = tr.find( '.total_price' );#}
+        {#            var unitPrice = parseFloat( tr.find( '.unit_price' ).data( 'price' ) );#}
+        {#            totalPrice.text( "$" + (newQuantity * unitPrice).toFixed(2) );#}
+        {#        }#}
+        {##}
+        {#        function deleteListing(tableRow) {#}
+        {#            tableRow.remove();#}
+        {#        }#}
+
+    </script>
+{% endblock %}

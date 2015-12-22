@@ -24,8 +24,12 @@ table.selectable tr:hover {
   cursor: pointer !important;
 }
 
-#cart_buttons {
+.cart-button {
 	float: right;
+}
+
+#main-cart-button {
+  float: none;
 }
 
 .toggle-cart {

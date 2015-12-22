@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
 from flask.ext.login import current_user
+from collections import defaultdict, OrderedDict
 
 
 class CartItem(db.Model):
@@ -21,6 +22,22 @@ class CartItem(db.Model):
     listing = db.relationship("Listing")
 
     @staticmethod
+    def get_vendor_cart_items_dict():
+        """returns a dict where the keys are
+        vendors and the fields are a list
+        of items in the cart from that vendor"""
+        vendor_items_dict = defaultdict(list)
+        for item in current_user.cart_items:
+            vendor = item.listing.vendor
+            vendor_items_dict[vendor].append(item)
+
+        # uses sorted dict so vendor order in cart
+        # is in alphabetical order of company names
+        sorted_dict = OrderedDict(sorted(vendor_items_dict.items(),
+                                        key=lambda pair: pair[0].company_name))
+        return sorted_dict
+
+    @staticmethod
     def delete_cart_items(cart_items):
         for cart_item in cart_items:
             db.session.delete(cart_item)
@@ -36,6 +53,7 @@ class Status:
     PENDING = 0
     APPROVED = 1
     DECLINED = 2
+    CANCELED = 3
 
 
 class Order(db.Model):
@@ -44,6 +62,7 @@ class Order(db.Model):
 
     date = db.Column(db.DateTime)
     status = db.Column(db.Integer)
+    merchant_id = db.Column(db.Integer)
 
     vendor_id = db.Column(db.Integer)
     company_name = db.Column(db.String(64))
@@ -52,6 +71,7 @@ class Order(db.Model):
         self.status = Status.PENDING
         self.date = date
         self.vendor_id = vendor_id
+        self.merchant_id = current_user.id
         vendor = User.query.get(vendor_id)
         self.company_name = vendor.company_name
 
@@ -69,19 +89,57 @@ class Order(db.Model):
                             current_user.cart_items)
 
         order = Order(date, vendor_id)
-
+        # TODO: email vendor
         for item in cart_items:
             p = Purchase(
                 order=order,
                 listing_id=item.listing.id,
                 quantity=item.quantity,
                 item_name=item.listing.name,
-                item_price=item.listing.price
+                item_price=item.listing.price,
+                unit=item.listing.category.unit
             )
             db.session.add(p)
+
         db.session.add(order)
         CartItem.delete_cart_items(cart_items)
         db.session.commit()
+
+    def get_total(self):
+        total = 0
+        for purchase in self.purchases:
+            total += purchase.quantity * purchase.item_price
+        return "${0:.2f}".format(total)
+
+    def get_date(self):
+        """Get date formatted as mm-dd-yyyy"""
+        date = self.date.date()
+        return '{}-{}-{}'.format(date.month, date.day, date.year)
+
+    def get_vendor_info(self):
+        vendor_id = self.vendor_id
+        vendor = User.query.get(vendor_id)
+        if vendor:
+            vendor_info = {
+                'company_name': vendor.company_name,
+                'full_name': vendor.full_name(),
+                'email': vendor.email
+            }
+        else:
+            vendor_info = {'company_name': self.company_name}
+        return vendor_info
+
+    def get_purchase_info(self):
+        purchases = self.purchases
+        purchase_info = []
+        for purchase in purchases:
+            purchase_info.append({
+                'quantity': purchase.quantity,
+                'name': purchase.item_name,
+                'price': purchase.item_price,
+                'unit': purchase.unit
+            })
+        return purchase_info
 
     @staticmethod
     def order_cart_items():
@@ -93,6 +151,24 @@ class Order(db.Model):
 
         for vendor_id in vendor_ids:
             Order.order_cart_items_from_vendor(vendor_id, date)
+
+    def get_all_purchases(self):
+        return Purchase.query.filter_by(order_id=self.id).all()
+
+    def cancel_order(self):
+        # TODO: Email vendor
+        pass
+
+    # def get_vendor_purchase_dict(self):
+    #     """Returns a dictionary where the keys are vendors
+    #     in the order and the values are a list of purchases"""
+    #     dictionary = defaultdict(list)
+    #     for purchase in self.purchases:
+    #         vendor_id = purchase.vendor_id
+    #         company_name = purchase.company_name
+    #         dictionary[(vendor_id, company_name)].append(purchase)
+    #
+    #     return dictionary
 
 
 class Purchase(db.Model):
@@ -108,13 +184,15 @@ class Purchase(db.Model):
     quantity = db.Column(db.Integer)
     item_name = db.Column(db.String(64))
     item_price = db.Column(db.Float)
+    unit = db.Column(db.String(32))
 
-    def __init__(self, order, listing_id, quantity, item_name, item_price):
+    def __init__(self, order, listing_id, quantity, item_name, item_price, unit):
         self.order = order
         self.listing_id = listing_id
         self.quantity = quantity
         self.item_name = item_name
         self.item_price = item_price
+        self.unit = unit
 
     def __repr__(self):
         return "<Purchase: {} Listing: {}>".format(self.id, self.listing_id)

@@ -45,7 +45,11 @@ def listing_view_all():
 @login_required
 @merchant_required
 def order_items():
-    Order.order_cart_items()
+    vendor_id = request.form.get('vendor_id', type=int)
+    if vendor_id:
+        Order.order_cart_items_from_vendor(vendor_id)
+    else:
+        Order.order_cart_items()
     return redirect(url_for('.manage_cart'))
 
 
@@ -53,8 +57,9 @@ def order_items():
 @login_required
 @merchant_required
 def manage_cart():
+    vendor_items_dict = CartItem.get_vendor_cart_items_dict()
     return render_template('merchant/manage_cart.html',
-                           cart=current_user.cart_items)
+                           vendor_items_dict=vendor_items_dict)
 
 
 @merchant.route('/items/<int:listing_id>')
@@ -117,3 +122,30 @@ def change_favorite(listing_id):
         current_user.bookmarks.remove(listing)
     db.session.commit()
     return jsonify({'isFavorite': listing in current_user.bookmarks})
+
+
+@merchant.route('/orders')
+@merchant.route('/orders/all')
+@login_required
+@merchant_required
+def view_all_orders():
+    orders = Order.query.\
+        filter_by(merchant_id=current_user.id).\
+        order_by(Order.id.desc()).all()
+    return render_template('merchant/orders.html', orders=orders)
+
+#
+# @merchant.route('/orders/<int:order_id>')
+# @login_required
+# @merchant_required
+# def view_order(order_id):
+#     order = Order.query.filter_by(id=order_id, merchant_id=current_user.id).first()
+#     if not order:
+#         abort(404)
+#     # purchases = order.purchases
+#     # vendor_purchase_dict = order.get_vendor_purchase_dict()
+#     # print vendor_purchase_dict
+#     # for purchase in purchases:
+#     #     print purchase
+#     return render_template('merchant/order.html', order=order)
+#     # return render_template('merchant/orders.html')
