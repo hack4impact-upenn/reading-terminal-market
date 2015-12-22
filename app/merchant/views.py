@@ -67,10 +67,7 @@ def listing_view_all(page=1):
 @login_required
 @merchant_required
 def order_items():
-    order = Order(current_user.cart_items)
-    db.session.add(order)
-    CartItem.delete_cart_items()
-    db.session.commit()
+    Order.order_cart_items()
     return redirect(url_for('.manage_cart'))
 
 

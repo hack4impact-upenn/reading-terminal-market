@@ -48,6 +48,7 @@ def add_category():
             db.session.commit()
             flash('Category {} successfully created'.format(category.name),
                   'form-success')
+        return redirect(url_for('admin.add_category'))
     return render_template('admin/add_category.html', form=form)
 
 
@@ -101,6 +102,7 @@ def new_user():
         db.session.commit()
         flash('User {} successfully created'.format(user.full_name()),
               'form-success')
+        return redirect(url_for('admin.new_user'))
     return render_template('admin/new_user.html', form=form)
 
 
@@ -135,6 +137,7 @@ def invite_user():
                    token=token)
 
         flash('User successfully invited', 'form-success')
+        return redirect(url_for('admin.invite_user'))
     return render_template('admin/new_user.html', form=form)
 
 
