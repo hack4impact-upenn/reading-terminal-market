@@ -40,8 +40,11 @@
                     </thead>
                     <tbody>
                     {% for l in listings.items %}
+                        {% if current_user.is_vendor() %}
+                        <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
+                        {% else %}
                         <tr>
-
+                        {% endif %}
                             <td>{{ l.name }}</td>
                             {% if current_user.is_merchant() %}
                                 <td>{{ l.vendor.company_name }}</td>
@@ -114,7 +117,11 @@
                 {% endfor %}
             </div>
             {% else %}
+            {% if current_user.is_merchant() %}
                 <h3><a href="{{ url_for('merchant.listing_view_all', page=1) }}">Reset Search</a></h3>
+            {% elif current_user.is_vendor() %}
+                <h3><a href="{{ url_for('vendor.current_listings', page=1) }}">Reset Search</a></h3>
+            {% endif %}
             {% endif %}
             {% block after %}
             {% endblock %}

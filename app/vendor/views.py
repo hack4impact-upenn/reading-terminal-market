@@ -60,16 +60,15 @@ def current_listings(page=1):
     result_count = listings_raw.count()
     if result_count == 0:
         return render_template('vendor/current_listings.html',
-                               listings=Listing.search(main_search_term='',
-                                                       sort_by=sort_by)
-                                               .filter(Listing.vendor_id == current_user.id)
-                                               .paginate(page, 20, False),
+                               listings=listings_paginated,
+                               count=result_count,
                                header="No Search Results: Showing All listings")
     else:
         return render_template('vendor/current_listings.html',
                                listings=listings_paginated,
                                main_search_term=main_search_term,
                                sort_by=sort_by,
+                               count=result_count,
                                header="Search Results: " + str(result_count) + " in total")
 
 
