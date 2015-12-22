@@ -65,8 +65,8 @@
             {% set display = 'display:none' %}
         {% endif %}
         <br>
-        <button class="ui button" type="submit">Search</button>
-        <a class="ui button red" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
+        <button class="ui button blue" type="submit">Search</button>
+        <a class="ui button" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
     </form>
 {% endblock %}
 

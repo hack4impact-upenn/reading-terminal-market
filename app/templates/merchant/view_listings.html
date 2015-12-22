@@ -9,7 +9,6 @@
         'success': get_flashed_messages(category_filter=['form-success'])
      } %}
 
-
     <form class="ui form segment">
         <div class="two fields">
             <div class="eleven wide field">
@@ -80,8 +79,8 @@
             <a href="#" id="toggle-advanced">Toggle advanced search</a>
         </div>
         <br>
-        <button class="ui button" type="submit">Search</button>
-        <a class="ui button violet" href="{{ url_for('merchant.listing_view_all', page=1) }}">Clear Criteria</a>
+        <button class="ui button blue" type="submit">Search</button>
+        <a class="ui button" href="{{ url_for('merchant.listing_view_all', page=1) }}">Clear Criteria</a>
 
     </form>
 {% endblock %}

@@ -17,6 +17,7 @@
             {# Actual table #}
             {# Use overflow-x: scroll so that mobile views don't freak out
              # when the table is too wide #}
+        {% if count > 0 %}
             <div style="overflow-x: scroll;">
                 <table id="listings-table" class="ui searchable sortable unstackable selectable celled table">
                     <thead>
@@ -88,7 +89,6 @@
                 </table>
             </div><br>
             <div class="ui pagination menu">
-
                 {% for page in listings.iter_pages() %}
                     {% if page %}
                         {% if page != listings.page %}
@@ -113,6 +113,9 @@
                     {% endif %}
                 {% endfor %}
             </div>
+            {% else %}
+                <h3><a href="{{ url_for('merchant.listing_view_all', page=1) }}">Reset Search</a></h3>
+            {% endif %}
             {% block after %}
             {% endblock %}
         </div>

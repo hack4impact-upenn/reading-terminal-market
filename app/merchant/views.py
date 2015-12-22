@@ -43,10 +43,9 @@ def listing_view_all(page=1):
     result_count = listings_raw.count()
     if result_count == 0:
         return render_template('merchant/view_listings.html',
-                               listings=Listing.search(main_search_term='',
-                                                       sort_by=sort_by)
-                                               .paginate(page, 20, False),
-                               header="No Search Results: Showing All listings",
+                               listings=listings_paginated,
+                               header="No Search Results",
+                               count=result_count
                                )
     else:
         return render_template('merchant/view_listings.html',
@@ -60,6 +59,7 @@ def listing_view_all(page=1):
                                category_search=category_search,
                                cart_listings=current_user.get_cart_listings(),
                                header="Search Results: " + str(result_count) + " results in total",
+                               count=result_count
                                )
 
 
