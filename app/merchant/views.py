@@ -134,7 +134,7 @@ def view_all_orders():
         order_by(Order.id.desc()).all()
     return render_template('merchant/orders.html', orders=orders)
 
-#
+
 # @merchant.route('/orders/<int:order_id>')
 # @login_required
 # @merchant_required
