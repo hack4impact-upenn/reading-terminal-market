@@ -123,29 +123,29 @@ def change_favorite(listing_id):
     db.session.commit()
     return jsonify({'isFavorite': listing in current_user.bookmarks})
 
+
 @merchant.route('/orders')
 @merchant.route('/orders/all')
 @login_required
 @merchant_required
 def view_all_orders():
-    orders = Order.query.filter_by(merchant_id=current_user.id).all()
-    # TODO sort by date
-    if not orders:
-        abort(404)
+    orders = Order.query.\
+        filter_by(merchant_id=current_user.id).\
+        order_by(Order.id.desc()).all()
     return render_template('merchant/orders.html', orders=orders)
 
-@merchant.route('/orders/<int:order_id>')
-@login_required
-@merchant_required
-def view_order(order_id):
-    order = Order.query.filter_by(id=order_id, merchant_id=current_user.id).first()
-    if not order:
-        abort(404)
-    # purchases = order.purchases
-    vendor_purchase_dict = order.get_vendor_purchase_dict()
-    print vendor_purchase_dict
-    # for purchase in purchases:
-    #     print purchase
-    return render_template('merchant/order.html', order=order,
-                           vendor_purchase_dict=vendor_purchase_dict)
-    # return render_template('merchant/orders.html')
+#
+# @merchant.route('/orders/<int:order_id>')
+# @login_required
+# @merchant_required
+# def view_order(order_id):
+#     order = Order.query.filter_by(id=order_id, merchant_id=current_user.id).first()
+#     if not order:
+#         abort(404)
+#     # purchases = order.purchases
+#     # vendor_purchase_dict = order.get_vendor_purchase_dict()
+#     # print vendor_purchase_dict
+#     # for purchase in purchases:
+#     #     print purchase
+#     return render_template('merchant/order.html', order=order)
+#     # return render_template('merchant/orders.html')
