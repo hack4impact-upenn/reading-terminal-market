@@ -29,25 +29,21 @@ def index():
 def listing_view_all():
     """Search for listings"""
     main_search_term = request.args.get('main-search', "", type=str)
-    favorite = True if request.args.get('favorite') == "on" else False
     name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
     listings = Listing.search(available=True,
-                              favorite=favorite,
                               min_price=min_price,
                               max_price=max_price,
                               name_search_term=name_search_term,
                               main_search_term=main_search_term)
 
-    return render_template('merchant/view_listings.html',
+    return render_template('admin/view_listings.html',
                            listings=listings,
                            main_search_term=main_search_term,
                            min_price=min_price,
                            max_price=max_price,
                            name_search_term=name_search_term,
-                           favorite=favorite,
-                           cart_listings=None,
                            header="All listings")
 
 
