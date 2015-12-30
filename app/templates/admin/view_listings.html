@@ -1,0 +1,61 @@
+{% extends 'layouts/listings.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% block before %}
+    {% set flashes = {
+        'error':   get_flashed_messages(category_filter=['form-error']),
+        'warning': get_flashed_messages(category_filter=['form-check-email']),
+        'info':    get_flashed_messages(category_filter=['form-info']),
+        'success': get_flashed_messages(category_filter=['form-success'])
+     } %}
+
+    <a class="ui basic compact button" href="{{ url_for('admin.index') }}">
+        <i class="caret left icon"></i>
+        Back to dashboard
+    </a>
+    
+    <form class="ui form segment">
+        <div class="twelve wide field">
+            <label>Search names and descriptions</label>
+            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
+        </div>
+
+        {% if not name_search_term and not min_price and not max_price%}
+            {% set display = 'display:none' %}
+        {% endif %}
+        <div class="twelve wide field advanced-search" style="{{ display }}">
+            <label>Search company and vendor names</label>
+            <input value="{{ name_search_term }}"type="text" name="name-search" placeholder="e.g. John's corned beef">
+        </div>
+
+        <div class="two fields advanced-search" style="{{ display }}">
+            <div class="three wide field">
+                <label>Minimum unit price</label>
+
+                <input value="{{ min_price }}" type="text" name="min-price" placeholder="e.g. $0">
+            </div>
+            <div class="three wide field">
+                <label>Maximum unit price</label>
+                <input value="{{ max_price }}" type="text" name="max-price" placeholder="e.g. $10">
+            </div>
+        </div>
+        <div>
+            <a href="#" id="toggle-advanced">Toggle advanced search</a>
+        </div>
+        <br>
+        <button class="ui button" type="submit">Search</button>
+    </form>
+{% endblock %}
+
+{% block after %}
+
+    <script src="{{ url_for('static', filename='merchant.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#toggle-advanced').click(function () {
+                $('.advanced-search').toggle();
+            });
+        });
+    </script>
+{% endblock %}
