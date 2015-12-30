@@ -12,6 +12,10 @@
         {% set text = 'Declined' %}
         {% set color = 'red' %}
     {% endif %}
+    {% elif status == 3 %}
+        {% set text = 'Canceled' %}
+        {% set color = 'red' %}
+    {% endif %}
 
     <div class="ui {{ color }} horizontal label">{{ text }}</div>
 {% endmacro %}
@@ -34,7 +38,6 @@
         <div class="stretched divided very relaxed row">
             <div class="twelve wide column">
 
-
                 {% for vendor, purchases in vendor_purchase_dict.iteritems() %}
                     {{ vendor_purchases(vendor, purchases) }}
                 {% endfor %}
@@ -43,9 +46,7 @@
                     <tr><td>Full name</td><td></td></tr>
                     <tr><td>Email address</td><td></td></tr>
                     <tr><td>Account type</td><td></td></tr>
-                    {#    {% if user.is_merchant_or_vendor() %}#}
                     <tr><td>Company name</td><td></td></tr>
-                    {#    {% endif %}#}
                 </table>
             </div>
         </div>

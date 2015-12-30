@@ -19,6 +19,9 @@
     {% elif status == 2 %}
         {% set text = 'Declined' %}
         {% set color = 'red' %}
+    {% elif status == 3 %}
+        {% set text = 'Canceled' %}
+        {% set color = 'red' %}
     {% endif %}
 
     <div class="ui {{ color }} horizontal label">{{ text }}</div>
@@ -39,6 +42,9 @@
                 <div class="ui left floated basic segment">
                     <h3 class="ui header">
                         Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ status_label(order.status) }}
+                        {% if order.status == 0 %}
+                            <button class="cancel-button negative mini ui button">Cancel</button>
+                        {% endif %}
                         <div class="sub header">
                             Placed on {{ order.get_date() }}
                         </div>
@@ -109,6 +115,26 @@
                     $( this ).text('Hide purchases');
                 }
                 console.log($(this));
+
+            });
+
+            $('.cancel-button').click(function () {
+                var button = $( this );
+                var order = button.closest('.order');
+                var orderId = order.attr('id').split('-')[1];
+                var label = order.find('.label');
+
+                 $.ajax({
+                    url: '/order/cancel/' + orderId,
+                    dataType: 'json',
+                    success: function (data) {
+                        label.text('Canceled');
+                        label.removeClass('grey');
+                        label.addClass('red');
+                        button.hide();
+                    },
+                    method: 'PUT'
+                });
 
             });
 

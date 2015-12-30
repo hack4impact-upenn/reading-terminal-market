@@ -2,10 +2,10 @@ from flask.ext.login import login_required, current_user
 from . import order
 from .. import db
 from ..models import Order, Status
-from flask import render_template, abort, request, redirect, url_for, jsonify
+from flask import abort, jsonify
 from ..decorators import merchant_required, vendor_required
 
-@order.route('/cancel_order/<int:order_id>', methods=['PUT'])
+@order.route('/cancel/<int:order_id>', methods=['PUT'])
 @login_required
 @merchant_required
 def cancel_order(order_id):
@@ -20,7 +20,7 @@ def cancel_order(order_id):
     return jsonify({'status': 'canceled'})
 
 
-@order.route('/approve_order/<int:order_id>', methods=['PUT'])
+@order.route('/approve/<int:order_id>', methods=['PUT'])
 @login_required
 @vendor_required
 def approve_order(order_id):
@@ -34,7 +34,7 @@ def approve_order(order_id):
     # TODO send emails
     return jsonify({'status': 'approved'})
 
-@order.route('/decline_order/<int:order_id>', methods=['PUT'])
+@order.route('/decline/<int:order_id>', methods=['PUT'])
 @login_required
 @vendor_required
 def decline_order(order_id):
