@@ -62,6 +62,84 @@
             $('#toggle-advanced').click(function () {
                 $('.advanced-search').toggle();
             });
+
+            $('.toggle-favorite').click(function (event) {
+                var toggledLink = $(this);
+                var isFavorite = toggledLink.data("isfavorite");
+                var listingId = toggledLink.data("id");
+                var newValue = isFavorite === true ? false : true;
+                $.ajax({
+                    url: '/merchant/change_favorite/' + listingId,
+                    data: JSON.stringify({
+                        isFavorite: newValue
+                    }),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        toggledLink.data("isfavorite", data.isFavorite);
+                        icon = toggledLink.find("i");
+                        icon.removeClass("grey");
+                        icon.removeClass("yellow");
+
+                        if (data.isFavorite) {
+                            icon.addClass("yellow");
+                        } else {
+                            icon.addClass("grey");
+                        }
+
+                    },
+                    method: 'PUT'
+                });
+
+            });
+
+            $('.cart-quantity').change(function (event) {
+                var newQuantity = parseInt($(this).val());
+                var td = $(this).closest('td')
+                var listingID = td.data('id');
+                updateCartQuantity(listingID, newQuantity);
+                updateCartFrontend(listingID, newQuantity);
+            });
+
+            $('.toggle-cart').click(function (event) {
+                var toggleCartIcon = $(this);
+                var inCart = toggleCartIcon.parent().data("incart");
+                var listingID = toggleCartIcon.parent().data("id");
+                var newQuantity = inCart ? 0 : 1;
+                updateCartQuantity(listingID, newQuantity);
+                updateCartFrontend(listingID, newQuantity);
+            });
         });
+
+        function changeInputQuantity(inputSelector, newQuantity) {
+            inputSelector.val(newQuantity);
+        }
+
+        function enableCartIcon(cartIconSelector) {
+            cartIconSelector.removeClass("grey");
+            cartIconSelector.addClass("blue");
+
+        }
+
+        function disableCartIcon(cartIconSelector) {
+            cartIconSelector.removeClass("blue");
+            cartIconSelector.addClass("grey");
+        }
+
+        function updateCartFrontend(listingID, quantity) {
+            var dataSelector = "[data-id='" + listingID + "']";
+            var td = $('#listings-table td.cartCell' + dataSelector);
+            var icon = td.find("i");
+            var quantityInput = td.find("input");
+            quantityInput.val(quantity);
+
+            if (quantity === 0) {
+                disableCartIcon(icon);
+                td.data("incart", false);
+            } else {
+                enableCartIcon(icon);
+                td.data("incart", true);
+            }
+        }
     </script>
 {% endblock %}
