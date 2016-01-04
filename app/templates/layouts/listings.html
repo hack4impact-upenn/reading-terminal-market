@@ -23,12 +23,12 @@
                     <thead>
                     <tr>
                         <th>Item name</th>
-                        {% if current_user.is_merchant() %}
+                        {% if current_user.is_merchant() or current_user.is_admin() %}
                             <th>Company</th>
                         {% endif %}
                         <th>Price</th>
                         <th class="truncate">Description</th>
-                        {% if current_user.is_vendor() %}
+                        {% if current_user.is_vendor() or current_user.is_admin() %}
                             <th>Availability</th>
                         {% endif %}
                         <th>Category</th>
@@ -46,12 +46,12 @@
                         <tr>
                         {% endif %}
                             <td>{{ l.name }}</td>
-                            {% if current_user.is_merchant() %}
+                            {% if current_user.is_merchant() or current_user.is_admin() %}
                                 <td>{{ l.vendor.company_name }}</td>
                             {% endif %}
                             <td>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>
                             <td class="truncate">{{ l.description }}</td>
-                            {% if current_user.is_vendor() %}
+                            {% if current_user.is_vendor() or current_user.is_admin() %}
                                 <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
                             {% endif %}
                             <td class="item category">{{ l.category.name }}</td>
