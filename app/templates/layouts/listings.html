@@ -67,11 +67,11 @@
                                     {% set cart_color = "grey" %}
                                 {% endif %}
                                 <td class="center aligned cartCell" data-id="{{ l.id }}" data-incart="{{ in_cart }}">
-                                    <a class="toggle-cart">
-                                        <i class="cart icon {{ cart_color }}"></i>
-                                    </a>
-                                    <div class="ui input fluid add_quant">
-                                        <input class="cart-quantity" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
+                                    <div class="ui left action input">
+                                        <a class="toggle-cart ui button" id="button_padding">
+                                            <i class="cart icon {{ cart_color }}"></i>
+                                        </a>
+                                        <input class="cart-quantity" id="input_size" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
                                     </div>
                                 </td>
                                 <td class="center aligned favoriteCell">
@@ -127,6 +127,7 @@
             {% endblock %}
         </div>
     </div>
+    
 
     <style>
         .truncate {
