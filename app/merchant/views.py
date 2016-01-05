@@ -43,6 +43,7 @@ def listing_view_all(page=1):
 
     listings_paginated = listings_raw.paginate(page, 20, False)
     result_count = listings_raw.count()
+
     if result_count == 0:
         return render_template(
             'merchant/view_listings.html',

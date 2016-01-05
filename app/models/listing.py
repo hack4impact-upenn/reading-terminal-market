@@ -76,59 +76,59 @@ class Listing(db.Model):
 
         if 'name_search_term' in kwargs and kwargs['name_search_term']:
             term = kwargs['name_search_term']
-            results = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
-            vendor_ids = []
-            for r in results:
-                vendor_ids.append(r.id)
-            filter_list.append(
-                (Listing.vendor_id.in_(vendor_ids))
-            )
+            vendors = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
+            vendor_ids = [vendor.id for vendor in vendors]
+            filter_list.append(Listing.vendor_id.in_(vendor_ids))
 
         if 'category_search' in kwargs and kwargs['category_search']:
             term = kwargs['category_search']
-            results = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
-            category_ids = []
-            for r in results:
-                category_ids.append(r.id)
-            filter_list.append(
-                (Listing.category_id.in_(category_ids))
-            )
+            categories = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
+            category_ids = [category.id for category in categories]
+            filter_list.append(Listing.category_id.in_(category_ids))
+
+        # used by vendors to filter by availability
         if 'avail' in kwargs:
             avail_criteria = kwargs['avail']
             format(avail_criteria)
-            if avail_criteria == "both":
-                filter_list.append(or_(Listing.available == True,
-                                       Listing.available == False)
-                                   )
-            elif avail_criteria == "non_avail":
+            if avail_criteria == "non_avail" or avail_criteria == "both":
                 filter_list.append(Listing.available == False)
-            elif avail_criteria == "avail":
+            if avail_criteria == "avail" or avail_criteria == "both":
                 filter_list.append(Listing.available == True)
+
+        # used by merchants to filter by availability
         if 'available' in kwargs:
             filter_list.append(Listing.available == True)
-        sort_criteria = None
+
         if 'favorite' in kwargs and kwargs['favorite']:
             bookmark_ids = [listing.id for listing in current_user.bookmarks]
             filter_list.append(Listing.id.in_(bookmark_ids))
+
         if 'min_price' in kwargs and kwargs['min_price']:
             filter_list.append(Listing.price >= kwargs['min_price'])
+
         if 'max_price' in kwargs and kwargs['max_price']:
             filter_list.append(Listing.price <= kwargs['max_price'])
-        init_filter = Listing.query.filter(*filter_list)
+
+        filtered_query = Listing.query.filter(*filter_list)
+
         if 'sort_by' in kwargs and kwargs['sort_by']:
             sort = kwargs['sort_by']
             format(sort)
-            if sort == "low_high":
-                final_filter = init_filter.order_by(Listing.price)
-            elif sort == "high_low":
-                final_filter = init_filter.order_by(desc(Listing.price))
-            elif sort == "alphaAZ":
-                final_filter = init_filter.order_by(func.lower(Listing.name))
-            else:
-                final_filter = init_filter.order_by(desc(func.lower(Listing.name)))
         else:
-            final_filter = init_filter.order_by(Listing.price)
-        return final_filter
+            sort = None
+
+        if sort == "low_high":
+            sorted_query = filtered_query.order_by(Listing.price)
+        elif sort == "high_low":
+            sorted_query = filtered_query.order_by(desc(Listing.price))
+        elif sort == "alphaAZ":
+            sorted_query = filtered_query.order_by(func.lower(Listing.name))
+        elif sort == "alphaZA":
+            sorted_query = filtered_query.order_by(desc(func.lower(Listing.name)))
+        else:  # default sort
+            sorted_query = filtered_query.order_by(Listing.price)
+
+        return sorted_query
 
     def __repr__(self):
         return "<Listing: {} Vendor: {} Category: {}>".format(self.name,
