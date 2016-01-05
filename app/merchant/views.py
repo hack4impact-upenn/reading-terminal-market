@@ -27,14 +27,16 @@ def listing_view_all(page=1):
     max_price = request.args.get('max-price', "", type=float)
     category_search = request.args.get('category-search', "", type=str)
     search = request.args.get('search', "", type=str)
-    listings_raw = Listing.search(available=True,
-                                  favorite=favorite,
-                                  sort_by=sort_by,
-                                  min_price=min_price,
-                                  max_price=max_price,
-                                  name_search_term=name_search_term,
-                                  main_search_term=main_search_term,
-                                  category_search=category_search)
+    listings_raw = Listing.search(
+        available=True,
+        favorite=favorite,
+        sort_by=sort_by,
+        min_price=min_price,
+        max_price=max_price,
+        name_search_term=name_search_term,
+        main_search_term=main_search_term,
+        category_search=category_search
+    )
     # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
     if search != "False":
         page = 1
@@ -42,25 +44,27 @@ def listing_view_all(page=1):
     listings_paginated = listings_raw.paginate(page, 20, False)
     result_count = listings_raw.count()
     if result_count == 0:
-        return render_template('merchant/view_listings.html',
-                               listings=listings_paginated,
-                               header="No Search Results",
-                               count=result_count
-                               )
+        return render_template(
+            'merchant/view_listings.html',
+            listings=listings_paginated,
+            header="No Search Results",
+            count=result_count
+        )
     else:
-        return render_template('merchant/view_listings.html',
-                               listings=listings_paginated,
-                               main_search_term=main_search_term,
-                               min_price=min_price,
-                               max_price=max_price,
-                               sort_by=sort_by,
-                               name_search_term=name_search_term,
-                               favorite=favorite,
-                               category_search=category_search,
-                               cart_listings=current_user.get_cart_listings(),
-                               header="Search Results: " + str(result_count) + " results in total",
-                               count=result_count
-                               )
+        return render_template(
+            'merchant/view_listings.html',
+            listings=listings_paginated,
+            main_search_term=main_search_term,
+            min_price=min_price,
+            max_price=max_price,
+            sort_by=sort_by,
+            name_search_term=name_search_term,
+            favorite=favorite,
+            category_search=category_search,
+            cart_listings=current_user.get_cart_listings(),
+            header="Search Results: " + str(result_count) + " results in total",
+            count=result_count
+        )
 
 
 @merchant.route('/order-items', methods=['POST'])

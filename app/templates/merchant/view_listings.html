@@ -29,10 +29,10 @@
                     {% elif request.args.get('sortby') == "alphaZA" %}
                         {% set checked5 = 'selected' %}
                     {% endif %}
-                    <option value="low_high" {{ checked2 }}>Low to High</option>
-                    <option value="high_low" {{ checked3 }}>High to Low</option>
-                    <option value="alphaAZ" {{ checked4 }}>Alphabetical (A-Z)</option>
-                    <option value="alphaZA" {{ checked5 }}>Alphabetical (Z-A)</option>
+                    <option value="low_high" {{ checked2 }}>Price, low to high</option>
+                    <option value="high_low" {{ checked3 }}>Price, high to low</option>
+                    <option value="alphaAZ" {{ checked4 }}>Alphabetical names, (A-Z)</option>
+                    <option value="alphaZA" {{ checked5 }}>Alphabetical names, (Z-A)</option>
 
                 </select>
 
@@ -57,8 +57,8 @@
         {% endif %}
 
         <div class="twelve wide field advanced-search" style="{{ display }}">
-                <label>Search Company Names</label>
-                <input value="{{ name_search_term }}" type="text" name="name-search" placeholder="e.g. Bobby's Burgers">
+            <label>Search Company Names</label>
+            <input value="{{ name_search_term }}" type="text" name="name-search" placeholder="e.g. Bobby's Burgers">
         </div>
         <div class="twelve wide field advanced-search" style="{{ display }}">
             <label>Search by Category Name</label>
