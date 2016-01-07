@@ -74,8 +74,9 @@ table.selectable tr:hover {
 }
 
 .toggle-cart {
-	float: left;
-	width: 30%;
+    float: left;
+    width: 30%;
+}
 
 #button_padding {
   padding-left: 10px;
