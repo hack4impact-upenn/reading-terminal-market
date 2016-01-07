@@ -1,6 +1,6 @@
 from ..decorators import vendor_required
 
-from flask import render_template, abort, redirect, flash, url_for
+from flask import render_template, abort, redirect, flash, url_for, request
 from flask.ext.login import login_required, current_user
 from forms import (
     ChangeListingInformation,
@@ -40,16 +40,40 @@ def new_listing():
     return render_template('vendor/new_listing.html', form=form)
 
 
-@vendor.route('/items')
+@vendor.route('/itemslist/')
+@vendor.route('/itemslist/<int:page>')
 @login_required
 @vendor_required
-def current_listings():
+def current_listings(page=1):
     """View all current listings."""
-    listings = current_user.listings.all()
-    categories = Category.query.all()
+    main_search_term = request.args.get('main-search', "", type=str)
+    sort_by = request.args.get('sortby', "", type=str)
+    avail = request.args.get('avail', "", type=str)
+    search = request.args.get('search', "", type=str)
+    listings_raw = Listing.search(
+        sort_by=sort_by,
+        main_search_term=main_search_term,
+        avail=avail
+    )
+    listings_raw = listings_raw.filter(Listing.vendor_id == current_user.id)
+
+    if search != "False":
+        page = 1
+
+    listings_paginated = listings_raw.paginate(page, 20, False)
+    result_count = listings_raw.count()
+
+    if result_count > 0:
+        header = "Search Results: {} in total".format(result_count)
+    else:
+        header = "No Search Results"
+
     return render_template('vendor/current_listings.html',
-                           listings=listings,
-                           categories=categories)
+                           listings=listings_paginated,
+                           main_search_term=main_search_term,
+                           sort_by=sort_by,
+                           count=result_count,
+                           header=header)
 
 
 @vendor.route('/items/<int:listing_id>')
@@ -59,10 +83,12 @@ def current_listings():
 def listing_info(listing_id):
     """View a listing's info."""
     listing = Listing.query.filter_by(id=listing_id).first()
+
     if listing is None:
         abort(404)
     elif listing.vendor_id != current_user.id:
         abort(403)
+
     return render_template('vendor/manage_listing.html', listing=listing)
 
 
@@ -73,10 +99,13 @@ def change_listing_info(listing_id):
     """Change a listings's info."""
     listing = Listing.query.filter_by(id=listing_id,
                                       vendor_id=current_user.id).first()
+
     if listing is None:
         abort(404)
+
     form = ChangeListingInformation()
     form.listing_id = listing_id
+
     if form.validate_on_submit():
         listing.category_id = form.category_id.data.id
         listing.name = form.listing_name.data
@@ -89,15 +118,20 @@ def change_listing_info(listing_id):
         listing.vendor_id = current_user.id
         flash('Information for item {} successfully changed.'
               .format(listing.name), 'form-success')
+
     form.listing_name.default = listing.name
     form.listing_description.default = listing.description
     form.listing_price.default = listing.price
     form.category_id.default = listing.category
     form.listing_available.default = listing.available
+
     form.process()
-    return render_template('vendor/manage_listing.html',
-                           listing=listing,
-                           form=form)
+
+    return render_template(
+        'vendor/manage_listing.html',
+        listing=listing,
+        form=form
+    )
 
 
 @vendor.route('/item/<int:listing_id>/delete')
