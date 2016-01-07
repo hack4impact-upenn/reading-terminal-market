@@ -44,28 +44,25 @@ def listing_view_all(page=1):
     listings_paginated = listings_raw.paginate(page, 20, False)
     result_count = listings_raw.count()
 
-    if result_count == 0:
-        return render_template(
-            'merchant/view_listings.html',
-            listings=listings_paginated,
-            header="No Search Results",
-            count=result_count
-        )
+    if result_count > 0:
+        header = "Search Results: {} results in total".format(result_count)
     else:
-        return render_template(
-            'merchant/view_listings.html',
-            listings=listings_paginated,
-            main_search_term=main_search_term,
-            min_price=min_price,
-            max_price=max_price,
-            sort_by=sort_by,
-            name_search_term=name_search_term,
-            favorite=favorite,
-            category_search=category_search,
-            cart_listings=current_user.get_cart_listings(),
-            header="Search Results: " + str(result_count) + " results in total",
-            count=result_count
-        )
+        header = "No Search Results"
+
+    return render_template(
+        'merchant/view_listings.html',
+        listings=listings_paginated,
+        main_search_term=main_search_term,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by=sort_by,
+        name_search_term=name_search_term,
+        favorite=favorite,
+        category_search=category_search,
+        cart_listings=current_user.get_cart_listings(),
+        header=header,
+        count=result_count
+    )
 
 
 @merchant.route('/order-items', methods=['POST'])
