@@ -1,7 +1,7 @@
 from .. import db
 from purchase import CartItem
-from sqlalchemy import or_
-from user import Vendor
+from sqlalchemy import or_, desc, func
+from ..models import Category, Vendor
 from flask.ext.login import current_user
 from sqlalchemy import UniqueConstraint
 
@@ -41,7 +41,7 @@ class Listing(db.Model):
 
     def get_quantity_in_cart(self):
         cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
-                                              listing_id=self.id).first()
+                                             listing_id=self.id).first()
         if cart_item:
             return cart_item.quantity
         else:
@@ -73,15 +73,31 @@ class Listing(db.Model):
                 Listing.name.like('%{}%'.format(term)),
                 Listing.description.like('%{}%'.format(term)))
             )
-        if 'name_search_term' in kwargs:
+
+        if 'name_search_term' in kwargs and kwargs['name_search_term']:
             term = kwargs['name_search_term']
-            filter_list.append(or_(
-                Vendor.first_name.like('%{}%'.format(term)),
-                Vendor.last_name.like('%{}%'.format(term)),
-                Vendor.company_name.like('%{}%'.format(term)))
-            )
+            vendors = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
+            vendor_ids = [vendor.id for vendor in vendors]
+            filter_list.append(Listing.vendor_id.in_(vendor_ids))
+
+        if 'category_search' in kwargs and kwargs['category_search']:
+            term = kwargs['category_search']
+            categories = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
+            category_ids = [category.id for category in categories]
+            filter_list.append(Listing.category_id.in_(category_ids))
+
+        # used by vendors to filter by availability
+        if 'avail' in kwargs:
+            avail_criteria = kwargs['avail']
+            format(avail_criteria)
+            if avail_criteria == "non_avail" or avail_criteria == "both":
+                filter_list.append(Listing.available == False)
+            if avail_criteria == "avail" or avail_criteria == "both":
+                filter_list.append(Listing.available == True)
+
+        # used by merchants to filter by availability
         if 'available' in kwargs:
-            filter_list.append(Listing.available == kwargs['available'])
+            filter_list.append(Listing.available == True)
 
         if 'favorite' in kwargs and kwargs['favorite']:
             bookmark_ids = [listing.id for listing in current_user.bookmarks]
@@ -93,7 +109,26 @@ class Listing(db.Model):
         if 'max_price' in kwargs and kwargs['max_price']:
             filter_list.append(Listing.price <= kwargs['max_price'])
 
-        return Listing.query.filter(*filter_list).all()
+        filtered_query = Listing.query.filter(*filter_list)
+
+        if 'sort_by' in kwargs and kwargs['sort_by']:
+            sort = kwargs['sort_by']
+            format(sort)
+        else:
+            sort = None
+
+        if sort == "low_high":
+            sorted_query = filtered_query.order_by(Listing.price)
+        elif sort == "high_low":
+            sorted_query = filtered_query.order_by(desc(Listing.price))
+        elif sort == "alphaAZ":
+            sorted_query = filtered_query.order_by(func.lower(Listing.name))
+        elif sort == "alphaZA":
+            sorted_query = filtered_query.order_by(desc(func.lower(Listing.name)))
+        else:  # default sort
+            sorted_query = filtered_query.order_by(Listing.price)
+
+        return sorted_query
 
     def __repr__(self):
         return "<Listing: {} Vendor: {} Category: {}>".format(self.name,

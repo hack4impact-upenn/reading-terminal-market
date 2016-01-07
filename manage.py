@@ -6,6 +6,7 @@ from app.models import (User, Role, Vendor, Merchant, Listing, Category,
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import Config
+from random import randint
 
 # Import settings from .env file. Must define FLASK_CONFIG
 if os.path.exists('.env'):
@@ -104,6 +105,27 @@ def setup_test_listings():
     db.session.add(l2)
     db.session.add(l3)
     db.session.commit()
+    from sqlalchemy.exc import IntegrityError
+    from random import seed, choice
+    from faker import Faker
+
+    fake = Faker()
+
+    seed()
+    for i in range(100):
+        u = Listing(
+            vendor_id=3,
+            category_id=1,
+            name=fake.word(),
+            description=fake.sentence(nb_words=10, variable_nb_words=True),
+            price=randint(1,100),
+            available=True
+        )
+        db.session.add(u)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
 
 
 @manager.command
@@ -164,7 +186,6 @@ def add_fake_data(number_users):
     Adds fake data to the database.
     """
     User.generate_fake(count=number_users)
-
 
 @manager.command
 def setup_dev():
