@@ -69,7 +69,11 @@ def listing_view_all(page=1):
 @login_required
 @merchant_required
 def order_items():
-    Order.order_cart_items()
+    vendor_id = request.form.get('vendor_id', type=int)
+    if vendor_id:
+        Order.order_cart_items_from_vendor(vendor_id)
+    else:
+        Order.order_cart_items()
     return redirect(url_for('.manage_cart'))
 
 
@@ -77,8 +81,9 @@ def order_items():
 @login_required
 @merchant_required
 def manage_cart():
+    vendor_items_dict = CartItem.get_vendor_cart_items_dict()
     return render_template('merchant/manage_cart.html',
-                           cart=current_user.cart_items)
+                           vendor_items_dict=vendor_items_dict)
 
 
 @merchant.route('/items/<int:listing_id>')

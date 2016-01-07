@@ -64,9 +64,18 @@ table.selectable tr:hover {
     cursor: pointer !important;
 }
 
-#cart_buttons {
+.cart-button {
 	float: right;
 }
+
+
+#main-cart-button {
+  float: none;
+}
+
+.toggle-cart {
+	float: left;
+	width: 30%;
 
 #button_padding {
   padding-left: 10px;
