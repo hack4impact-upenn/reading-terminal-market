@@ -1,5 +1,10 @@
 {% extends 'layouts/base.html' %}
 
+
+{% macro order_modal_content(vendors_list) %}
+
+{% endmacro %}
+
 {% macro vendor_cart(vendor, cart_items) %}
     <div>
         <h3 class="ui header">
@@ -48,39 +53,53 @@
 
         <br>
 
-        {#        <form action="{{ url_for('merchant.order_items') }}" method="post">#}
-        {#            <input type="submit" class="ui teal button cart-button" name="submit"#}
-        {#                   value="Order from {{ vendor.company_name }}">#}
-        {#            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>#}
-        {#            <input type="hidden" name="vendor_id" value="{{ vendor.id }}"/>#}
-        {#        </form>#}
 
-        <button class="ui teal button cart-button vendor-cart-button">Order from {{ vendor.company_name }}</button>
+
+        <a class="ui teal button vendor-cart-button" href="{{ url_for('.manage_cart', confirm_order=True, vendor_id=vendor.id) }}">
+            Order from {{ vendor.company_name }}
+        </a>
 
     </div>
 {% endmacro %}
 
-{% macro modal(vendor_id) %}
+{% macro modal(vendor) %}
+    {% if vendor %}
+        {% set order_str = "order" %}
+        {% set order_with_str = (" with "~vendor.company_name ) %}
+        {% set vendor_id = vendor.id %}
+    {% else %}
+        {% set order_str = "orders" %}
+        {% set vendor_id = None %}
+    {% endif %}
+
+
     <div class="ui modal">
-        <div class="header">Would you like to place the order(s)?</div>
+        <div class="header">Would you like to place the {{ order_str }}{{ order_with_str }}?</div>
         <div class="content">
 
             <div class="description">
-                <div class="ui header">Order description</div>
+                <div class="ui header">Order summary</div>
                 <p>We've grabbed the following image from the <a href="https://www.gravatar.com" target="_blank">gravatar</a> image associated with your registered e-mail address.</p>
                 <p>Is it okay to use this photo?</p>
+                <div class="ui divider"></div>
             </div>
-            {% for item in cart | sort(attribute='listing_name') %}
-                <p>{{ item.quantity }} {{ item.listing.name }} at a unit cost of ${{ item.listing.price }} for a total of ${{ item.quantity * item.listing.price }}
-            {% endfor %}
-            <p>The total price of your order is: ${{ total_price }}</p>
+            {#            {% for item in cart | sort(attribute='listing_name') %}#}
+            {#                <p>{{ item.quantity }} {{ item.listing.name }} at a unit cost of ${{ item.listing.price }} for a total of ${{ item.quantity * item.listing.price }}#}
+            {#            {% endfor %}#}
+            {#            <p>The total price of your order is: ${{ total_price }}</p>#}
             <p>Once you place the order, you and each vendor will receive an email with the order details. Each vendor
                 will then have the option to either approve or deny the order. You'll receive an email when this happens. </p>
             </p>
         </div>
+
         <div class="actions">
-            <div class="ui negative button">Cancel order</div>
-            <div class="ui positive button">Place order</div>
+
+            <form action="{{ url_for('.order_items', vendor_id=vendor_id) }}" method="post">
+                <a href="{{ url_for('.manage_cart') }}" class="ui negative button">Do not place {{ order_str }}</a>
+
+                <input type="submit" class="ui positive button" name="submit" value="Place {{ order_str }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            </form>
         </div>
     </div>
 {% endmacro %}
@@ -96,11 +115,10 @@
             </h2>
 
             {% if vendor_items_dict %}
-                {#                <form action="{{ url_for('merchant.order_items') }}" method="post">#}
-                {#                    <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">#}
-                {#                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>#}
-                {#                </form>#}
-                <button class="ui button positive cart-button" id="main-cart-button">Order from all vendors</button>
+                <a class="ui button positive" id="main-cart-button"
+                   href="{{ url_for('.manage_cart', confirm_order=True) }}">
+                    Order from all vendors
+                </a>
                 <br>
                 <br>
             {% endif %}
@@ -113,7 +131,9 @@
                 <h3>Your cart is currently empty</h3>
             {% endfor %}
 
-            {{ modal() }}
+            {% if confirm_order and vendor_items_dict %}
+                {{ modal(vendor) }}
+            {% endif %}
         </div>
     </div>
 
@@ -151,12 +171,13 @@
             }
         })();
 
-        // Order modals
+        // Order modal
         (function() {
-            $('.cart-button').click(function() {
-                console.log('yo');
-                $('.ui.modal').modal('show');
-            });
+            {% if confirm_order and vendor_items_dict %}
+                $('.ui.modal')
+                        .modal({closable  : false})
+                        .modal('show');
+            {% endif %}
         })();
 
     </script>

@@ -27,6 +27,67 @@
     <div class="ui {{ color }} horizontal label">{{ text }}</div>
 {% endmacro %}
 
+{% macro order_table(order) %}
+    {% set purchase_info = order.get_purchase_info() %}
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th>Item name</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for purchase in purchase_info %}
+            <tr>
+                <td>{{ purchase['name'] }}</td>
+                <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
+                <td>${{ '%0.2f' | format(purchase['price']) }} / {{ purchase['unit'] }}</td>
+                <td>${{ '%0.2f' | format(purchase['price'] * purchase['quantity']) }}</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro order_segment(order) %}
+    {% set vendor_info = order.get_vendor_info() %}
+    <div class="ui segment clearing order" id="order-{{ order.id }}">
+        <div class="ui left floated basic segment">
+            <h3 class="ui header">
+                Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ status_label(order.status) }}
+                {% if order.status == 0 %}
+                    <button class="cancel-button negative mini ui button">Cancel</button>
+                {% endif %}
+                <div class="sub header">
+                    Placed on {{ order.get_date() }}
+                </div>
+            </h3>
+            <div><b>Total:</b> {{ order.get_total() }}</div>
+            <div><a class="toggle-details">Show purchases</a></div>
+
+        </div>
+        <div class="ui right floated basic segment">
+            <div class="ui list right">
+                <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
+                {% if vendor_info['full_name'] %}
+                    <div class="item"><b>Vendor name: </b> {{  vendor_info['full_name'] }}</div>
+                {% endif %}
+                {% if vendor_info['email'] %}
+                    <div class="item"><b>Email: </b> {{  vendor_info['email'] }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="details" style="display: none;">
+            {{ order_table(order) }}
+        </div>
+    </div>
+{% endmacro %}
+
 {% block content %}
     <div class="ui stackable grid container">
     <div class="sixteen wide tablet twelve wide computer centered column">
@@ -37,63 +98,7 @@
             </div>
         </h2>
         {% for order in orders %}
-            {% set vendor_info = order.get_vendor_info() %}
-            <div class="ui segment clearing order" id="order-{{ order.id }}">
-                <div class="ui left floated basic segment">
-                    <h3 class="ui header">
-                        Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ status_label(order.status) }}
-                        {% if order.status == 0 %}
-                            <button class="cancel-button negative mini ui button">Cancel</button>
-                        {% endif %}
-                        <div class="sub header">
-                            Placed on {{ order.get_date() }}
-                        </div>
-                    </h3>
-                    <div>Total: {{ order.get_total() }}</div>
-                    <div><a class="toggle-details">Show purchases</a></div>
-
-                </div>
-                <div class="ui right floated basic segment">
-                    <div class="ui list right">
-                        <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
-                        {% if vendor_info['full_name'] %}
-                            <div class="item"><b>Vendor name: </b> {{  vendor_info['full_name'] }}</div>
-                        {% endif %}
-                        {% if vendor_info['email'] %}
-                            <div class="item"><b>Email: </b> {{  vendor_info['email'] }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-
-
-                <div class="details" style="display: none;">
-                    {% set purchase_info = order.get_purchase_info() %}
-                    <table class="ui celled table">
-                        <thead>
-                        <tr>
-                            <th>Item name</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Total</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for purchase in purchase_info %}
-                            <tr>
-                                <td>{{ purchase['name'] }}</td>
-                                <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
-                                <td>${{ '%0.2f' | format(purchase['price']) }} / {{ purchase['unit'] }}</td>
-                                <td>${{ '%0.2f' | format(purchase['price'] * purchase['quantity']) }}</td>
-                            </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-
-
-                </div>
-            </div>
-
+            {{ order_segment(order) }}
         {% else %}
             <h3>Your have not made any orders.</h3>
         {% endfor %}
@@ -124,7 +129,7 @@
                 var orderId = order.attr('id').split('-')[1];
                 var label = order.find('.label');
 
-                 $.ajax({
+                $.ajax({
                     url: '/order/cancel/' + orderId,
                     dataType: 'json',
                     success: function (data) {
@@ -135,7 +140,6 @@
                     },
                     method: 'PUT'
                 });
-
             });
 
         });

@@ -23,9 +23,9 @@ class CartItem(db.Model):
 
     @staticmethod
     def get_vendor_cart_items_dict():
-        """returns a dict where the keys are
+        '''returns a dict where the keys are
         vendors and the fields are a list
-        of items in the cart from that vendor"""
+        of items in the cart from that vendor'''
         vendor_items_dict = defaultdict(list)
         for item in current_user.cart_items:
             vendor = item.listing.vendor
@@ -36,6 +36,10 @@ class CartItem(db.Model):
         sorted_dict = OrderedDict(sorted(vendor_items_dict.items(),
                                         key=lambda pair: pair[0].company_name))
         return sorted_dict
+
+    @staticmethod
+    def get_vendor_ids():
+        return [item.listing.vendor_id for item in current_user.cart_items]
 
     @staticmethod
     def delete_cart_items(cart_items):

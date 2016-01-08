@@ -64,12 +64,11 @@ def listing_view_all(page=1):
         count=result_count
     )
 
-
-@merchant.route('/order-items', methods=['POST'])
+@merchant.route('/order-items/', methods=['POST'])
+@merchant.route('/order-items/<int:vendor_id>', methods=['POST'])
 @login_required
 @merchant_required
-def order_items():
-    vendor_id = request.form.get('vendor_id', type=int)
+def order_items(vendor_id=None):
     if vendor_id:
         Order.order_cart_items_from_vendor(vendor_id)
     else:
@@ -81,9 +80,22 @@ def order_items():
 @login_required
 @merchant_required
 def manage_cart():
+    # used to show/hide the order modal
+    confirm_order = request.args.get('confirm_order', default=False, type=bool)
+    # vendor_id to order from. if None, order from all
+    vendor_id = request.args.get('vendor_id', type=int)
+    if vendor_id not in CartItem.get_vendor_ids():
+        vendor = None
+    else:
+        vendor = Vendor.query.get(vendor_id)
+
     vendor_items_dict = CartItem.get_vendor_cart_items_dict()
-    return render_template('merchant/manage_cart.html',
-                           vendor_items_dict=vendor_items_dict)
+    return render_template(
+        'merchant/manage_cart.html',
+        vendor_items_dict=vendor_items_dict,
+        confirm_order=confirm_order,
+        vendor=vendor
+    )
 
 
 @merchant.route('/items/<int:listing_id>')
@@ -106,8 +118,7 @@ def add_to_cart(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if ('quantity' not in request.json or
-                type(request.json['quantity']) is not int):
+    if 'quantity' not in request.json or type(request.json['quantity']) is not int:
         abort(400)
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
                                          listing_id=listing_id).first()
@@ -136,8 +147,7 @@ def change_favorite(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if ('isFavorite' not in request.json or
-                type(request.json['isFavorite']) is not bool):
+    if 'isFavorite' not in request.json or type(request.json['isFavorite']) is not bool:
         abort(400)
     old_status = listing in current_user.bookmarks
     new_status = request.json.get('isFavorite', old_status)
@@ -154,9 +164,10 @@ def change_favorite(listing_id):
 @login_required
 @merchant_required
 def view_all_orders():
-    orders = Order.query.\
-        filter_by(merchant_id=current_user.id).\
-        order_by(Order.id.desc()).all()
+    orders = (Order
+              .query
+              .filter_by(merchant_id=current_user.id)
+              .order_by(Order.id.desc()).all())
     return render_template('merchant/orders.html', orders=orders)
 
 
