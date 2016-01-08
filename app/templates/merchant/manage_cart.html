@@ -49,12 +49,10 @@
         <br>
 
         <form action="{{ url_for('merchant.order_items') }}" method="post">
-            <div class="ui buttons cart-button">
-                <input type="submit" class="ui teal button" name="submit"
+                <input type="submit" class="ui teal button cart-button" name="submit"
                        value="Order from {{ vendor.company_name }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <input type="hidden" name="vendor_id" value="{{ vendor.id }}"/>
-            </div>
         </form>
 
     </div>
@@ -72,10 +70,8 @@
 
             {% if vendor_items_dict %}
                 <form action="{{ url_for('merchant.order_items') }}" method="post">
-                    <div class="ui buttons cart-button" id="main-cart-button">
-                        <input type="submit" class="ui positive button" name="submit" value="Order all items">
+                        <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    </div>
                 </form>
                 <br>
             {% endif %}

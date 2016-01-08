@@ -1,0 +1,60 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+	<div class="ui stackable centered grid container">
+		<div class="twelve wide column">
+			<a class="ui basic compact button" href="{{ url_for('merchant.listing_view_all') }}">
+				<i class="caret left icon"></i>
+				Back to dashboard
+			</a>
+			<h2 class="ui header">
+				Items
+				<div class="sub header">
+					View items and add them to cart or favorite them.
+				</div>
+			</h2>
+				<div style="overflow-x: scroll;">
+					<table class="ui searchable sortable unstackable selectable celled table">
+						<thead>
+							<tr>
+								<th class="sorted ascending seven wide">Item Name</th>
+								<th class="nine wide">Item Description</th>
+								<th class="six wide">Price</th>
+								<th class="one wide">Available?</th>
+								<th class="two wide">Add to Cart</th>
+								<th class="one wide">Favorite</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for l in listings | sort(attribute='name') %}
+							<tr>
+								<td>{{ l.name }}</td>
+								<td>{{ l.description }}</td>
+								<td>{{ l.price }}</td>
+								{% if l.available %}
+									<td>"Available"</td>
+								{% else %}
+									<td>"Currently Unavailable"</td>
+								{% endif %} 
+								<td class="center aligned">
+									<a href="{{ url_for('merchant.add_to_cart', listing_id=l.id, quantity=1) }}"> <!--how to update quantity? -->
+										<i class="cart icon"></i>
+									</a>
+								</td>
+								<td class="center aligned">
+									<a href="{{ url_for('merchant.favorite', listing_id=l.id) }}">
+										<i class="favorite icon"></i>
+									</a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	{% endblock %}

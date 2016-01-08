@@ -1,63 +1,75 @@
 {% extends 'layouts/listings.html' %}
+{% import 'macros/form_macros.html' as f %}
 
 {% block before %}
-<a class="ui basic compact button" href="{{ url_for('vendor.index') }}">
-    <i class="caret left icon"></i>
-    Back to dashboard
-</a>
-<h2 class="ui header">
-    Your Items
-    <div class="sub header">
-        View and manage all your items.
-    </div>
-</h2>
+    {% set flashes = {
+        'error':   get_flashed_messages(category_filter=['form-error']),
+        'warning': get_flashed_messages(category_filter=['form-check-email']),
+        'info':    get_flashed_messages(category_filter=['form-info']),
+        'success': get_flashed_messages(category_filter=['form-success'])
+     } %}
 
-<div class="ui menu">
-    <div id="select-role" class="ui dropdown item">
-        <div class="text">
-            All item categories
+    <a class="ui basic compact button" href="{{ url_for('vendor.index') }}">
+        <i class="caret left icon"></i>
+        Back to dashboard
+    </a>
+    <h2 class="ui header">
+        Your Items
+        <div class="sub header">
+            View and manage all your items.
         </div>
-        <i class="dropdown icon"></i>
-        <div class="menu">
-            <div class="item" data-value="">All item types</div>
-            {% for c in categories %}
-                <script>
-                </script>
-                <div class="item" data-value="{{ c.name }}">{{ c.name }}</div>
-            {% endfor %}
+    </h2>
+
+    <form class="ui form segment">
+        <div class="twelve wide field">
+            <label>Search names and descriptions</label>
+            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
         </div>
-    </div>
-    <div class="ui right search item">
-        <div class="ui transparent icon input">
-            <input id="search-items" type="text" placeholder="Search items...">
-            <i class="search icon"></i>
+
+        <div class="inline field">
+            <select class="ui selection dropdown" name="avail">
+                {% if request.args.get('avail') == "avail" %}
+                    {% set selected = 'selected' %}
+                {% elif request.args.get('avail') == "non_avail" %}
+                    {% set selected2 = 'selected' %}
+                {% elif request.args.get('avail') == "avail" %}
+                    {% set selected3 = 'selected' %}
+                {% endif %}
+                <option value="both" {{ selected }}>Show Available and Non Available Items</option>
+                <option value="non_avail" {{ selected2 }}>Show Non Available Items</option>
+                <option value="avail" {{ selected3 }}>Show Available Items</option>
+
+            </select>
+            <br>
+            <br>
+            <select class="ui selection dropdown" name="sort-by">
+                {% if request.args.get('sortby') == "low_high" %}
+                    {% set checked2 = 'selected' %}
+                {% elif request.args.get('sortby') == "high_low" %}
+                    {% set checked3 = 'selected' %}
+                {% elif request.args.get('sortby') == "alphaAZ" %}
+                    {% set checked4 = 'selected' %}
+                {% elif request.args.get('sortby') == "alphaZA" %}
+                    {% set checked5 = 'selected' %}
+                {% endif %}
+                <option value="low_high" {{ checked2 }}>Price, low to high</option>
+                <option value="high_low" {{ checked3 }}>Price, high to low</option>
+                <option value="alphaAZ" {{ checked4 }}>Alphabetical names, (A-Z)</option>
+                <option value="alphaZA" {{ checked5 }}>Alphabetical names, (Z-A)</option>
+
+            </select>
+
         </div>
-    </div>
-</div>
+
+        {% if not name_search_term and not min_price and not max_price%}
+            {% set display = 'display:none' %}
+        {% endif %}
+        <br>
+        <button class="ui button blue" type="submit">Search</button>
+        <a class="ui button" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
+    </form>
 {% endblock %}
 
 {% block after %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#search-items').keyup(function () {
-                var searchText = $(this).val();
-                if (searchText.length > 0) {
-                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
-                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
-                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
-                } else {
-                    $('td.positive').removeClass('positive');
-                    $('tr.hidden').removeClass('hidden').show();
-                }
-            });
 
-            $('#select-role').dropdown({
-                onChange: function (value, text, $selectedItem) {
-                    $('td.item.category:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-                    $('td.item.category').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
-                }
-            });
-        });
-    </script>
 {% endblock %}
