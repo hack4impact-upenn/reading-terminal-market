@@ -55,18 +55,18 @@
 {% macro order_segment(order) %}
     {% set vendor_info = order.get_vendor_info() %}
     <div class="ui segment clearing order" id="order-{{ order.id }}">
-        <div class="ui left floated basic segment">
+        <div class="ui left floated basic segment" style="margin-bottom: 0px">
             <h3 class="ui header">
                 Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ status_label(order.status) }}
-                {% if order.status == 0 %}
-                    <button class="cancel-button negative mini ui button">Cancel</button>
-                {% endif %}
+{#                {% if order.status == 0 %}#}
+{#                    <button class="cancel-button negative mini ui button">Cancel</button>#}
+{#                {% endif %}#}
                 <div class="sub header">
                     Placed on {{ order.get_date() }}
                 </div>
             </h3>
             <div><b>Total:</b> {{ order.get_total() }}</div>
-            <div><a class="toggle-details">Show purchases</a></div>
+            <div style="margin-top: 5px; margin-bottom: 0px"><a class="toggle-details">Show purchases</a></div>
 
         </div>
         <div class="ui right floated basic segment">
@@ -123,24 +123,24 @@
 
             });
 
-            $('.cancel-button').click(function () {
-                var button = $( this );
-                var order = button.closest('.order');
-                var orderId = order.attr('id').split('-')[1];
-                var label = order.find('.label');
-
-                $.ajax({
-                    url: '/order/cancel/' + orderId,
-                    dataType: 'json',
-                    success: function (data) {
-                        label.text('Canceled');
-                        label.removeClass('grey');
-                        label.addClass('red');
-                        button.hide();
-                    },
-                    method: 'PUT'
-                });
-            });
+{#            $('.cancel-button').click(function () {#}
+{#                var button = $( this );#}
+{#                var order = button.closest('.order');#}
+{#                var orderId = order.attr('id').split('-')[1];#}
+{#                var label = order.find('.label');#}
+{##}
+{#                $.ajax({#}
+{#                    url: '/order/cancel/' + orderId,#}
+{#                    dataType: 'json',#}
+{#                    success: function (data) {#}
+{#                        label.text('Canceled');#}
+{#                        label.removeClass('grey');#}
+{#                        label.addClass('red');#}
+{#                        button.hide();#}
+{#                    },#}
+{#                    method: 'PUT'#}
+{#                });#}
+{#            });#}
 
         });
 
