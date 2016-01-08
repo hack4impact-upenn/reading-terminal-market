@@ -48,19 +48,46 @@
 
         <br>
 
-        <form action="{{ url_for('merchant.order_items') }}" method="post">
-                <input type="submit" class="ui teal button cart-button" name="submit"
-                       value="Order from {{ vendor.company_name }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="hidden" name="vendor_id" value="{{ vendor.id }}"/>
-        </form>
+        {#        <form action="{{ url_for('merchant.order_items') }}" method="post">#}
+        {#            <input type="submit" class="ui teal button cart-button" name="submit"#}
+        {#                   value="Order from {{ vendor.company_name }}">#}
+        {#            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>#}
+        {#            <input type="hidden" name="vendor_id" value="{{ vendor.id }}"/>#}
+        {#        </form>#}
 
+        <button class="ui teal button cart-button vendor-cart-button">Order from {{ vendor.company_name }}</button>
+
+    </div>
+{% endmacro %}
+
+{% macro modal(vendor_id) %}
+    <div class="ui modal">
+        <div class="header">Would you like to place the order(s)?</div>
+        <div class="content">
+
+            <div class="description">
+                <div class="ui header">Order description</div>
+                <p>We've grabbed the following image from the <a href="https://www.gravatar.com" target="_blank">gravatar</a> image associated with your registered e-mail address.</p>
+                <p>Is it okay to use this photo?</p>
+            </div>
+            {% for item in cart | sort(attribute='listing_name') %}
+                <p>{{ item.quantity }} {{ item.listing.name }} at a unit cost of ${{ item.listing.price }} for a total of ${{ item.quantity * item.listing.price }}
+            {% endfor %}
+            <p>The total price of your order is: ${{ total_price }}</p>
+            <p>Once you place the order, you and each vendor will receive an email with the order details. Each vendor
+                will then have the option to either approve or deny the order. You'll receive an email when this happens. </p>
+            </p>
+        </div>
+        <div class="actions">
+            <div class="ui negative button">Cancel order</div>
+            <div class="ui positive button">Place order</div>
+        </div>
     </div>
 {% endmacro %}
 
 {% block content %}
     <div class="ui stackable grid container">
-        <div class="sixteen wide tablet twelve wide computer centered column">         
+        <div class="sixteen wide tablet twelve wide computer centered column">
             <h2 class="ui header">
                 Manage cart
                 <div class="sub header">
@@ -69,10 +96,12 @@
             </h2>
 
             {% if vendor_items_dict %}
-                <form action="{{ url_for('merchant.order_items') }}" method="post">
-                        <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                </form>
+                {#                <form action="{{ url_for('merchant.order_items') }}" method="post">#}
+                {#                    <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">#}
+                {#                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>#}
+                {#                </form>#}
+                <button class="ui button positive cart-button" id="main-cart-button">Order from all vendors</button>
+                <br>
                 <br>
             {% endif %}
 
@@ -84,41 +113,51 @@
                 <h3>Your cart is currently empty</h3>
             {% endfor %}
 
-
+            {{ modal() }}
         </div>
     </div>
 
     <script src="{{ url_for('static', filename='merchant.js') }}"></script>
 
     <script>
+        // Cart management
+        (function() {
+            $(document).ready(function () {
+                $('.remove-from-cart').click(function () {
+                    var toggledItemButton = $(this);
+                    var listingID = toggledItemButton.data('id');
+                    var tableRow = toggledItemButton.parent().parent();
+                    updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));
+                });
 
-        $(document).ready(function () {
-            $('.remove-from-cart').click(function () {
-                var toggledItemButton = $(this);
-                var listingID = toggledItemButton.data('id');
-                var tableRow = toggledItemButton.parent().parent();
-                updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));
+                $('.cart-quantity').change(function (event) {
+                    var newQuantity = parseInt($(this).val());
+                    var listingID = $(this).data('id');
+
+                    updateTotalPrice(listingID, newQuantity);
+                    updateCartQuantity(listingID, newQuantity);
+                });
             });
 
-            $('.cart-quantity').change(function (event) {
-                var newQuantity = parseInt($(this).val());
-                var listingID = $(this).data('id');
+            function updateTotalPrice(listingID, newQuantity) {
+                var tr = $('tr').filterByData('id', listingID);
+                var totalPrice = tr.find('.total_price');
+                var unitPrice = parseFloat(tr.find('.unit_price').data('price'));
+                totalPrice.text("$" + (newQuantity * unitPrice).toFixed(2));
+            }
 
-                updateTotalPrice(listingID, newQuantity);
-                updateCartQuantity(listingID, newQuantity);
+            function deleteListing(tableRow) {
+                tableRow.remove();
+            }
+        })();
+
+        // Order modals
+        (function() {
+            $('.cart-button').click(function() {
+                console.log('yo');
+                $('.ui.modal').modal('show');
             });
-        });
-
-        function updateTotalPrice(listingID, newQuantity) {
-            var tr = $( 'tr' ).filterByData( 'id', listingID );
-            var totalPrice = tr.find( '.total_price' );
-            var unitPrice = parseFloat( tr.find( '.unit_price' ).data( 'price' ) );
-            totalPrice.text( "$" + (newQuantity * unitPrice).toFixed(2) );
-        }
-
-        function deleteListing(tableRow) {
-            tableRow.remove();
-        }
+        })();
 
     </script>
 {% endblock %}
