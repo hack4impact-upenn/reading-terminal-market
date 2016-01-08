@@ -94,7 +94,8 @@ def manage_cart():
         'merchant/manage_cart.html',
         vendor_items_dict=vendor_items_dict,
         confirm_order=confirm_order,
-        vendor=vendor
+        vendor=vendor,
+        get_total_price=CartItem.get_total_price
     )
 
 

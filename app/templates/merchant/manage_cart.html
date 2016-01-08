@@ -1,7 +1,45 @@
 {% extends 'layouts/base.html' %}
 
 
-{% macro order_modal_content(vendors_list) %}
+{% macro vendor_modal_table(vendor, cart_items) %}
+
+    <div class="ui list ">
+        <div class="item"><b>Company name: </b> {{  vendor.company_name }}</div>
+        <div class="item"><b>Vendor name: </b> {{  vendor.full_name() }}</div>
+        <div class="item"><b>Email: </b> {{  vendor.email }}</div>
+    </div>
+
+
+    <table class="ui compact table">
+        <thead>
+        <tr>
+            <th>Item name</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for cart_item in cart_items %}
+            <tr>
+                <td>{{ cart_item.listing.name }}</td>
+                <td>{{ cart_item.quantity| int() }} {{ cart_item.listing.category.unit }}</td>
+                <td>${{ '%0.2f' | format(cart_item.listing.price) }} / {{ cart_item.listing.category.unit }}</td>
+                <td>${{ '%0.2f' | format(cart_item.listing.price * cart_item.quantity) }}</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+        <tfoot>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th><b>${{ '%0.2f' | format(get_total_price(cart_items)) }}</b></th>
+        </tr>
+        </tfoot>
+    </table>
+    <div class="ui divider"></div>
 
 {% endmacro %}
 
@@ -62,33 +100,43 @@
     </div>
 {% endmacro %}
 
-{% macro modal(vendor) %}
+{% macro modal(vendor, vendor_items_dict) %}
     {% if vendor %}
         {% set order_str = "order" %}
         {% set order_with_str = (" with "~vendor.company_name ) %}
         {% set vendor_id = vendor.id %}
+        {% set vendor_cart_items = vendor_items_dict[vendor] %}
     {% else %}
         {% set order_str = "orders" %}
         {% set vendor_id = None %}
+        {% set vendor_id = None %}
+        {% set vendor_cart_items = None %}
     {% endif %}
 
 
     <div class="ui modal">
-        <div class="header">Would you like to place the {{ order_str }}{{ order_with_str }}?</div>
+        <div class="header">Would you like to place the following {{ order_str }}{{ order_with_str }}?</div>
         <div class="content">
 
             <div class="description">
-                <div class="ui header">Order summary</div>
-                <p>We've grabbed the following image from the <a href="https://www.gravatar.com" target="_blank">gravatar</a> image associated with your registered e-mail address.</p>
-                <p>Is it okay to use this photo?</p>
-                <div class="ui divider"></div>
+                {% if vendor %}
+                    {{ vendor_modal_table(vendor, vendor_cart_items) }}
+                    <br>
+                {% else %}
+                    {% for vendor, cart_items in vendor_items_dict.iteritems() %}
+                        {{ vendor_modal_table(vendor, cart_items) }}
+                    {% endfor %}
+
+                {% endif %}
+
             </div>
-            {#            {% for item in cart | sort(attribute='listing_name') %}#}
-            {#                <p>{{ item.quantity }} {{ item.listing.name }} at a unit cost of ${{ item.listing.price }} for a total of ${{ item.quantity * item.listing.price }}#}
-            {#            {% endfor %}#}
-            {#            <p>The total price of your order is: ${{ total_price }}</p>#}
-            <p>Once you place the order, you and each vendor will receive an email with the order details. Each vendor
-                will then have the option to either approve or deny the order. You'll receive an email when this happens. </p>
+
+            <p class="right floated column"><b>The total price of your {{ order_str }} is: ${{ '%0.2f' | format(get_total_price(vendor_cart_items)) }}</b></p>
+            <p>
+                Once you place the {{ order_str }}, you and each vendor will receive an email with order details. Each vendor
+                will then have the option to either approve or deny the order. You'll receive another email when this happens.
+                Until then, your {{ order_str }} will remain pending.
+            </p>
             </p>
         </div>
 
@@ -132,7 +180,7 @@
             {% endfor %}
 
             {% if confirm_order and vendor_items_dict %}
-                {{ modal(vendor) }}
+                {{ modal(vendor, vendor_items_dict) }}
             {% endif %}
         </div>
     </div>

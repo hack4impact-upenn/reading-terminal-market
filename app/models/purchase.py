@@ -34,12 +34,23 @@ class CartItem(db.Model):
         # uses sorted dict so vendor order in cart
         # is in alphabetical order of company names
         sorted_dict = OrderedDict(sorted(vendor_items_dict.items(),
-                                        key=lambda pair: pair[0].company_name))
+                                         key=lambda pair: pair[0].company_name))
         return sorted_dict
 
     @staticmethod
     def get_vendor_ids():
+        '''returns all the ids of all the vendors represented in a cart'''
         return [item.listing.vendor_id for item in current_user.cart_items]
+
+    @staticmethod
+    def get_total_price(cart_items=None):
+        '''returns the total price of the given cart_items. if None, returns
+        the total price of all of the current user's cart_items'''
+        if cart_items is None:
+            cart_items = current_user.cart_items
+        prices = [item.listing.price * item.quantity for item in cart_items]
+        return sum(prices)
+
 
     @staticmethod
     def delete_cart_items(cart_items):
@@ -162,17 +173,6 @@ class Order(db.Model):
     def cancel_order(self):
         # TODO: Email vendor
         pass
-
-    # def get_vendor_purchase_dict(self):
-    #     """Returns a dictionary where the keys are vendors
-    #     in the order and the values are a list of purchases"""
-    #     dictionary = defaultdict(list)
-    #     for purchase in self.purchases:
-    #         vendor_id = purchase.vendor_id
-    #         company_name = purchase.company_name
-    #         dictionary[(vendor_id, company_name)].append(purchase)
-    #
-    #     return dictionary
 
 
 class Purchase(db.Model):
