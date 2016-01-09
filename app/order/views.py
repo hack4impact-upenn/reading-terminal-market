@@ -19,7 +19,6 @@ from ..decorators import merchant_required, vendor_required
 #     # TODO send emails
 #     return jsonify({'status': 'canceled'})
 
-
 @order.route('/approve/<int:order_id>', methods=['PUT'])
 @login_required
 @vendor_required

@@ -1,13 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{#{% macro purchase_tagline(order) %}#}
-{#<p>With purchases from:#}
-{# {% for vendor, purchases in order.get_vendor_purchase_dict().iteritems() %}#}
-{#     {{ vendor[1] }}#}
-{# {% endfor %}#}
-{#    </p>#}
-{##}
-{#{% endmacro %}#}
+{% set page_size = 10 %}
 
 {% macro status_label(status) %}
     {% if status == 0 %}
@@ -52,15 +45,15 @@
     </table>
 {% endmacro %}
 
-{% macro order_segment(order) %}
+{% macro order_segment(order, hide=False) %}
     {% set vendor_info = order.get_vendor_info() %}
-    <div class="ui segment clearing order" id="order-{{ order.id }}">
+    {% if hide %}
+        {% set display = "display:none" %}
+    {% endif %}
+    <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
         <div class="ui left floated basic segment" style="margin-bottom: 0px">
             <h3 class="ui header">
                 Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ status_label(order.status) }}
-{#                {% if order.status == 0 %}#}
-{#                    <button class="cancel-button negative mini ui button">Cancel</button>#}
-{#                {% endif %}#}
                 <div class="sub header">
                     Placed on {{ order.get_date() }}
                 </div>
@@ -97,14 +90,25 @@
                 View and manage your orders.
             </div>
         </h2>
-        {% for order in orders %}
+        {% for order in orders[:page_size] %}
             {{ order_segment(order) }}
         {% else %}
             <h3>Your have not made any orders.</h3>
         {% endfor %}
-    </div>
 
-    {#    <script src="{{ url_for('static', filename='merchant.js') }}"></script>#}
+        {% for order in orders[page_size:] %}
+            {{ order_segment(order, hide=True) }}
+        {% endfor %}
+
+        {% if orders | length > page_size %}
+            <div class="ui one column stackable center aligned page grid">
+                <div class="column twelve wide">
+                    <button class="ui button" id="show-more">Show more orders</button>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
 
     <script>
 
@@ -123,54 +127,22 @@
 
             });
 
-{#            $('.cancel-button').click(function () {#}
-{#                var button = $( this );#}
-{#                var order = button.closest('.order');#}
-{#                var orderId = order.attr('id').split('-')[1];#}
-{#                var label = order.find('.label');#}
-{##}
-{#                $.ajax({#}
-{#                    url: '/order/cancel/' + orderId,#}
-{#                    dataType: 'json',#}
-{#                    success: function (data) {#}
-{#                        label.text('Canceled');#}
-{#                        label.removeClass('grey');#}
-{#                        label.addClass('red');#}
-{#                        button.hide();#}
-{#                    },#}
-{#                    method: 'PUT'#}
-{#                });#}
-{#            });#}
+            var page_size = {{ page_size }};
+            var total_num_orders = {{ orders | length }};
+            var current_idx = Math.min(page_size, total_num_orders);
 
-        });
+            $('#show-more').click(function () {
+                for (var i = current_idx; i < current_idx + page_size; i++) {
+                    $('.order').eq(i).show();
+                }
+                current_idx += page_size;
+                if (current_idx >= total_num_orders) {
+                    $('#show-more').hide();
+                }
 
-        {#        $(document).ready(function () {#}
-        {#            $('.remove-from-cart').click(function () {#}
-        {#                var toggledItemButton = $(this);#}
-        {#                var listingID = toggledItemButton.data('id');#}
-        {#                var tableRow = toggledItemButton.parent().parent();#}
-        {#                updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));#}
-        {#            });#}
-        {##}
-        {#            $('.cart-quantity').change(function (event) {#}
-        {#                var newQuantity = parseInt($(this).val());#}
-        {#                var listingID = $(this).data('id');#}
-        {##}
-        {#                updateTotalPrice(listingID, newQuantity);#}
-        {#                updateCartQuantity(listingID, newQuantity);#}
-        {#            });#}
-        {#        });#}
-        {##}
-        {#        function updateTotalPrice(listingID, newQuantity) {#}
-        {#            var tr = $( 'tr' ).filterByData( 'id', listingID );#}
-        {#            var totalPrice = tr.find( '.total_price' );#}
-        {#            var unitPrice = parseFloat( tr.find( '.unit_price' ).data( 'price' ) );#}
-        {#            totalPrice.text( "$" + (newQuantity * unitPrice).toFixed(2) );#}
-        {#        }#}
-        {##}
-        {#        function deleteListing(tableRow) {#}
-        {#            tableRow.remove();#}
-        {#        }#}
+            });
+
+         });
 
     </script>
 {% endblock %}

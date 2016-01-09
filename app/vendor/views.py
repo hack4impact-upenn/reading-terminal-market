@@ -2,10 +2,7 @@ from ..decorators import vendor_required
 
 from flask import render_template, abort, redirect, flash, url_for, request
 from flask.ext.login import login_required, current_user
-from forms import (
-    ChangeListingInformation,
-    NewItemForm
-)
+from forms import (ChangeListingInformation, NewItemForm)
 from . import vendor
 from ..models import Listing, Category
 from .. import db
@@ -50,11 +47,9 @@ def current_listings(page=1):
     sort_by = request.args.get('sortby', "", type=str)
     avail = request.args.get('avail', "", type=str)
     search = request.args.get('search', "", type=str)
-    listings_raw = Listing.search(
-        sort_by=sort_by,
-        main_search_term=main_search_term,
-        avail=avail
-    )
+    listings_raw = Listing.search(sort_by=sort_by,
+                                  main_search_term=main_search_term,
+                                  avail=avail)
     listings_raw = listings_raw.filter(Listing.vendor_id == current_user.id)
 
     if search != "False":
@@ -127,11 +122,9 @@ def change_listing_info(listing_id):
 
     form.process()
 
-    return render_template(
-        'vendor/manage_listing.html',
-        listing=listing,
-        form=form
-    )
+    return render_template('vendor/manage_listing.html',
+                           listing=listing,
+                           form=form)
 
 
 @vendor.route('/item/<int:listing_id>/delete')
@@ -156,3 +149,12 @@ def delete_listing(listing_id):
     listing.delete_listing()
     flash('Successfully deleted item %s.' % listing.name, 'success')
     return redirect(url_for('vendor.current_listings'))
+
+
+@vendor.route('/orders')
+@login_required
+@vendor_required
+def view_all_orders():
+    orders = (Order.query.filter_by(merchant_id=current_user.id)
+              .order_by(Order.id.desc()).all())
+    return render_template('vendor/orders.html', orders=orders)
