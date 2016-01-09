@@ -4,7 +4,7 @@ from flask import render_template, abort, redirect, flash, url_for, request
 from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm)
 from . import vendor
-from ..models import Listing, Category
+from ..models import Listing, Category, Order
 from .. import db
 
 
@@ -155,6 +155,6 @@ def delete_listing(listing_id):
 @login_required
 @vendor_required
 def view_all_orders():
-    orders = (Order.query.filter_by(merchant_id=current_user.id)
+    orders = (Order.query.filter_by(vendor_id=current_user.id)
               .order_by(Order.id.desc()).all())
     return render_template('vendor/orders.html', orders=orders)
