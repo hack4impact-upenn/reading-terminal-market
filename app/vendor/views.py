@@ -1,10 +1,18 @@
 from ..decorators import vendor_required
 
-from flask import render_template, abort, redirect, flash, url_for, request
+from flask import (
+    render_template,
+    abort,
+    redirect,
+    flash,
+    url_for,
+    request,
+    jsonify
+)
 from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm)
 from . import vendor
-from ..models import Listing, Category, Order
+from ..models import Listing, Order, Status
 from .. import db
 
 
@@ -154,7 +162,48 @@ def delete_listing(listing_id):
 @vendor.route('/orders')
 @login_required
 @vendor_required
-def view_all_orders():
+def view_orders():
     orders = (Order.query.filter_by(vendor_id=current_user.id)
-              .order_by(Order.id.desc()).all())
-    return render_template('vendor/orders.html', orders=orders)
+              .order_by(Order.id.desc()))
+    status_filter = request.args.get('status')
+
+    if status_filter == 'approved':
+        orders = orders.filter_by(status=Status.APPROVED)
+    elif status_filter == 'declined':
+        orders = orders.filter_by(status=Status.DECLINED)
+    elif status_filter == 'pending':
+        orders = orders.filter_by(status=Status.PENDING)
+    else:
+        status_filter = None
+
+    return render_template('vendor/orders.html', orders=orders.all(), status_filter=status_filter)
+
+
+@vendor.route('/approve/<int:order_id>', methods=['PUT'])
+@login_required
+@vendor_required
+def approve_order(order_id):
+    order = Order.query.get(order_id)
+    if not order or order.vendor_id != current_user.id:
+        abort(404)
+    if order.status != Status.PENDING:
+        abort(400)
+    order.status = Status.APPROVED
+    db.session.commit()
+    # TODO send emails
+    return jsonify({'order_id': order_id, 'status': 'approved'})
+
+
+@vendor.route('/decline/<int:order_id>', methods=['PUT'])
+@login_required
+@vendor_required
+def decline_order(order_id):
+    order = Order.query.get(order_id)
+    if not order or order.vendor_id != current_user.id:
+        abort(404)
+    if order.status != Status.PENDING:
+        abort(400)
+    order.status = Status.DECLINED
+    db.session.commit()
+    # TODO send emails
+    return jsonify({'order_id': order_id, 'status': 'declined'})
