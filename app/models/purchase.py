@@ -89,6 +89,7 @@ class Order(db.Model):
         self.merchant_id = current_user.id
         vendor = User.query.get(vendor_id)
         self.company_name = vendor.company_name
+        self.merchant_company_name = current_user.company_name
 
     def __repr__(self):
         return "<Order: {}>".format(self.id)
