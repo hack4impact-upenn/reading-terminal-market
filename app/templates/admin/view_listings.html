@@ -13,7 +13,7 @@
         <i class="caret left icon"></i>
         Back to dashboard
     </a>
-    
+
     <form class="ui form segment">
         <div class="twelve wide field">
             <label>Search names and descriptions</label>
@@ -43,8 +43,11 @@
             <a href="#" id="toggle-advanced">Toggle advanced search</a>
         </div>
         <br>
-        <button class="ui button" type="submit">Search</button>
+        <button class="ui button blue" type="submit">Search</button>
+        <a class="ui button" href="{{ url_for('.listings_view_all') }}">Clear Criteria</a>
+
     </form>
+
 {% endblock %}
 
 {% block after %}
