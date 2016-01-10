@@ -38,8 +38,14 @@ def listing_view_all():
                               name_search_term=name_search_term,
                               main_search_term=main_search_term)
 
+    # TODO: either implement admin pagination or modify
+    # view_listings template to not require pagination
+    count = listings.count()
+    listings_paginated = listings.paginate(1, count, False)
+
     return render_template('admin/view_listings.html',
-                           listings=listings,
+                           listings=listings_paginated,
+                           count = count,
                            main_search_term=main_search_term,
                            min_price=min_price,
                            max_price=max_price,
@@ -232,3 +238,25 @@ def delete_user(user_id):
         db.session.commit()
         flash('Successfully deleted user %s.' % user.full_name(), 'success')
     return redirect(url_for('admin.registered_users'))
+
+
+@admin.route('/items/<int:listing_id>')
+@admin.route('/items/<int:listing_id>/info')
+@login_required
+@admin_required
+def listing_info(listing_id):
+    """View a listing's info."""
+    listing = Listing.query.filter_by(id=listing_id, available=True).first()
+    if listing is None:
+        abort(404)
+
+    if 'backto' in request.args:
+        backto = request.args.get('backto')
+    else:
+        backto = url_for('admin.listing_view_all')
+
+    return render_template(
+        'shared/listing_info.html',
+        listing=listing,
+        backto=backto
+    )

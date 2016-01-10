@@ -44,7 +44,7 @@
         </div>
         <br>
         <button class="ui button blue" type="submit">Search</button>
-        <a class="ui button" href="{{ url_for('.listings_view_all') }}">Clear Criteria</a>
+        <a class="ui button" href="{{ url_for('.listing_view_all') }}">Clear Criteria</a>
 
     </form>
 
@@ -52,7 +52,6 @@
 
 {% block after %}
 
-    <script src="{{ url_for('static', filename='merchant.js') }}"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {

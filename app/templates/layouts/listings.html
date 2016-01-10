@@ -49,6 +49,11 @@
                               url_for('merchant.listing_info',
                               backto=request.path + '?' + request.query_string,
                               listing_id=l.id) + '\';' %}
+                            {% elif current_user.is_admin() %}
+                                {% set info_link = 'onclick=window.location.href=\'' +
+                              url_for('admin.listing_info',
+                              backto=request.path + '?' + request.query_string,
+                              listing_id=l.id) + '\';' %}
                             {% endif %}
 
                             <td {{info_link}}>{{ l.name }}</td>

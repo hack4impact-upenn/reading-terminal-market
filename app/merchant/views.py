@@ -106,7 +106,7 @@ def listing_info(listing_id):
     else:
         backto = url_for('merchant.listing_view_all')
 
-    return render_template('merchant/listing_info.html', listing=listing,
+    return render_template('shared/listing_info.html', listing=listing,
                            quantity=quantity, backto=backto)
 
 
