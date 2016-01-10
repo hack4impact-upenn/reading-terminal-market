@@ -93,7 +93,7 @@
         {% for order in orders[:page_size] %}
             {{ order_segment(order) }}
         {% else %}
-            <h3>Your have not made any orders.</h3>
+            <h3>You have not made any orders.</h3>
         {% endfor %}
 
         {% for order in orders[page_size:] %}
@@ -116,15 +116,12 @@
             $('.toggle-details').click(function () {
                 var order = $( this ).closest('.order');
                 var details = order.find('.details');
-                console.log($(this));
                 details.toggle();
                 if ($( this ).text() === 'Hide purchases') {
                     $(this).text('Show purchases');
                 } else {
                     $( this ).text('Hide purchases');
                 }
-                console.log($(this));
-
             });
 
             var page_size = {{ page_size }};

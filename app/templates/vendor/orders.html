@@ -2,6 +2,15 @@
 
 {% set page_size = 10 %}
 
+{% macro status_filter_menu() %}
+    <div class="ui three item menu">
+        <a class="item {% if status_filter is none %}active{% endif %}" href="{{ url_for('.view_orders') }}">All</a>
+        <a class="item {% if status_filter == 'pending' %}active{% endif %}" href="{{ url_for('.view_orders', status='pending') }}">Pending</a>
+        <a class="item {% if status_filter == 'approved' %}active{% endif %}" href="{{ url_for('.view_orders', status='approved') }}">Approved</a>
+        <a class="item {% if status_filter == 'declined' %}active{% endif %}" href="{{ url_for('.view_orders', status='declined') }}">Declined</a>
+    </div>
+{% endmacro %}
+
 {% macro status_label(status) %}
     {% if status == 0 %}
         {% set text = 'Pending' %}
@@ -17,61 +26,71 @@
         {% set color = 'red' %}
     {% endif %}
 
-    <div class="ui {{ color }} horizontal label">{{ text }}</div>
+    <div class="ui {{ color }} horizontal label status-label">{{ text }}</div>
 {% endmacro %}
 
 {% macro order_table(order) %}
     {% set purchase_info = order.get_purchase_info() %}
     <table class="ui celled table">
         <thead>
-            <tr>
-                <th>Item name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-            </tr>
+        <tr>
+            <th>Item name</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
         </thead>
         <tbody>
-            {% for purchase in purchase_info %}
-                <tr>
-                    <td>{{ purchase['name'] }}</td>
-                    <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
-                    <td>${{ '%0.2f' | format(purchase['price']) }} / {{ purchase['unit'] }}</td>
-                    <td>${{ '%0.2f' | format(purchase['price'] * purchase['quantity']) }}</td>
-                </tr>
-            {% endfor %}
+        {% for purchase in purchase_info %}
+            <tr>
+                <td>{{ purchase['name'] }}</td>
+                <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
+                <td>${{ '%0.2f' | format(purchase['price']) }} / {{ purchase['unit'] }}</td>
+                <td>${{ '%0.2f' | format(purchase['price'] * purchase['quantity']) }}</td>
+            </tr>
+        {% endfor %}
 
         </tbody>
     </table>
 {% endmacro %}
 
 {% macro order_segment(order, hide=False) %}
-    {% set vendor_info = order.get_vendor_info() %}
+    {% set merchant_info = order.get_merchant_info() %}
     {% if hide %}
         {% set display = "display:none" %}
     {% endif %}
     <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
         <div class="ui left floated basic segment" style="margin-bottom: 0px">
             <h3 class="ui header">
-                Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ status_label(order.status) }}
+                Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ status_label(order.status) }}
                 <div class="sub header">
                     Placed on {{ order.get_date() }}
                 </div>
             </h3>
+
             <div><b>Total:</b> {{ order.get_total() }}</div>
             <div style="margin-top: 5px; margin-bottom: 0px"><a class="toggle-details">Show purchases</a></div>
 
         </div>
         <div class="ui right floated basic segment">
             <div class="ui list right">
-                <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
-                {% if vendor_info['full_name'] %}
-                    <div class="item"><b>Vendor name: </b> {{  vendor_info['full_name'] }}</div>
+                <div class="item"><b>Company name: </b> {{  merchant_info['company_name'] }}</div>
+                {% if merchant_info['full_name'] %}
+                    <div class="item"><b>Merchant name: </b> {{  merchant_info['full_name'] }}</div>
                 {% endif %}
-                {% if vendor_info['email'] %}
-                    <div class="item"><b>Email: </b> {{  vendor_info['email'] }}</div>
+                {% if merchant_info['email'] %}
+                    <div class="item"><b>Email: </b> {{  merchant_info['email'] }}</div>
                 {% endif %}
+
             </div>
+
+            {% if order.status == 0 %}
+                <div class="approve-decline-container">
+                    <button class="positive ui button tiny compact approve">Approve order</button>
+                    <button class="negative ui button tiny compact decline">Decline order</button>
+                </div>
+            {% endif %}
+
         </div>
 
 
@@ -83,66 +102,112 @@
 
 {% block content %}
     <div class="ui stackable grid container">
-        <div class="sixteen wide tablet twelve wide computer centered column">
-            <h2 class="ui header">
-                Manage orders
-                <div class="sub header">
-                    View and manage your orders.
+    <div class="sixteen wide tablet twelve wide computer centered column">
+        <h2 class="ui header">
+            Manage orders
+            <div class="sub header">
+                View and manage orders placed with you.
+            </div>
+        </h2>
+
+        {{ status_filter_menu() }}
+
+        {% for order in orders[:page_size] %}
+            {{ order_segment(order) }}
+        {% else %}
+            <h3>No orders found.</h3>
+        {% endfor %}
+
+        {% for order in orders[page_size:] %}
+            {{ order_segment(order, hide=True) }}
+        {% endfor %}
+
+        {% if orders | length > page_size %}
+            <div class="ui one column stackable center aligned page grid">
+                <div class="column twelve wide">
+                    <button class="ui button" id="show-more">Show more orders</button>
                 </div>
-            </h2>
-            {% for order in orders[:page_size] %}
-                {{ order_segment(order) }}
-            {% else %}
-                <h3>Your have not made any orders.</h3>
-            {% endfor %}
+            </div>
+        {% endif %}
 
-            {% for order in orders[page_size:] %}
-                {{ order_segment(order, hide=True) }}
-            {% endfor %}
+    </div>
 
-            {% if orders | length > page_size %}
-                <div class="ui one column stackable center aligned page grid">
-                    <div class="column twelve wide">
-                        <button class="ui button" id="show-more">Show more orders</button>
-                    </div>
-                </div>
-            {% endif %}
+    <script>
 
-        </div>
+        $(document).ready(function(){
+            $('.toggle-details').click(function () {
+                var order = $( this ).closest('.order');
+                var details = order.find('.details');
+                details.toggle();
+                if ($( this ).text() === 'Hide purchases') {
+                    $(this).text('Show purchases');
+                } else {
+                    $( this ).text('Hide purchases');
+                }
+            });
 
-        <script>
+            var page_size = {{ page_size }};
+            var total_num_orders = {{ orders | length }};
+            var current_idx = Math.min(page_size, total_num_orders);
 
-         $(document).ready(function(){
-             $('.toggle-details').click(function () {
-                 var order = $( this ).closest('.order');
-                 var details = order.find('.details');
-                 console.log($(this));
-                 details.toggle();
-                 if ($( this ).text() === 'Hide purchases') {
-                     $(this).text('Show purchases');
-                 } else {
-                     $( this ).text('Hide purchases');
-                 }
-                 console.log($(this));
+            $('#show-more').click(function() {
+                for (var i = current_idx; i < current_idx + page_size; i++) {
+                    $('.order').eq(i).show();
+                }
+                current_idx += page_size;
+                if (current_idx >= total_num_orders) {
+                    $('#show-more').hide();
+                }
 
-             });
+            });
 
-             var page_size = {{ page_size }};
-             var total_num_orders = {{ orders | length }};
-             var current_idx = Math.min(page_size, total_num_orders);
+            function approveDeclineRequest(newStatus, orderId, callback) {
+                $.ajax({
+                    url: '/vendor/'+ newStatus +'/' + orderId,
+                    contentType: "application/json",
+                    dataType:"json",
+                    success: function(data) {
+                        if (callback !== undefined) {
+                            callback();
+                        }
+                    },
+                    method: 'PUT'
+                });
+            }
 
-             $('#show-more').click(function () {
-                 for (var i = current_idx; i < current_idx + page_size; i++) {
-                     $('.order').eq(i).show();
-                 }
-                 current_idx += page_size;
-                 if (current_idx >= total_num_orders) {
-                     $('#show-more').hide();
-                 }
 
-             });
+            function disableApproveDeclineButtons(buttonContainer) {
+                buttonContainer.find( 'button' ).addClass('disabled');
+            }
 
-         });
+            function approveDeclineHandler(newStatus) {
+                var buttonContainer = $( this ).closest( '.approve-decline-container' );
+                var orderSegment = $( this ).closest( '.order' );
+                var orderId = orderSegment.attr('id').split('-')[1];
+                var statusLabel = orderSegment.find( '.status-label' );
+                switch (newStatus) {
+                    case "approved":
+                        approveDeclineRequest('approve', orderId, function() {
+                            statusLabel.removeClass("green grey red");
+                            disableApproveDeclineButtons(buttonContainer);
+                            statusLabel.text("Approved");
+                            statusLabel.addClass("green");
+                        });
+                        break;
+                    case "declined":
+                        approveDeclineRequest('decline', orderId, function() {
+                            statusLabel.removeClass("green grey red");
+                            disableApproveDeclineButtons(buttonContainer);
+                            statusLabel.text("Declined");
+                            statusLabel.addClass("red");
+                        });
+                        break;
+                }
+            }
 
-        </script>
+            $('.approve').click(function(){approveDeclineHandler.call(this, 'approved')});
+            $('.decline').click(function(){approveDeclineHandler.call(this, 'declined')});
+        });
+
+    </script>
 {% endblock %}
