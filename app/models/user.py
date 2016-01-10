@@ -278,7 +278,7 @@ class Merchant(User):
     def get_cart_item(self, listing_id):
         """ Returns a cart_item based on its listing_id """
         for cart_item in self.cart_items:
-            if(cart_item.listing.id == listing_id):
+            if cart_item.listing.id == listing_id:
                 return cart_item
         return None
 
