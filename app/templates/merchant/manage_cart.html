@@ -6,7 +6,7 @@
     <div class="ui list ">
         <div class="item"><b>Company name: </b> {{  vendor.company_name }}</div>
         <div class="item"><b>Vendor name: </b> {{  vendor.full_name() }}</div>
-        <div class="item"><b>Email: </b> {{  vendor.email }}</div>
+        <div class="item"><b>Email: </b> <a href="mailto: {{ vendor.email }}">{{ vendor.email }}</a></div>
     </div>
 
 
@@ -49,7 +49,7 @@
             Cart for {{ vendor.company_name }}
 
             <div class="sub header">
-                {{ vendor.full_name() }} - {{ vendor.email }}
+                {{ vendor.full_name() }} - <a href="mailto: {{ vendor.email }}">{{ vendor.email }}</a>
             </div>
         </h3>
         <div style="overflow-x: scroll;">

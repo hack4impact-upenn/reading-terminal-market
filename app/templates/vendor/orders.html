@@ -76,7 +76,7 @@
                     <div class="item"><b>Merchant name: </b> {{  merchant_info['full_name'] }}</div>
                 {% endif %}
                 {% if merchant_info['email'] %}
-                    <div class="item"><b>Email: </b> {{  merchant_info['email'] }}</div>
+                    <div class="item"><b>Email: </b> <a href="mailto: {{ merchant_info['email'] }}">{{  merchant_info['email'] }}</a></div>
                 {% endif %}
 
             </div>
