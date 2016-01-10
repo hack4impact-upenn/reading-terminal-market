@@ -71,7 +71,4 @@ def create_app(config_name):
     from vendor import vendor as vendor_blueprint
     app.register_blueprint(vendor_blueprint, url_prefix='/vendor')
 
-    from order import order as order_blueprint
-    app.register_blueprint(order_blueprint, url_prefix='/order')
-
     return app
