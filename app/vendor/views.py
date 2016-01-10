@@ -68,12 +68,14 @@ def current_listings(page=1):
     else:
         header = "No Search Results"
 
-    return render_template('vendor/current_listings.html',
-                           listings=listings_paginated,
-                           main_search_term=main_search_term,
-                           sort_by=sort_by,
-                           count=result_count,
-                           header=header)
+    return render_template(
+        'vendor/current_listings.html',
+        listings=listings_paginated,
+        main_search_term=main_search_term,
+        sort_by=sort_by,
+        count=result_count,
+        header=header
+    )
 
 
 @vendor.route('/items/<int:listing_id>')
