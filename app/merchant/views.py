@@ -141,47 +141,6 @@ def add_to_cart(listing_id):
     return jsonify({'quantity': new_quantity, 'name': name})
 
 
-# @merchant.route('/add_quantity_to_cart')
-# @login_required
-# @merchant_required
-# def add_quantity_to_cart():
-#     """ Does anything still depend on this route? """
-#     listing_id = request.args.get('listing_id')
-#     quantity = int(request.args.get('quantity'))
-#     return_to = request.args.get('return_to')
-#     if not quantity:
-#         quantity = 0
-#
-#     if not listing_id:
-#         return redirect(url_for('.index'))
-#     listing = Listing.query.filter_by(id=listing_id).first()
-#     cart_item = CartItem.query.filter_by(
-#         merchant_id=current_user.id).filter_by(
-#         listing_id=listing_id).first()
-#
-#     if listing is None:
-#         abort(404)
-#
-#     if cart_item is not None:
-#         db.session.delete(cart_item)
-#         db.session.commit()
-#
-#     if quantity >= 1:
-#         db.session.add(CartItem(
-#             merchant_id=current_user.id,
-#             listing_id=listing_id,
-#             quantity=quantity
-#         ))
-#         db.session.commit()
-#
-#     if return_to == 'listing_view_all':
-#         return redirect(url_for('.listing_view_all'))
-#     elif return_to == 'listing_info':
-#         return redirect(url_for('.listing_info', listing_id=listing_id))
-#     else:
-#         return redirect(url_for('.listing_view_all'))
-
-
 @merchant.route('/change_favorite/<int:listing_id>', methods=['PUT'])
 @login_required
 @merchant_required
