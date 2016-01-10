@@ -1,6 +1,6 @@
 from ..decorators import admin_required
 
-from flask import render_template, abort, redirect, flash, url_for
+from flask import render_template, abort, redirect, request, flash, url_for
 from flask.ext.login import login_required, current_user
 
 from forms import (
@@ -10,7 +10,7 @@ from forms import (
     NewCategoryForm
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant, Category
+from ..models import User, Role, Vendor, Merchant, Category, Listing
 from .. import db
 from ..email import send_email
 
@@ -21,6 +21,30 @@ from ..email import send_email
 def index():
     """Admin dashboard page."""
     return render_template('admin/index.html')
+
+
+@admin.route('/view/all')
+@login_required
+@admin_required
+def listing_view_all():
+    """Search for listings"""
+    main_search_term = request.args.get('main-search', "", type=str)
+    name_search_term = request.args.get('name-search', "", type=str)
+    min_price = request.args.get('min-price', "", type=float)
+    max_price = request.args.get('max-price', "", type=float)
+    listings = Listing.search(available=True,
+                              min_price=min_price,
+                              max_price=max_price,
+                              name_search_term=name_search_term,
+                              main_search_term=main_search_term)
+
+    return render_template('admin/view_listings.html',
+                           listings=listings,
+                           main_search_term=main_search_term,
+                           min_price=min_price,
+                           max_price=max_price,
+                           name_search_term=name_search_term,
+                           header="All listings")
 
 
 @admin.route('/view-categories')
@@ -48,6 +72,7 @@ def add_category():
             db.session.commit()
             flash('Category {} successfully created'.format(category.name),
                   'form-success')
+        return redirect(url_for('admin.add_category'))
     return render_template('admin/add_category.html', form=form)
 
 
@@ -101,6 +126,7 @@ def new_user():
         db.session.commit()
         flash('User {} successfully created'.format(user.full_name()),
               'form-success')
+        return redirect(url_for('admin.new_user'))
     return render_template('admin/new_user.html', form=form)
 
 
@@ -135,6 +161,7 @@ def invite_user():
                    token=token)
 
         flash('User successfully invited', 'form-success')
+        return redirect(url_for('admin.invite_user'))
     return render_template('admin/new_user.html', form=form)
 
 

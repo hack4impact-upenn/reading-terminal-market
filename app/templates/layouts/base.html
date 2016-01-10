@@ -2,33 +2,81 @@
 
 <!DOCTYPE html>
 <html>
-    {% include 'partials/_head.html' %}
+{% include 'partials/_head.html' %}
 
-    <body>
-        {% block nav %}
-            {{ nav.render_nav(current_user) }}
-        {% endblock %}
+<body>
+<style>
+    #notifier {
+        z-index: 1000000;
+        position: fixed;
+        bottom: 20px;
+        width: 250px;
+        left: 50%;
+        margin-left: -37.5%;
+        height: 70px;
+        font-size: 12px
+    }
+</style>
+<div class="notifications"></div>
 
-        {% include 'partials/_flashes.html' %}
+{% block nav %}
+    {{ nav.render_nav(current_user) }}
+{% endblock %}
 
-        {% block content %}
-        {% endblock %}
+{% include 'partials/_flashes.html' %}
 
-        {# Implement CSRF protection for site #}
-        {% if csrf_token() %}
-            <div style="visibility: hidden; display: none">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            </div>
+{% block content %}
+{% endblock %}
 
-            <script>
-                $.ajaxSetup({
-                    beforeSend: function(xhr, settings) {
-                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}")
-                        }
-                    }
-                });
-            </script>
-        {% endif %}
-    </body>
+{# Implement CSRF protection for site #}
+{% if csrf_token() %}
+    <div style="visibility: hidden; display: none">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    </div>
+
+    <script>
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}")
+                }
+            }
+        });
+        $( document ).ajaxSuccess(function( event, request, settings ) {
+            message = "";
+            if (request.responseText) {
+                event = (request.responseText).toString();
+                var myArray = event.split('"');
+                item = myArray[myArray.length - 2];
+                if(event.includes("quantity")) {
+                    num = event.match(/\d+/)[0];
+                } else {
+                    num = -1
+                }
+                if (event.includes("Favorite") && event.includes("false")) {
+                    message = "You have successfully unfavorited " + item;
+                }
+                else if (event.includes("Favorite") && event.includes("true")) {
+                    message = "You have successfully favorited " + item;
+                }
+                else if (event.includes("quantity") && (num > 0)) {
+                    item = myArray[3];
+                    message = "You are now ordering a total of " + num + " of " + item;
+                }
+                else if (event.includes("quantity") && (num == 0)) {
+                    item = myArray[3];
+                    message = "You have removed " + item + " from your cart";
+                }
+            }
+            if($("#notifier").length) {
+                $("#notifier").remove();
+            }
+            $("<div class='ui green message' id='notifier'><i class='close icon'>"  +
+                    "</i><div class='header' id='dynamicflash'>" + message + "</div></p></div>")
+                    .appendTo(".notifications").fadeIn(500).delay(5000).fadeOut();
+        });
+
+    </script>
+{% endif %}
+</body>
 </html>
