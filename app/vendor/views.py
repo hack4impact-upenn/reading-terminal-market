@@ -31,12 +31,14 @@ def new_listing():
     form = NewItemForm()
     if form.validate_on_submit():
         category_id = form.category_id.data.id
-        listing = Listing(name=form.listing_name.data,
-                          description=form.listing_description.data,
-                          available=True,
-                          price=form.listing_price.data,
-                          category_id=category_id,
-                          vendor_id=current_user.id)
+        listing = Listing(
+            name=form.listing_name.data,
+            description=form.listing_description.data,
+            available=True,
+            price=form.listing_price.data,
+            category_id=category_id,
+            vendor_id=current_user.id
+        )
         db.session.add(listing)
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
@@ -55,9 +57,11 @@ def current_listings(page=1):
     sort_by = request.args.get('sortby', "", type=str)
     avail = request.args.get('avail', "", type=str)
     search = request.args.get('search', "", type=str)
-    listings_raw = Listing.search(sort_by=sort_by,
-                                  main_search_term=main_search_term,
-                                  avail=avail)
+    listings_raw = Listing.search(
+        sort_by=sort_by,
+        main_search_term=main_search_term,
+        avail=avail
+    )
     listings_raw = listings_raw.filter(Listing.vendor_id == current_user.id)
 
     if search != "False":
@@ -71,12 +75,14 @@ def current_listings(page=1):
     else:
         header = "No Search Results"
 
-    return render_template('vendor/current_listings.html',
-                           listings=listings_paginated,
-                           main_search_term=main_search_term,
-                           sort_by=sort_by,
-                           count=result_count,
-                           header=header)
+    return render_template(
+        'vendor/current_listings.html',
+        listings=listings_paginated,
+        main_search_term=main_search_term,
+        sort_by=sort_by,
+        count=result_count,
+        header=header
+    )
 
 
 @vendor.route('/items/<int:listing_id>')
@@ -100,8 +106,10 @@ def listing_info(listing_id):
 @vendor_required
 def change_listing_info(listing_id):
     """Change a listings's info."""
-    listing = Listing.query.filter_by(id=listing_id,
-                                      vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(
+        id=listing_id,
+        vendor_id=current_user.id
+    ).first()
 
     if listing is None:
         abort(404)
@@ -130,9 +138,11 @@ def change_listing_info(listing_id):
 
     form.process()
 
-    return render_template('vendor/manage_listing.html',
-                           listing=listing,
-                           form=form)
+    return render_template(
+        'vendor/manage_listing.html',
+        listing=listing,
+        form=form
+    )
 
 
 @vendor.route('/item/<int:listing_id>/delete')
@@ -140,8 +150,10 @@ def change_listing_info(listing_id):
 @vendor_required
 def delete_listing_request(listing_id):
     """Request deletion of an item"""
-    listing = Listing.query.filter_by(id=listing_id,
-                                      vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(
+        id=listing_id,
+        vendor_id=current_user.id
+    ).first()
     if listing is None:
         abort(404)
     return render_template('vendor/manage_listing.html', listing=listing)
@@ -152,8 +164,10 @@ def delete_listing_request(listing_id):
 @vendor_required
 def delete_listing(listing_id):
     """Delete an item."""
-    listing = Listing.query.filter_by(id=listing_id,
-                                      vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(
+        id=listing_id,
+        vendor_id=current_user.id
+    ).first()
     listing.delete_listing()
     flash('Successfully deleted item %s.' % listing.name, 'success')
     return redirect(url_for('vendor.current_listings'))
@@ -176,7 +190,11 @@ def view_orders():
     else:
         status_filter = None
 
-    return render_template('vendor/orders.html', orders=orders.all(), status_filter=status_filter)
+    return render_template(
+        'vendor/orders.html',
+        orders=orders.all(),
+        status_filter=status_filter
+    )
 
 
 @vendor.route('/approve/<int:order_id>', methods=['PUT'])

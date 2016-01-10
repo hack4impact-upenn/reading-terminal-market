@@ -27,14 +27,16 @@ def listing_view_all(page=1):
     max_price = request.args.get('max-price', "", type=float)
     category_search = request.args.get('category-search', "", type=str)
     search = request.args.get('search', "", type=str)
-    listings_raw = Listing.search(available=True,
-                                  favorite=favorite,
-                                  sort_by=sort_by,
-                                  min_price=min_price,
-                                  max_price=max_price,
-                                  name_search_term=name_search_term,
-                                  main_search_term=main_search_term,
-                                  category_search=category_search)
+    listings_raw = Listing.search(
+        available=True,
+        favorite=favorite,
+        sort_by=sort_by,
+        min_price=min_price,
+        max_price=max_price,
+        name_search_term=name_search_term,
+        main_search_term=main_search_term,
+        category_search=category_search
+    )
     # used to reset page count to pg.1 when new search is performed from a page
     # that isn't the first one
 
@@ -49,18 +51,20 @@ def listing_view_all(page=1):
     else:
         header = "No Search Results"
 
-    return render_template('merchant/view_listings.html',
-                           listings=listings_paginated,
-                           main_search_term=main_search_term,
-                           min_price=min_price,
-                           max_price=max_price,
-                           sort_by=sort_by,
-                           name_search_term=name_search_term,
-                           favorite=favorite,
-                           category_search=category_search,
-                           cart_listings=current_user.get_cart_listings(),
-                           header=header,
-                           count=result_count)
+    return render_template(
+        'merchant/view_listings.html',
+        listings=listings_paginated,
+        main_search_term=main_search_term,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by=sort_by,
+        name_search_term=name_search_term,
+        favorite=favorite,
+        category_search=category_search,
+        cart_listings=current_user.get_cart_listings(),
+        header=header,
+        count=result_count
+    )
 
 
 @merchant.route('/order-items/', methods=['POST'])
@@ -89,11 +93,13 @@ def manage_cart():
         vendor = Vendor.query.get(vendor_id)
 
     vendor_items_dict = CartItem.get_vendor_cart_items_dict()
-    return render_template('merchant/manage_cart.html',
-                           vendor_items_dict=vendor_items_dict,
-                           confirm_order=confirm_order,
-                           vendor=vendor,
-                           get_total_price=CartItem.get_total_price)
+    return render_template(
+        'merchant/manage_cart.html',
+        vendor_items_dict=vendor_items_dict,
+        confirm_order=confirm_order,
+        vendor=vendor,
+        get_total_price=CartItem.get_total_price
+    )
 
 
 @merchant.route('/items/<int:listing_id>')
@@ -117,10 +123,14 @@ def add_to_cart(listing_id):
     if not request.json:
         abort(400)
     if 'quantity' not in request.json or type(request.json[
-            'quantity']) is not int:
+                                                  'quantity']) is not int:
         abort(400)
-    cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
-                                         listing_id=listing_id).first()
+
+    cart_item = CartItem.query.filter_by(
+        merchant_id=current_user.id,
+        listing_id=listing_id
+    ).first()
+
     new_quantity = request.json['quantity']
     is_currently_incart = cart_item is not None
 
@@ -129,9 +139,13 @@ def add_to_cart(listing_id):
     elif new_quantity != 0 and is_currently_incart:
         cart_item.quantity = new_quantity
     elif new_quantity != 0 and not is_currently_incart:
-        db.session.add(CartItem(merchant_id=current_user.id,
-                                listing_id=listing_id,
-                                quantity=new_quantity))
+        db.session.add(
+            CartItem(
+                merchant_id=current_user.id,
+                listing_id=listing_id,
+                quantity=new_quantity
+            )
+        )
     db.session.commit()
     name = Listing.query.filter_by(id=listing_id).first().name
     return jsonify({'quantity': new_quantity, 'name': name})
@@ -146,9 +160,9 @@ def change_favorite(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'isFavorite' not in request.json or type(request.json[
-            'isFavorite']) is not bool:
+    if 'isFavorite' not in request.json or type(request.json['isFavorite']) is not bool:
         abort(400)
+
     old_status = listing in current_user.bookmarks
     new_status = request.json.get('isFavorite', old_status)
     if new_status and listing not in current_user.bookmarks:
@@ -156,8 +170,9 @@ def change_favorite(listing_id):
     elif not new_status and listing in current_user.bookmarks:
         current_user.bookmarks.remove(listing)
     db.session.commit()
-    return jsonify({'isFavorite': listing in current_user.bookmarks,
-                    'name': listing.name})
+    return jsonify(
+        {'isFavorite': listing in current_user.bookmarks, 'name': listing.name}
+    )
 
 
 @merchant.route('/orders')
