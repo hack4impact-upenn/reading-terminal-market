@@ -51,7 +51,6 @@ class CartItem(db.Model):
         prices = [item.listing.price * item.quantity for item in cart_items]
         return sum(prices)
 
-
     @staticmethod
     def delete_cart_items(cart_items):
         for cart_item in cart_items:
@@ -68,7 +67,6 @@ class Status:
     PENDING = 0
     APPROVED = 1
     DECLINED = 2
-    CANCELED = 3
 
 
 class Order(db.Model):
@@ -183,10 +181,6 @@ class Order(db.Model):
 
     def get_all_purchases(self):
         return Purchase.query.filter_by(order_id=self.id).all()
-
-    def cancel_order(self):
-        # TODO: Email vendor
-        pass
 
 
 class Purchase(db.Model):

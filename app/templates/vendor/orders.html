@@ -21,9 +21,6 @@
     {% elif status == 2 %}
         {% set text = 'Declined' %}
         {% set color = 'red' %}
-    {% elif status == 3 %}
-        {% set text = 'Canceled' %}
-        {% set color = 'red' %}
     {% endif %}
 
     <div class="ui {{ color }} horizontal label status-label">{{ text }}</div>
