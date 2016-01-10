@@ -1,0 +1,130 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% macro listing_info(listing) %}
+    <table class="ui compact definition table">
+
+        <tr><td>Product Name</td><td>{{ listing.name }} </td></tr>
+        <tr><td>Company</td><td>{{ listing.vendor.company_name }} </td></tr>
+        <tr><td>Vendor</td><td>{{ listing.vendor.full_name() }} </td></tr>
+        <tr><td>Vendor email</td><td>{{ listing.vendor.email }} </td></tr>
+        <tr><td>Price</td><td>${{ '%0.2f' | format(listing.price) }}/{{listing.category.unit}}</td></tr>
+        <tr><td>Description</td><td>{{ listing.description }}</td></tr>
+        <tr><td>Category</td><td>{{ listing.category.name }}</td></tr>
+
+    </table>
+{% endmacro %}
+
+
+{% block content %}
+    <div class="ui stackable centered grid container">
+        <div class="twelve wide column">
+            <a class="ui basic compact button" href="{{ backto }}">
+                <i class="caret left icon"></i>
+                Back to listings
+            </a>
+            <h2 class="ui header">
+                {{ listing.name }}
+                <div style="padding-bottom: 8px;" class="sub header">View and buy {{listing.name}}.</div>
+                  <button data-isfavorite="{% if listing in current_user.bookmarks %}true{% else %}false{% endif %}"
+                    class="ui yellow button {% if listing not in current_user.bookmarks %}basic{% endif %}" id="favorite">
+                    {% if listing in current_user.bookmarks %}Unfavorite
+                    {% else %}Favorite
+                    {% endif %}this</button>
+            </h2>
+        </div>
+        <div class="stretched divided very relaxed row">
+     <div class="twelve wide column">
+                {{ listing_info(listing)}}
+
+                <div class="ui left action right labeled input">
+                  <button id="purchase-button" class="ui {% if quantity == 0 %}grey{% else %}blue{% endif %} labeled icon button">
+                    <i class="cart icon"></i>
+                    Put in cart
+                  </button>
+                  <input type="number" id="quantity" min="0" step="1" value={{ quantity }}>
+                  <div class="ui basic label">
+                    {{ listing.category.unit }}
+                    of {{ listing.name }}
+                  </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='merchant.js') }}"></script>
+
+    <script type="text/javascript">
+      var listingId = {{ listing.id }};
+        $(document).ready(function () {
+            $('#favorite').click(function (event) {
+                var toggledLink = $(this);
+                var isFavorite = toggledLink.data("isfavorite");
+                var newValue = isFavorite === true ? false : true;
+                $.ajax({
+                    url: '/merchant/change_favorite/' + listingId,
+                    data: JSON.stringify({
+                        isFavorite: newValue
+                    }),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        toggledLink.data("isfavorite", data.isFavorite);
+
+                        if(data.isFavorite) {
+                            toggledLink.removeClass('basic');
+                            toggledLink.html('Unfavorite this');
+                        } else {
+                            toggledLink.addClass('basic');
+                            toggledLink.html('Favorite this');
+                        }
+                    },
+                    method: 'PUT'
+                });
+
+            });
+
+            $('#purchase-button').click(function (event) {
+                var newQuantity = parseInt($('#quantity').val());
+                updateCartQuantity(listingId, newQuantity);
+                updateCartFrontend(newQuantity);
+            });
+
+            $('#quantity').change(function (event) {
+                var newQuantity = parseInt($(this).val());
+                updateCartQuantity(listingId, newQuantity);
+                updateCartFrontend(newQuantity);
+            });
+        });
+
+        function changeInputQuantity(newQuantity) {
+            var inputSelector = $('#quantity');
+            inputSelector.val(newQuantity);
+        }
+
+        function enableCartIcon() {
+            var cartIconSelector = $('#purchase-button');
+            cartIconSelector.removeClass("grey");
+            cartIconSelector.addClass("blue");
+        }
+
+        function disableCartIcon() {
+            var cartIconSelector = $('#purchase-button');
+            cartIconSelector.removeClass("blue");
+            cartIconSelector.addClass("grey");
+        }
+
+        function updateCartFrontend(quantity) {
+            var quantityInput = $('#quantity');
+            quantityInput.val(quantity);
+
+            if (quantity === 0) {
+                disableCartIcon();
+            } else {
+                enableCartIcon();
+            }
+        }
+    </script>
+
+{% endblock %}
