@@ -24,8 +24,8 @@
             <tr>
                 <td>{{ cart_item.listing.name }}</td>
                 <td>{{ cart_item.quantity| int() }} {{ cart_item.listing.category.unit }}</td>
-                <td>${{ '%0.2f' | format(cart_item.listing.price) }} / {{ cart_item.listing.category.unit }}</td>
-                <td>${{ '%0.2f' | format(cart_item.listing.price * cart_item.quantity) }}</td>
+                <td>{{ format_price(cart_item.listing.price) }} / {{ cart_item.listing.category.unit }}</td>
+                <td>{{ format_price(cart_item.listing.price * cart_item.quantity) }}</td>
             </tr>
         {% endfor %}
 
@@ -35,7 +35,7 @@
             <th></th>
             <th></th>
             <th></th>
-            <th><b>${{ '%0.2f' | format(get_total_price(cart_items)) }}</b></th>
+            <th><b>{{ format_price(get_total_price(cart_items)) }}</b></th>
         </tr>
         </tfoot>
     </table>
@@ -69,13 +69,13 @@
                 {% for item in cart_items | sort(attribute='listing.name') %}
                     <tr data-id="{{ item.listing.id }}">
                         <td>{{ item.listing.name }}</td>
-                        <td class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>
+                        <td class="unit_price" data-price="{{ item.listing.price  }}">{{ format_price(item.listing.price) }}</td>
                         <td>
                             <div class="ui input fluid">
                                 <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
                             </div>
                         </td>
-                        <td class="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>
+                        <td class="total_price">{{ format_price(item.quantity * item.listing.price) }}</td>
                         <td class="center aligned">
                             <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
                                 <i class="red large trash icon"></i>
@@ -131,7 +131,7 @@
 
             </div>
 
-            <p class="right floated column"><b>The total price of your {{ order_str }} is: ${{ '%0.2f' | format(get_total_price(vendor_cart_items)) }}</b></p>
+            <p class="right floated column"><b>The total price of your {{ order_str }} is: {{ format_price(get_total_price(vendor_cart_items)) }}</b></p>
             <p>
                 Once you place the {{ order_str }}, you and each vendor will receive an email with order details. Each vendor
                 will then have the option to either approve or deny the order. You'll receive another email when this happens.
