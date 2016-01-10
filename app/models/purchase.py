@@ -132,6 +132,19 @@ class Order(db.Model):
         date = self.date.date()
         return '{}-{}-{}'.format(date.month, date.day, date.year)
 
+    def get_merchant_info(self):
+        merchant_id = self.merchant_id
+        merchant = User.query.get(merchant_id)
+        if merchant:
+            merchant_info = {
+                'company_name': merchant.company_name,
+                'full_name': merchant.full_name(),
+                'email': merchant.email
+            }
+        else:
+            merchant_info = {'company_name': self.merchant_company_name}
+        return merchant_info
+
     def get_vendor_info(self):
         vendor_id = self.vendor_id
         vendor = User.query.get(vendor_id)
