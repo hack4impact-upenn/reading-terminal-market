@@ -2,7 +2,7 @@ from flask import render_template, abort, request, redirect, url_for, jsonify
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order, Vendor
+from ..models import Listing, CartItem, Order, Vendor, Status
 from .. import db
 
 
@@ -37,7 +37,9 @@ def listing_view_all(page=1):
         main_search_term=main_search_term,
         category_search=category_search
     )
-    # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
+    # used to reset page count to pg.1 when new search is performed from a page
+    # that isn't the first one
+
     if search != "False":
         page = 1
 
@@ -65,11 +67,11 @@ def listing_view_all(page=1):
     )
 
 
-@merchant.route('/order-items', methods=['POST'])
+@merchant.route('/order-items/', methods=['POST'])
+@merchant.route('/order-items/<int:vendor_id>', methods=['POST'])
 @login_required
 @merchant_required
-def order_items():
-    vendor_id = request.form.get('vendor_id', type=int)
+def order_items(vendor_id=None):
     if vendor_id:
         Order.order_cart_items_from_vendor(vendor_id)
     else:
@@ -81,9 +83,23 @@ def order_items():
 @login_required
 @merchant_required
 def manage_cart():
+    # used to show/hide the order modal
+    confirm_order = request.args.get('confirm_order', default=False, type=bool)
+    # vendor_id to order from. if None, order from all
+    vendor_id = request.args.get('vendor_id', type=int)
+    if vendor_id not in CartItem.get_vendor_ids():
+        vendor = None
+    else:
+        vendor = Vendor.query.get(vendor_id)
+
     vendor_items_dict = CartItem.get_vendor_cart_items_dict()
-    return render_template('merchant/manage_cart.html',
-                           vendor_items_dict=vendor_items_dict)
+    return render_template(
+        'merchant/manage_cart.html',
+        vendor_items_dict=vendor_items_dict,
+        confirm_order=confirm_order,
+        vendor=vendor,
+        get_total_price=CartItem.get_total_price
+    )
 
 
 @merchant.route('/items/<int:listing_id>')
@@ -106,11 +122,15 @@ def add_to_cart(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if ('quantity' not in request.json or
-                type(request.json['quantity']) is not int):
+    if 'quantity' not in request.json or type(request.json[
+                                                  'quantity']) is not int:
         abort(400)
-    cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
-                                         listing_id=listing_id).first()
+
+    cart_item = CartItem.query.filter_by(
+        merchant_id=current_user.id,
+        listing_id=listing_id
+    ).first()
+
     new_quantity = request.json['quantity']
     is_currently_incart = cart_item is not None
 
@@ -119,9 +139,13 @@ def add_to_cart(listing_id):
     elif new_quantity != 0 and is_currently_incart:
         cart_item.quantity = new_quantity
     elif new_quantity != 0 and not is_currently_incart:
-        db.session.add(CartItem(merchant_id=current_user.id,
-                                listing_id=listing_id,
-                                quantity=new_quantity))
+        db.session.add(
+            CartItem(
+                merchant_id=current_user.id,
+                listing_id=listing_id,
+                quantity=new_quantity
+            )
+        )
     db.session.commit()
     name = Listing.query.filter_by(id=listing_id).first().name
     return jsonify({'quantity': new_quantity, 'name': name})
@@ -136,9 +160,9 @@ def change_favorite(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if ('isFavorite' not in request.json or
-                type(request.json['isFavorite']) is not bool):
+    if 'isFavorite' not in request.json or type(request.json['isFavorite']) is not bool:
         abort(400)
+
     old_status = listing in current_user.bookmarks
     new_status = request.json.get('isFavorite', old_status)
     if new_status and listing not in current_user.bookmarks:
@@ -146,4 +170,31 @@ def change_favorite(listing_id):
     elif not new_status and listing in current_user.bookmarks:
         current_user.bookmarks.remove(listing)
     db.session.commit()
-    return jsonify({'isFavorite': listing in current_user.bookmarks, 'name': listing.name})
+    return jsonify(
+        {'isFavorite': listing in current_user.bookmarks, 'name': listing.name}
+    )
+
+
+@merchant.route('/orders')
+@login_required
+@merchant_required
+def view_orders():
+    orders = (Order.query.filter_by(merchant_id=current_user.id)
+              .order_by(Order.id.desc()))
+
+    status_filter = request.args.get('status')
+
+    if status_filter == 'approved':
+        orders = orders.filter_by(status=Status.APPROVED)
+    elif status_filter == 'declined':
+        orders = orders.filter_by(status=Status.DECLINED)
+    elif status_filter == 'pending':
+        orders = orders.filter_by(status=Status.PENDING)
+    else:
+        status_filter = None
+
+    return render_template(
+        'merchant/orders.html',
+        orders=orders.all(),
+        status_filter=status_filter
+    )

@@ -16,5 +16,9 @@ def register_template_utils(app):
     app.add_template_global(index_for_role)
 
 
+def format_price(num):
+    return "${0:.2f}".format(num)
+
+
 def index_for_role(role):
     return url_for(role.index)

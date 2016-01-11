@@ -1,0 +1,24 @@
+{% macro status_filter_menu(status_filter) %}
+    <div class="ui three item menu">
+        <a class="item {% if status_filter is none %}active{% endif %}" href="{{ url_for('.view_orders') }}">All</a>
+        <a class="item {% if status_filter == 'pending' %}active{% endif %}" href="{{ url_for('.view_orders', status='pending') }}">Pending</a>
+        <a class="item {% if status_filter == 'approved' %}active{% endif %}" href="{{ url_for('.view_orders', status='approved') }}">Approved</a>
+        <a class="item {% if status_filter == 'declined' %}active{% endif %}" href="{{ url_for('.view_orders', status='declined') }}">Declined</a>
+    </div>
+{% endmacro %}
+
+
+{% macro status_label(status) %}
+    {% if status == 0 %}
+        {% set text = 'Pending' %}
+        {% set color = 'grey' %}
+    {% elif status == 1 %}
+        {% set text = 'Approved' %}
+        {% set color = 'green' %}
+    {% elif status == 2 %}
+        {% set text = 'Declined' %}
+        {% set color = 'red' %}
+    {% endif %}
+
+    <div class="ui {{ color }} horizontal label status-label">{{ text }}</div>
+{% endmacro %}

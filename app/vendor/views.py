@@ -1,13 +1,18 @@
 from ..decorators import vendor_required
 
-from flask import render_template, abort, redirect, flash, url_for, request
-from flask.ext.login import login_required, current_user
-from forms import (
-    ChangeListingInformation,
-    NewItemForm
+from flask import (
+    render_template,
+    abort,
+    redirect,
+    flash,
+    url_for,
+    request,
+    jsonify
 )
+from flask.ext.login import login_required, current_user
+from forms import (ChangeListingInformation, NewItemForm)
 from . import vendor
-from ..models import Listing, Category
+from ..models import Listing, Order, Status
 from .. import db
 
 
@@ -26,12 +31,14 @@ def new_listing():
     form = NewItemForm()
     if form.validate_on_submit():
         category_id = form.category_id.data.id
-        listing = Listing(name=form.listing_name.data,
-                          description=form.listing_description.data,
-                          available=True,
-                          price=form.listing_price.data,
-                          category_id=category_id,
-                          vendor_id=current_user.id)
+        listing = Listing(
+            name=form.listing_name.data,
+            description=form.listing_description.data,
+            available=True,
+            price=form.listing_price.data,
+            category_id=category_id,
+            vendor_id=current_user.id
+        )
         db.session.add(listing)
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
@@ -68,12 +75,14 @@ def current_listings(page=1):
     else:
         header = "No Search Results"
 
-    return render_template('vendor/current_listings.html',
-                           listings=listings_paginated,
-                           main_search_term=main_search_term,
-                           sort_by=sort_by,
-                           count=result_count,
-                           header=header)
+    return render_template(
+        'vendor/current_listings.html',
+        listings=listings_paginated,
+        main_search_term=main_search_term,
+        sort_by=sort_by,
+        count=result_count,
+        header=header
+    )
 
 
 @vendor.route('/items/<int:listing_id>')
@@ -97,8 +106,10 @@ def listing_info(listing_id):
 @vendor_required
 def change_listing_info(listing_id):
     """Change a listings's info."""
-    listing = Listing.query.filter_by(id=listing_id,
-                                      vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(
+        id=listing_id,
+        vendor_id=current_user.id
+    ).first()
 
     if listing is None:
         abort(404)
@@ -139,8 +150,10 @@ def change_listing_info(listing_id):
 @vendor_required
 def delete_listing_request(listing_id):
     """Request deletion of an item"""
-    listing = Listing.query.filter_by(id=listing_id,
-                                      vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(
+        id=listing_id,
+        vendor_id=current_user.id
+    ).first()
     if listing is None:
         abort(404)
     return render_template('vendor/manage_listing.html', listing=listing)
@@ -151,8 +164,64 @@ def delete_listing_request(listing_id):
 @vendor_required
 def delete_listing(listing_id):
     """Delete an item."""
-    listing = Listing.query.filter_by(id=listing_id,
-                                      vendor_id=current_user.id).first()
+    listing = Listing.query.filter_by(
+        id=listing_id,
+        vendor_id=current_user.id
+    ).first()
     listing.delete_listing()
     flash('Successfully deleted item %s.' % listing.name, 'success')
     return redirect(url_for('vendor.current_listings'))
+
+
+@vendor.route('/orders')
+@login_required
+@vendor_required
+def view_orders():
+    orders = (Order.query.filter_by(vendor_id=current_user.id)
+              .order_by(Order.id.desc()))
+    status_filter = request.args.get('status')
+
+    if status_filter == 'approved':
+        orders = orders.filter_by(status=Status.APPROVED)
+    elif status_filter == 'declined':
+        orders = orders.filter_by(status=Status.DECLINED)
+    elif status_filter == 'pending':
+        orders = orders.filter_by(status=Status.PENDING)
+    else:
+        status_filter = None
+
+    return render_template(
+        'vendor/orders.html',
+        orders=orders.all(),
+        status_filter=status_filter
+    )
+
+
+@vendor.route('/approve/<int:order_id>', methods=['PUT'])
+@login_required
+@vendor_required
+def approve_order(order_id):
+    order = Order.query.get(order_id)
+    if not order or order.vendor_id != current_user.id:
+        abort(404)
+    if order.status != Status.PENDING:
+        abort(400)
+    order.status = Status.APPROVED
+    db.session.commit()
+    # TODO send emails
+    return jsonify({'order_id': order_id, 'status': 'approved'})
+
+
+@vendor.route('/decline/<int:order_id>', methods=['PUT'])
+@login_required
+@vendor_required
+def decline_order(order_id):
+    order = Order.query.get(order_id)
+    if not order or order.vendor_id != current_user.id:
+        abort(404)
+    if order.status != Status.PENDING:
+        abort(400)
+    order.status = Status.DECLINED
+    db.session.commit()
+    # TODO send emails
+    return jsonify({'order_id': order_id, 'status': 'declined'})

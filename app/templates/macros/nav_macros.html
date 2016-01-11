@@ -20,6 +20,17 @@
         {% set href = url_for('merchant.manage_cart') %}
         <a class="item" href="{{ href }}">Manage cart</a>
     {% endif %}
+
+    {% if current_user.is_merchant() %}
+        {% set href = url_for('merchant.view_orders') %}
+        <a class="item" href="{{ href }}">Orders</a>
+    {% endif %}
+
+    {% if current_user.is_vendor() %}
+        {% set href = url_for('vendor.view_orders') %}
+        <a class="item" href="{{ href }}">Orders</a>
+    {% endif %}
+
 {% endmacro %}
 
 {% macro account_items(current_user) %}

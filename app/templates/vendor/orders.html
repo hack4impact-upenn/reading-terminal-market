@@ -1,0 +1,187 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/orders.html' as order_macros %}
+
+{% set page_size = 10 %}
+
+{% macro order_table(order) %}
+    {% set purchase_info = order.get_purchase_info() %}
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th>Item name</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for purchase in purchase_info %}
+            <tr>
+                <td>{{ purchase['name'] }}</td>
+                <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
+                <td>{{ format_price(purchase['price']) }} / {{ purchase['unit'] }}</td>
+                <td>{{ format_price(purchase['price'] * purchase['quantity']) }}</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro order_segment(order, hide=False) %}
+    {% set merchant_info = order.get_merchant_info() %}
+    {% if hide %}
+        {% set display = "display:none" %}
+    {% endif %}
+    <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
+        <div class="ui left floated basic segment" style="margin-bottom: 0px">
+            <h3 class="ui header">
+                Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ order_macros.status_label(order.status) }}
+                <div class="sub header">
+                    Placed on {{ order.get_date() }} at {{ order.get_time() }}
+                </div>
+            </h3>
+
+            <div><b>Total:</b> {{ order.get_total() }}</div>
+            <div style="margin-top: 5px; margin-bottom: 0px"><a class="toggle-details" href="#">Show purchases</a></div>
+
+        </div>
+        <div class="ui right floated basic segment">
+            <div class="ui list right">
+                <div class="item"><b>Company name: </b> {{  merchant_info['company_name'] }}</div>
+                {% if merchant_info['full_name'] %}
+                    <div class="item"><b>Merchant name: </b> {{  merchant_info['full_name'] }}</div>
+                {% endif %}
+                {% if merchant_info['email'] %}
+                    <div class="item"><b>Email: </b> <a href="mailto: {{ merchant_info['email'] }}">{{  merchant_info['email'] }}</a></div>
+                {% endif %}
+
+            </div>
+
+            {% if order.status == 0 %}
+                <div class="approve-decline-container">
+                    <button class="positive ui button tiny compact approve">Approve order</button>
+                    <button class="negative ui button tiny compact decline">Decline order</button>
+                </div>
+            {% endif %}
+
+        </div>
+
+
+        <div class="details" style="display: none;">
+            {{ order_table(order) }}
+        </div>
+    </div>
+{% endmacro %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+    <div class="sixteen wide tablet twelve wide computer centered column">
+        <h2 class="ui header">
+            Manage orders
+            <div class="sub header">
+                View and manage orders placed with you.
+            </div>
+        </h2>
+
+        {{ order_macros.status_filter_menu(status_filter) }}
+
+        {% for order in orders[:page_size] %}
+            {{ order_segment(order) }}
+        {% else %}
+            <h3>No orders found.</h3>
+        {% endfor %}
+
+        {% for order in orders[page_size:] %}
+            {{ order_segment(order, hide=True) }}
+        {% endfor %}
+
+        {% if orders | length > page_size %}
+            <div class="ui one column stackable center aligned page grid">
+                <div class="column twelve wide">
+                    <button class="ui button" id="show-more">Show more orders</button>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <script>
+
+        $(document).ready(function(){
+            $('.toggle-details').click(function () {
+                var order = $( this ).closest('.order');
+                var details = order.find('.details');
+                details.toggle();
+                if ($( this ).text() === 'Hide purchases') {
+                    $(this).text('Show purchases');
+                } else {
+                    $( this ).text('Hide purchases');
+                }
+            });
+
+            var page_size = {{ page_size }};
+            var total_num_orders = {{ orders | length }};
+            var current_idx = Math.min(page_size, total_num_orders);
+
+            $('#show-more').click(function() {
+                for (var i = current_idx; i < current_idx + page_size; i++) {
+                    $('.order').eq(i).show();
+                }
+                current_idx += page_size;
+                if (current_idx >= total_num_orders) {
+                    $('#show-more').hide();
+                }
+
+            });
+
+            function approveDeclineRequest(newStatus, orderId, callback) {
+                $.ajax({
+                    url: '/vendor/'+ newStatus +'/' + orderId,
+                    contentType: "application/json",
+                    dataType:"json",
+                    success: function(data) {
+                        if (callback !== undefined) {
+                            callback();
+                        }
+                    },
+                    method: 'PUT'
+                });
+            }
+
+
+            function disableApproveDeclineButtons(buttonContainer) {
+                buttonContainer.find( 'button' ).addClass('disabled');
+            }
+
+            function approveDeclineHandler(newStatus) {
+                var buttonContainer = $( this ).closest( '.approve-decline-container' );
+                var orderSegment = $( this ).closest( '.order' );
+                var orderId = orderSegment.attr('id').split('-')[1];
+                var statusLabel = orderSegment.find( '.status-label' );
+                switch (newStatus) {
+                    case "approved":
+                        approveDeclineRequest('approve', orderId, function() {
+                            statusLabel.removeClass("green grey red");
+                            disableApproveDeclineButtons(buttonContainer);
+                            statusLabel.text("Approved");
+                            statusLabel.addClass("green");
+                        });
+                        break;
+                    case "declined":
+                        approveDeclineRequest('decline', orderId, function() {
+                            statusLabel.removeClass("green grey red");
+                            disableApproveDeclineButtons(buttonContainer);
+                            statusLabel.text("Declined");
+                            statusLabel.addClass("red");
+                        });
+                        break;
+                }
+            }
+
+            $('.approve').click(function(){approveDeclineHandler.call(this, 'approved')});
+            $('.decline').click(function(){approveDeclineHandler.call(this, 'declined')});
+        });
+
+    </script>
+{% endblock %}

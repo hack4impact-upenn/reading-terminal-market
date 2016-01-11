@@ -1,12 +1,55 @@
 {% extends 'layouts/base.html' %}
 
+
+{% macro vendor_modal_table(vendor, cart_items) %}
+
+    <div class="ui list ">
+        <div class="item"><b>Company name: </b> {{  vendor.company_name }}</div>
+        <div class="item"><b>Vendor name: </b> {{  vendor.full_name() }}</div>
+        <div class="item"><b>Email: </b> <a href="mailto: {{ vendor.email }}">{{ vendor.email }}</a></div>
+    </div>
+
+
+    <table class="ui compact table">
+        <thead>
+        <tr>
+            <th>Item name</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for cart_item in cart_items %}
+            <tr>
+                <td>{{ cart_item.listing.name }}</td>
+                <td>{{ cart_item.quantity| int() }} {{ cart_item.listing.category.unit }}</td>
+                <td>{{ format_price(cart_item.listing.price) }} / {{ cart_item.listing.category.unit }}</td>
+                <td>{{ format_price(cart_item.listing.price * cart_item.quantity) }}</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+        <tfoot>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th><b>{{ format_price(get_total_price(cart_items)) }}</b></th>
+        </tr>
+        </tfoot>
+    </table>
+    <div class="ui divider"></div>
+
+{% endmacro %}
+
 {% macro vendor_cart(vendor, cart_items) %}
     <div>
         <h3 class="ui header">
             Cart for {{ vendor.company_name }}
 
             <div class="sub header">
-                {{ vendor.full_name() }} - {{ vendor.email }}
+                {{ vendor.full_name() }} - <a href="mailto: {{ vendor.email }}">{{ vendor.email }}</a>
             </div>
         </h3>
         <div style="overflow-x: scroll;">
@@ -26,13 +69,13 @@
                 {% for item in cart_items | sort(attribute='listing.name') %}
                     <tr data-id="{{ item.listing.id }}">
                         <td>{{ item.listing.name }}</td>
-                        <td class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>
+                        <td class="unit_price" data-price="{{ item.listing.price  }}">{{ format_price(item.listing.price) }}</td>
                         <td>
                             <div class="ui input fluid">
                                 <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
                             </div>
                         </td>
-                        <td class="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>
+                        <td class="total_price">{{ format_price(item.quantity * item.listing.price) }}</td>
                         <td class="center aligned">
                             <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
                                 <i class="red large trash icon"></i>
@@ -48,19 +91,70 @@
 
         <br>
 
-        <form action="{{ url_for('merchant.order_items') }}" method="post">
-                <input type="submit" class="ui teal button cart-button" name="submit"
-                       value="Order from {{ vendor.company_name }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="hidden" name="vendor_id" value="{{ vendor.id }}"/>
-        </form>
 
+
+        <a class="ui teal button vendor-cart-button" href="{{ url_for('.manage_cart', confirm_order=True, vendor_id=vendor.id) }}">
+            Order from {{ vendor.company_name }}
+        </a>
+
+    </div>
+{% endmacro %}
+
+{% macro modal(vendor, vendor_items_dict) %}
+    {% if vendor %}
+        {% set order_str = "order" %}
+        {% set order_with_str = (" with "~vendor.company_name ) %}
+        {% set vendor_id = vendor.id %}
+        {% set vendor_cart_items = vendor_items_dict[vendor] %}
+    {% else %}
+        {% set order_str = "orders" %}
+        {% set vendor_id = None %}
+        {% set vendor_id = None %}
+        {% set vendor_cart_items = None %}
+    {% endif %}
+
+
+    <div class="ui modal">
+        <div class="header">Would you like to place the following {{ order_str }}{{ order_with_str }}?</div>
+        <div class="content">
+
+            <div class="description">
+                {% if vendor %}
+                    {{ vendor_modal_table(vendor, vendor_cart_items) }}
+                    <br>
+                {% else %}
+                    {% for vendor, cart_items in vendor_items_dict.iteritems() %}
+                        {{ vendor_modal_table(vendor, cart_items) }}
+                    {% endfor %}
+
+                {% endif %}
+
+            </div>
+
+            <p class="right floated column"><b>The total price of your {{ order_str }} is: {{ format_price(get_total_price(vendor_cart_items)) }}</b></p>
+            <p>
+                Once you place the {{ order_str }}, you and each vendor will receive an email with order details. Each vendor
+                will then have the option to either approve or deny the order. You'll receive another email when this happens.
+                Until then, your {{ order_str }} will remain pending.
+            </p>
+            </p>
+        </div>
+
+        <div class="actions">
+
+            <form action="{{ url_for('.order_items', vendor_id=vendor_id) }}" method="post">
+                <a href="{{ url_for('.manage_cart') }}" class="ui negative button">Do not place {{ order_str }}</a>
+
+                <input type="submit" class="ui positive button" name="submit" value="Place {{ order_str }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            </form>
+        </div>
     </div>
 {% endmacro %}
 
 {% block content %}
     <div class="ui stackable grid container">
-        <div class="sixteen wide tablet twelve wide computer centered column">         
+        <div class="sixteen wide tablet twelve wide computer centered column">
             <h2 class="ui header">
                 Manage cart
                 <div class="sub header">
@@ -69,10 +163,11 @@
             </h2>
 
             {% if vendor_items_dict %}
-                <form action="{{ url_for('merchant.order_items') }}" method="post">
-                        <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                </form>
+                <a class="ui button positive" id="main-cart-button"
+                   href="{{ url_for('.manage_cart', confirm_order=True) }}">
+                    Order from all vendors
+                </a>
+                <br>
                 <br>
             {% endif %}
 
@@ -84,41 +179,54 @@
                 <h3>Your cart is currently empty</h3>
             {% endfor %}
 
-
+            {% if confirm_order and vendor_items_dict %}
+                {{ modal(vendor, vendor_items_dict) }}
+            {% endif %}
         </div>
     </div>
 
     <script src="{{ url_for('static', filename='merchant.js') }}"></script>
 
     <script>
+        // Cart management
+        (function() {
+            $(document).ready(function () {
+                $('.remove-from-cart').click(function () {
+                    var toggledItemButton = $(this);
+                    var listingID = toggledItemButton.data('id');
+                    var tableRow = toggledItemButton.parent().parent();
+                    updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));
+                });
 
-        $(document).ready(function () {
-            $('.remove-from-cart').click(function () {
-                var toggledItemButton = $(this);
-                var listingID = toggledItemButton.data('id');
-                var tableRow = toggledItemButton.parent().parent();
-                updateCartQuantity(listingID, 0, deleteListing.bind(this, tableRow));
+                $('.cart-quantity').change(function (event) {
+                    var newQuantity = parseInt($(this).val());
+                    var listingID = $(this).data('id');
+
+                    updateTotalPrice(listingID, newQuantity);
+                    updateCartQuantity(listingID, newQuantity);
+                });
             });
 
-            $('.cart-quantity').change(function (event) {
-                var newQuantity = parseInt($(this).val());
-                var listingID = $(this).data('id');
+            function updateTotalPrice(listingID, newQuantity) {
+                var tr = $('tr').filterByData('id', listingID);
+                var totalPrice = tr.find('.total_price');
+                var unitPrice = parseFloat(tr.find('.unit_price').data('price'));
+                totalPrice.text("$" + (newQuantity * unitPrice).toFixed(2));
+            }
 
-                updateTotalPrice(listingID, newQuantity);
-                updateCartQuantity(listingID, newQuantity);
-            });
-        });
+            function deleteListing(tableRow) {
+                tableRow.remove();
+            }
+        })();
 
-        function updateTotalPrice(listingID, newQuantity) {
-            var tr = $( 'tr' ).filterByData( 'id', listingID );
-            var totalPrice = tr.find( '.total_price' );
-            var unitPrice = parseFloat( tr.find( '.unit_price' ).data( 'price' ) );
-            totalPrice.text( "$" + (newQuantity * unitPrice).toFixed(2) );
-        }
-
-        function deleteListing(tableRow) {
-            tableRow.remove();
-        }
+        // Order modal
+        (function() {
+            {% if confirm_order and vendor_items_dict %}
+                $('.ui.modal')
+                        .modal({closable  : false})
+                        .modal('show');
+            {% endif %}
+        })();
 
     </script>
 {% endblock %}

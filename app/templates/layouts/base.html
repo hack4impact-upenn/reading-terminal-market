@@ -14,10 +14,15 @@
         left: 50%;
         margin-left: -37.5%;
         height: 70px;
-        font-size: 12px
+        font-size: 12px;
     }
 </style>
-<div class="notifications"></div>
+<div class="notifications" style="display:none">
+    <div class='ui green message' id='notifier'>
+        <i class='close icon'></i>
+        <div class='header' id='dynamicflash'></div>
+    </div>
+</div>
 
 {% block nav %}
     {{ nav.render_nav(current_user) }}
@@ -43,37 +48,43 @@
             }
         });
         $( document ).ajaxSuccess(function( event, request, settings ) {
-            message = "";
+            var message = "";
             if (request.responseText) {
-                event = (request.responseText).toString();
+                var event = (request.responseText).toString();
                 var myArray = event.split('"');
-                item = myArray[myArray.length - 2];
-                if(event.includes("quantity")) {
-                    num = event.match(/\d+/)[0];
+                var item = myArray[myArray.length - 2];
+                if (event.includes("quantity")) {
+                    var num = event.match(/\d+/)[0];
                 } else {
-                    num = -1
+                    var num = -1;
                 }
+                
+                if (event.includes('order_id')) {
+                    var orderId = event.match(/\d+/)[0];
+                }
+
                 if (event.includes("Favorite") && event.includes("false")) {
                     message = "You have successfully unfavorited " + item;
-                }
-                else if (event.includes("Favorite") && event.includes("true")) {
+                } else if (event.includes("Favorite") && event.includes("true")) {
                     message = "You have successfully favorited " + item;
-                }
-                else if (event.includes("quantity") && (num > 0)) {
+                } else if (event.includes("quantity") && (num > 0)) {
                     item = myArray[3];
                     message = "You are now ordering a total of " + num + " of " + item;
-                }
-                else if (event.includes("quantity") && (num == 0)) {
+                } else if (event.includes("quantity") && (num == 0)) {
                     item = myArray[3];
                     message = "You have removed " + item + " from your cart";
+                } else if (event.includes("approved")) {
+                    message = "You have approved order #" + orderId ;
+                } else if (event.includes("declined")) {
+                    message = "You have declined order #" + orderId ;
                 }
             }
-            if($("#notifier").length) {
-                $("#notifier").remove();
-            }
-            $("<div class='ui green message' id='notifier'><i class='close icon'>"  +
-                    "</i><div class='header' id='dynamicflash'>" + message + "</div></p></div>")
-                    .appendTo(".notifications").fadeIn(500).delay(5000).fadeOut();
+
+            $('#notifier .header').html(message);
+            $( '.notifications' ).fadeIn(500).delay(5000).fadeOut(function(){
+                $( '.notifications').clearQueue();
+            });
+
         });
 
     </script>

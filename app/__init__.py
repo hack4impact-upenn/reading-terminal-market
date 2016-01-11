@@ -10,6 +10,7 @@ from flask.ext.wtf import CsrfProtect
 from flask.ext.compress import Compress
 from config import config
 from assets import app_css, app_js, vendor_css, vendor_js
+from utils import format_price
 
 mail = Mail()
 db = SQLAlchemy()
@@ -37,6 +38,7 @@ def create_app(config_name):
     # Register Jinja template functions
     from utils import register_template_utils
     register_template_utils(app)
+    app.jinja_env.globals.update(format_price=format_price)
 
     # Set up asset pipeline
     assets_env = Environment(app)
