@@ -47,7 +47,7 @@ def new_listing():
 def current_listings(page=1):
     """View all current listings."""
     main_search_term = request.args.get('main-search', "", type=str)
-    sort_by = request.args.get('sortby', "", type=str)
+    sort_by = request.args.get('sort-by', "", type=str)
     avail = request.args.get('avail', "", type=str)
     search = request.args.get('search', "", type=str)
     listings_raw = Listing.search(
