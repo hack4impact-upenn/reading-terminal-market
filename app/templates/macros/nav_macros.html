@@ -22,7 +22,7 @@
     {% endif %}
 
     {% if current_user.is_merchant() %}
-        {% set href = url_for('merchant.view_all_orders') %}
+        {% set href = url_for('merchant.view_orders') %}
         <a class="item" href="{{ href }}">Orders</a>
     {% endif %}
 

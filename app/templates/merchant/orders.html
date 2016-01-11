@@ -1,21 +1,7 @@
 {% extends 'layouts/base.html' %}
+{% import 'macros/orders.html' as order_macros %}
 
 {% set page_size = 10 %}
-
-{% macro status_label(status) %}
-    {% if status == 0 %}
-        {% set text = 'Pending' %}
-        {% set color = 'grey' %}
-    {% elif status == 1 %}
-        {% set text = 'Approved' %}
-        {% set color = 'green' %}
-    {% elif status == 2 %}
-        {% set text = 'Declined' %}
-        {% set color = 'red' %}
-    {% endif %}
-
-    <div class="ui {{ color }} horizontal label">{{ text }}</div>
-{% endmacro %}
 
 {% macro order_table(order) %}
     {% set purchase_info = order.get_purchase_info() %}
@@ -50,7 +36,7 @@
     <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
         <div class="ui left floated basic segment" style="margin-bottom: 0px">
             <h3 class="ui header">
-                Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ status_label(order.status) }}
+                Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ order_macros.status_label(order.status) }}
                 <div class="sub header">
                     Placed on {{ order.get_date() }} at {{ order.get_time() }}
                 </div>
@@ -87,6 +73,9 @@
                 View and manage your orders.
             </div>
         </h2>
+
+        {{ order_macros.status_filter_menu(status_filter) }}
+
         {% for order in orders[:page_size] %}
             {{ order_segment(order) }}
         {% else %}

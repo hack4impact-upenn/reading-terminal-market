@@ -2,7 +2,7 @@ from flask import render_template, abort, request, redirect, url_for, jsonify
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order, Vendor
+from ..models import Listing, CartItem, Order, Vendor, Status
 from .. import db
 
 
@@ -178,7 +178,23 @@ def change_favorite(listing_id):
 @merchant.route('/orders')
 @login_required
 @merchant_required
-def view_all_orders():
+def view_orders():
     orders = (Order.query.filter_by(merchant_id=current_user.id)
-              .order_by(Order.id.desc()).all())
-    return render_template('merchant/orders.html', orders=orders)
+              .order_by(Order.id.desc()))
+
+    status_filter = request.args.get('status')
+
+    if status_filter == 'approved':
+        orders = orders.filter_by(status=Status.APPROVED)
+    elif status_filter == 'declined':
+        orders = orders.filter_by(status=Status.DECLINED)
+    elif status_filter == 'pending':
+        orders = orders.filter_by(status=Status.PENDING)
+    else:
+        status_filter = None
+
+    return render_template(
+        'merchant/orders.html',
+        orders=orders.all(),
+        status_filter=status_filter
+    )

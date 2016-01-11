@@ -1,30 +1,7 @@
 {% extends 'layouts/base.html' %}
+{% import 'macros/orders.html' as order_macros %}
 
 {% set page_size = 10 %}
-
-{% macro status_filter_menu() %}
-    <div class="ui three item menu">
-        <a class="item {% if status_filter is none %}active{% endif %}" href="{{ url_for('.view_orders') }}">All</a>
-        <a class="item {% if status_filter == 'pending' %}active{% endif %}" href="{{ url_for('.view_orders', status='pending') }}">Pending</a>
-        <a class="item {% if status_filter == 'approved' %}active{% endif %}" href="{{ url_for('.view_orders', status='approved') }}">Approved</a>
-        <a class="item {% if status_filter == 'declined' %}active{% endif %}" href="{{ url_for('.view_orders', status='declined') }}">Declined</a>
-    </div>
-{% endmacro %}
-
-{% macro status_label(status) %}
-    {% if status == 0 %}
-        {% set text = 'Pending' %}
-        {% set color = 'grey' %}
-    {% elif status == 1 %}
-        {% set text = 'Approved' %}
-        {% set color = 'green' %}
-    {% elif status == 2 %}
-        {% set text = 'Declined' %}
-        {% set color = 'red' %}
-    {% endif %}
-
-    <div class="ui {{ color }} horizontal label status-label">{{ text }}</div>
-{% endmacro %}
 
 {% macro order_table(order) %}
     {% set purchase_info = order.get_purchase_info() %}
@@ -59,7 +36,7 @@
     <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
         <div class="ui left floated basic segment" style="margin-bottom: 0px">
             <h3 class="ui header">
-                Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ status_label(order.status) }}
+                Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ order_macros.status_label(order.status) }}
                 <div class="sub header">
                     Placed on {{ order.get_date() }} at {{ order.get_time() }}
                 </div>
@@ -107,7 +84,7 @@
             </div>
         </h2>
 
-        {{ status_filter_menu() }}
+        {{ order_macros.status_filter_menu(status_filter) }}
 
         {% for order in orders[:page_size] %}
             {{ order_segment(order) }}
