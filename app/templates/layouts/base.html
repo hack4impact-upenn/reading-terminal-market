@@ -58,27 +58,24 @@
                 } else {
                     var num = -1;
                 }
+                
                 if (event.includes('order_id')) {
                     var orderId = event.match(/\d+/)[0];
                 }
+
                 if (event.includes("Favorite") && event.includes("false")) {
                     message = "You have successfully unfavorited " + item;
-                }
-                else if (event.includes("Favorite") && event.includes("true")) {
+                } else if (event.includes("Favorite") && event.includes("true")) {
                     message = "You have successfully favorited " + item;
-                }
-                else if (event.includes("quantity") && (num > 0)) {
+                } else if (event.includes("quantity") && (num > 0)) {
                     item = myArray[3];
                     message = "You are now ordering a total of " + num + " of " + item;
-                }
-                else if (event.includes("quantity") && (num == 0)) {
+                } else if (event.includes("quantity") && (num == 0)) {
                     item = myArray[3];
                     message = "You have removed " + item + " from your cart";
                 } else if (event.includes("approved")) {
                     message = "You have approved order #" + orderId ;
-
                 } else if (event.includes("declined")) {
-                    var orderId = myArray[2];
                     message = "You have declined order #" + orderId ;
                 }
             }
