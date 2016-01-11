@@ -192,15 +192,45 @@ def invite_user():
     return render_template('admin/new_user.html', form=form)
 
 
-@admin.route('/users')
+@admin.route('/users-all/')
+@admin.route('/users-all/<int:page>')
 @login_required
 @admin_required
-def registered_users():
+def registered_users(page=1):
     """View all registered users."""
-    users = User.query.all()
-    roles = Role.query.all()
-    return render_template('admin/registered_users.html', users=users,
-                           roles=roles)
+    main_search_term = request.args.get('main-search', "", type=str)
+    sort_by = request.args.get('sort-by', "", type=str)
+    company_search_term = request.args.get('company-search', "", type=str)
+    user_type = request.args.get('user-type', "", type=str)
+    search = request.args.get('search', "", type=str)
+    users_raw = User.user_search(
+        sort_by=sort_by,
+        main_search_term=main_search_term,
+        company_search_term=company_search_term,
+        user_type=user_type,
+    )
+    # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
+    if search != "False":
+        page = 1
+    users_paginated = users_raw.paginate(page, 2, False)
+    result_count = users_raw.count()
+    print result_count
+
+    if result_count > 0:
+        header = "Search Results: {} results in total".format(result_count)
+    else:
+        header = "No Search Results"
+
+    return render_template(
+        'admin/registered_users.html',
+        sort_by=sort_by,
+        main_search_term=main_search_term,
+        company_search_term=company_search_term,
+        user_type=user_type,
+        header=header,
+        users=users_paginated,
+        count=result_count
+    )
 
 
 @admin.route('/user/<int:user_id>')

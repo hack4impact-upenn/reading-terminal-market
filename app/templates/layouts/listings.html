@@ -63,7 +63,7 @@
                             <td {{info_link}}>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>
                             <td class="truncate" {{info_link}}>{{ l.description }}</td>
                             {% if current_user.is_vendor() or current_user.is_admin() %}
-                                <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                                <td {{info_link}}>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
                             {% endif %}
                             <td class="item category" {{info_link}}>{{ l.category.name }}</td>
 
@@ -136,6 +136,8 @@
                     <h3><a href="{{ url_for('merchant.listing_view_all', page=1) }}">Reset Search</a></h3>
                 {% elif current_user.is_vendor() %}
                     <h3><a href="{{ url_for('vendor.current_listings', page=1) }}">Reset Search</a></h3>
+                {% elif current_user.is_admin() %}
+                    <h3><a href="{{ url_for('admin.listing_view_all', page=1) }}">Reset Search</a></h3>
                 {% endif %}
             {% endif %}
             {% block after %}

@@ -69,7 +69,6 @@ class Listing(db.Model):
         filter_list = []
         if 'main_search_term' in kwargs:
             term = kwargs['main_search_term']
-            print term
             filter_list.append(or_(
                 Listing.name.like('%{}%'.format(term)),
                 Listing.description.like('%{}%'.format(term)))
