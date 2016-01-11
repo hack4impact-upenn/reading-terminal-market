@@ -61,7 +61,7 @@
             <h3 class="ui header">
                 Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ status_label(order.status) }}
                 <div class="sub header">
-                    Placed on {{ order.get_date() }}
+                    Placed on {{ order.get_date() }} at {{ order.get_time() }}
                 </div>
             </h3>
 

@@ -130,6 +130,10 @@ class Order(db.Model):
         date = self.date.date()
         return '{}-{}-{}'.format(date.month, date.day, date.year)
 
+    def get_time(self):
+        """Get time formatted as mm-dd-yyyy"""
+        return self.date.time().strftime("%I:%M%p")
+
     def get_merchant_info(self):
         merchant_id = self.merchant_id
         merchant = User.query.get(merchant_id)
