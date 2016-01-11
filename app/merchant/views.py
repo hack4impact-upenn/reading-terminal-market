@@ -106,8 +106,18 @@ def listing_info(listing_id):
     else:
         backto = url_for('merchant.listing_view_all')
 
-    return render_template('shared/listing_info.html', listing=listing,
-                           quantity=quantity, backto=backto)
+    if 'cart' in backto:
+        backto_text = 'cart'
+    else:
+        backto_text = 'listings'
+
+    return render_template(
+        'shared/listing_info.html',
+        listing=listing,
+        quantity=quantity,
+        backto=backto,
+        backto_text=backto_text
+    )
 
 
 @merchant.route('/add_to_cart/<int:listing_id>', methods=["PUT"])
@@ -121,7 +131,7 @@ def add_to_cart(listing_id):
     if not request.json:
         abort(400)
     if ('quantity' not in request.json or
-            type(request.json['quantity']) is not int):
+                type(request.json['quantity']) is not int):
         abort(400)
     cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
                                          listing_id=listing_id).first()
@@ -151,7 +161,7 @@ def change_favorite(listing_id):
     if not request.json:
         abort(400)
     if ('isFavorite' not in request.json or
-            type(request.json['isFavorite']) is not bool):
+                type(request.json['isFavorite']) is not bool):
         abort(400)
     old_status = listing in current_user.bookmarks
     new_status = request.json.get('isFavorite', old_status)
