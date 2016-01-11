@@ -116,6 +116,12 @@
                                     {% else %}
                                         <a class="item" href="{{ url_for('vendor.current_listings', page=page, search=False, **request.args.to_dict()) }}">{{ page }}</a>
                                     {% endif %}
+                                {% elif current_user.is_admin %}
+                                    {% if 'search=False' in request.query_string %}
+                                        <a class="item" href="{{ url_for('admin.listing_view_all', page=page, **request.args.to_dict()) }}">{{ page }}</a>
+                                    {% else %}
+                                        <a class="item" href="{{ url_for('admin.listing_view_all', page=page, search=False, **request.args.to_dict()) }}">{{ page }}</a>
+                                    {% endif %}
                                 {% endif %}
                             {% else %}
                                 <a class="active item">{{ page }}</a>

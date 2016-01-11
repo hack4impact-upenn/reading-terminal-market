@@ -23,34 +23,55 @@ def index():
     return render_template('admin/index.html')
 
 
-@admin.route('/view/all')
+@admin.route('/view-all/')
+@admin.route('/view-all/<int:page>')
 @login_required
 @admin_required
-def listing_view_all():
+def listing_view_all(page=1):
     """Search for listings"""
     main_search_term = request.args.get('main-search', "", type=str)
+    sort_by = request.args.get('sort-by', "", type=str)
     name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
-    listings = Listing.search(available=True,
-                              min_price=min_price,
-                              max_price=max_price,
-                              name_search_term=name_search_term,
-                              main_search_term=main_search_term)
+    category_search = request.args.get('category-search', "", type=str)
+    avail = request.args.get('avail', "", type=str)
+    search = request.args.get('search', "", type=str)
+    listings_raw = Listing.search(
+        sort_by=sort_by,
+        main_search_term=main_search_term,
+        avail=avail,
+        name_search_term=name_search_term,
+        min_price=min_price,
+        max_price=max_price,
+        category_search=category_search
+    )
+    print sort_by
+    print main_search_term
+    # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
+    if search != "False":
+        page = 1
+    listings_paginated_new = listings_raw.paginate(page, 20, False)
+    result_count = listings_raw.count()
 
-    # TODO: either implement admin pagination or modify
-    # view_listings template to not require pagination
-    count = listings.count()
-    listings_paginated = listings.paginate(1, count, False)
+    if result_count > 0:
+        header = "Search Results: {} results in total".format(result_count)
+    else:
+        header = "No Search Results"
 
-    return render_template('admin/view_listings.html',
-                           listings=listings_paginated,
-                           count = count,
-                           main_search_term=main_search_term,
-                           min_price=min_price,
-                           max_price=max_price,
-                           name_search_term=name_search_term,
-                           header="All listings")
+    return render_template(
+        'admin/view_listings.html',
+        sort_by=sort_by,
+        listings=listings_paginated_new,
+        main_search_term=main_search_term,
+        avail=avail,
+        name_search_term=name_search_term,
+        min_price=min_price,
+        max_price=max_price,
+        category_search=category_search,
+        header=header,
+        count=result_count
+    )
 
 
 @admin.route('/view-categories')
