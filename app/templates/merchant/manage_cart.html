@@ -11,6 +11,7 @@
         </h3>
         <div style="overflow-x: scroll;">
             <table class="ui searchable sortable unstackable selectable celled table">
+
                 <thead>
                 <tr>
                     <th class="four wide">Item name</th>
@@ -24,9 +25,14 @@
 
 
                 {% for item in cart_items | sort(attribute='listing.name') %}
+                    {% set info_link = 'onclick=window.location.href=\'' +
+                              url_for('merchant.listing_info', backto=request.path +
+                              '?' + request.query_string,
+                              listing_id=item.listing.id) + '\';' %}
+
                     <tr data-id="{{ item.listing.id }}">
-                        <td>{{ item.listing.name }}</td>
-                        <td class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>
+                        <td {{info_link}}>{{ item.listing.name }}</td>
+                        <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>
                         <td>
                             <div class="ui input fluid">
                                 <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
@@ -49,10 +55,10 @@
         <br>
 
         <form action="{{ url_for('merchant.order_items') }}" method="post">
-                <input type="submit" class="ui teal button cart-button" name="submit"
-                       value="Order from {{ vendor.company_name }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <input type="hidden" name="vendor_id" value="{{ vendor.id }}"/>
+            <input type="submit" class="ui teal button cart-button" name="submit"
+                   value="Order from {{ vendor.company_name }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="hidden" name="vendor_id" value="{{ vendor.id }}"/>
         </form>
 
     </div>
@@ -60,61 +66,61 @@
 
 {% block content %}
     <div class="ui stackable grid container">
-        <div class="sixteen wide tablet twelve wide computer centered column">         
-            <h2 class="ui header">
-                Manage cart
-                <div class="sub header">
-                    View and manage your cart.
-                </div>
-            </h2>
+    <div class="sixteen wide tablet twelve wide computer centered column">
+        <h2 class="ui header">
+            Manage cart
+            <div class="sub header">
+                View and manage your cart.
+            </div>
+        </h2>
 
-            <div style="overflow-x: scroll;">
-                <table class="ui searchable sortable unstackable selectable celled table">
-                    <thead>
-                    <tr>
-                        <th class="four wide">Item name</th>
-                        <th class="three wide">Company</th>
-                        <th class="three wide">Vendor</th>
-                        <th class="two wide">Unit price</th>
-                        <th class="two wide">Quantity</th>
-                        <th class="one wide">Total price</th>
-                        <th class="one wide">Remove</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    {% for item in cart | sort(attribute='listing.name') %}
-                        <tr data-id="{{ item.listing.id }}">
-
-                          {% set info_link = 'onclick=window.location.href=\'' +
-                              url_for('merchant.listing_info', backto=request.path +
-                              '?' + request.query_string,
-                              listing_id=item.listing.id) + '\';' %}
-
-                            <td {{info_link}}>{{ item.listing.name }}</td>
-                            <td {{info_link}}>{{ item.listing.vendor.company_name }}</td>
-                            <td {{info_link}}>{{ item.listing.vendor.full_name() }}</td>
-                            <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>
-                            <td>
-                                <div class="ui input fluid">
-                                    <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>
-                                </div>
-                            </td>
-                            <td {{info_link}} class="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>
-                            <td class="center aligned">
-                                <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">
-                                    <i class="red large trash icon"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+        <div style="overflow-x: scroll;">
+            {#                <table class="ui searchable sortable unstackable selectable celled table">#}
+            {#                    <thead>#}
+            {#                    <tr>#}
+            {#                        <th class="four wide">Item name</th>#}
+            {#                        <th class="three wide">Company</th>#}
+            {#                        <th class="three wide">Vendor</th>#}
+            {#                        <th class="two wide">Unit price</th>#}
+            {#                        <th class="two wide">Quantity</th>#}
+            {#                        <th class="one wide">Total price</th>#}
+            {#                        <th class="one wide">Remove</th>#}
+            {#                    </tr>#}
+            {#                    </thead>#}
+            {#                    <tbody>#}
+            {##}
+            {#                    {% for item in cart | sort(attribute='listing.name') %}#}
+            {#                        <tr data-id="{{ item.listing.id }}">#}
+            {##}
+            {#                          {% set info_link = 'onclick=window.location.href=\'' +#}
+            {#                              url_for('merchant.listing_info', backto=request.path +#}
+            {#                              '?' + request.query_string,#}
+            {#                              listing_id=item.listing.id) + '\';' %}#}
+            {##}
+            {#                            <td {{info_link}}>{{ item.listing.name }}</td>#}
+            {#                            <td {{info_link}}>{{ item.listing.vendor.company_name }}</td>#}
+            {#                            <td {{info_link}}>{{ item.listing.vendor.full_name() }}</td>#}
+            {#                            <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>#}
+            {#                            <td>#}
+            {#                                <div class="ui input fluid">#}
+            {#                                    <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>#}
+            {#                                </div>#}
+            {#                            </td>#}
+            {#                            <td {{info_link}} class="total_price">${{ '%0.2f' | format(item.quantity * item.listing.price) }}</td>#}
+            {#                            <td class="center aligned">#}
+            {#                                <button type="submit" name="submit" class="remove-from-cart ui icon button" data-id="{{ item.listing.id }}" value="Remove {{ item.listing.id }}">#}
+            {#                                    <i class="red large trash icon"></i>#}
+            {#                                </button>#}
+            {#                            </td>#}
+            {#                        </tr>#}
+            {#                    {% endfor %}#}
+            {#                    </tbody>#}
+            {#                </table>#}
 
             {% if vendor_items_dict %}
                 <form action="{{ url_for('merchant.order_items') }}" method="post">
-                        <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 </form>
                 <br>
             {% endif %}
