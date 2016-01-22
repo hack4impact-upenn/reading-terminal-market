@@ -153,3 +153,6 @@ $ python manage.py runserver
     ├── test_basics.py
     └── test_user_model.py
 ```
+
+## License
+[MIT License](LICENSE.md)
