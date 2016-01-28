@@ -4,6 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, \
     BadSignature, SignatureExpired
 from .. import db, login_manager
+from sqlalchemy import or_, desc, func
+
 
 
 class Permission:
@@ -214,6 +216,60 @@ class User(UserMixin, db.Model):
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
+    @staticmethod
+    def user_search(**kwargs):
+        """ Returns all users matching criteria"""
+        filter_list = []
+        if 'main_search_term' in kwargs:
+            term = kwargs['main_search_term']
+            if " " in (term.strip()):
+                array_term = term.split(' ', 1) # split into first and last name
+                filter_list.append(or_(User.first_name.like('%{}%'.format(array_term[0])),
+                                   User.last_name.like('%{}%'.format(array_term[1]))))
+            else:
+                filter_list.append(or_(User.first_name.like('%{}%'.format(term)),
+                                   User.last_name.like('%{}%'.format(term))))
+        if 'company_search_term' in kwargs and kwargs['company_search_term']:
+            term = kwargs['company_search_term']
+            vendors = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
+            vendor_ids = [vendor.id for vendor in vendors]
+            if len(vendor_ids) > 0:
+                filter_list.append(User.id.in_(vendor_ids))
+        if 'company_search_term' in kwargs and kwargs['company_search_term']:
+            term = kwargs['company_search_term']
+            merchants = Merchant.query.filter(Merchant.company_name.like('%{}%'.format(term))).all()
+            merchant_ids = [merchant.id for merchant in merchants]
+            if len(merchant_ids) > 0:
+                filter_list.append(User.id.in_(merchant_ids))
+        if 'user_type' in kwargs:
+            user_criteria = kwargs['user_type']
+            format(user_criteria)
+            if user_criteria == "merchant":
+                filter_list.append(User.user_type == "merchant")
+            elif user_criteria == "vendor":
+                filter_list.append(User.user_type == "vendor")
+            elif user_criteria == "merchant_vendor":
+                filter_list.append(or_(User.user_type == "merchant",
+                                       User.user_type == "vendor"))
+            elif user_criteria == "admin":
+                filter_list.append(User.role_id == 2)
+            else:
+                ()
+        filtered_query = User.query.filter(*filter_list)
+
+        if 'sort_by' in kwargs and kwargs['sort_by']:
+            sort = kwargs['sort_by']
+            format(sort)
+        else:
+            sort = None
+
+        if sort == "alphaAZ":
+            sorted_query = filtered_query.order_by(func.lower(User.last_name))
+        elif sort == "alphaZA":
+            sorted_query = filtered_query.order_by(desc(func.lower(User.last_name)))
+        else:  # default sort
+            sorted_query = filtered_query.order_by(func.lower(User.last_name))
+        return sorted_query
 
     def __repr__(self):
         return '<User \'%s\'>' % self.full_name()
@@ -274,6 +330,13 @@ class Merchant(User):
 
     def get_cart_listings(self):
         return [cart_item.listing for cart_item in self.cart_items]
+
+    def get_cart_item(self, listing_id):
+        """ Returns a cart_item based on its listing_id """
+        for cart_item in self.cart_items:
+            if cart_item.listing.id == listing_id:
+                return cart_item
+        return None
 
     def __init__(self, **kwargs):
         super(Merchant, self).__init__(**kwargs)
