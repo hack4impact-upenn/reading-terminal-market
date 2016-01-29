@@ -13,55 +13,110 @@
                     View and manage currently registered users.
                 </div>
             </h2>
-
-            <div class="ui menu">
-                <div id="select-role" class="ui dropdown item">
-                    <div class="text">
-                        All account types
-                    </div>
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <div class="item" data-value="">All account types</div>
-                        {% for r in roles %}
-                            <div class="item" data-value="{{ r.name }}">{{ r.name }}s</div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="ui right search item">
-                    <div class="ui transparent icon input">
-                        <input id="search-users" type="text" placeholder="Search users…">
-                        <i class="search icon"></i>
-                    </div>
-                </div>
+        <form class="ui form segment">
+            <div class="twelve wide field">
+                <label>Search names</label>
+                <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. Bob Smith">
             </div>
 
+            <div class="inline field">
+                <br>
+                <br>
+                <select class="ui selection dropdown" name="sort-by">
+                    {% if request.args.get('sortby') == "alphaAZ" %}
+                        {% set checked1 = 'selected' %}
+                    {% elif request.args.get('sortby') == "alphaZA" %}
+                        {% set checked2 = 'selected' %}
+                    {% endif %}
+                    <option value="alphaAZ" {{ checked1 }}>Alphabetical names, (A-Z)</option>
+                    <option value="alphaZA" {{ checked2 }}>Alphabetical names, (Z-A)</option>
+
+                </select>
+                <select class="ui selection dropdown" name="user-type">
+                    {% if request.args.get('user-type') == "all" %}
+                        {% set checked3 = 'selected' %}
+                    {% elif request.args.get('user-type') == "merchant" %}
+                        {% set checked4 = 'selected' %}
+                    {% elif request.args.get('user-type') == "vendor" %}
+                        {% set checked5 = 'selected' %}
+                    {% elif request.args.get('user-type') == "merchant_vendor" %}
+                        {% set checked6 = 'selected' %}
+                    {% elif request.args.get('user-type') == "admin" %}
+                        {% set checked7 = 'selected' %}
+                    {% endif %}
+                    <option value="all" {{ checked3 }}>Show All User Types</option>
+                    <option value="merchant" {{ checked4 }}>Show Merchants only</option>
+                    <option value="vendor" {{ checked5 }}>Show Vendors only</option>
+                    <option value="merchant_vendor" {{ checked6 }}>Show Merchants and Vendors only</option>
+                    <option value="admin" {{ checked7 }}>Show Admins only</option>
+                </select>
+
+            </div>
+            <div class="twelve wide field advanced-search">
+                <label>Search Company Names</label>
+                <input value="{{ company_search_term }}" type="text" name="company-search" placeholder="e.g. Bobby's Burgers">
+            </div>
+
+            <br>
+            <button class="ui button blue" type="submit">Search</button>
+            <a class="ui button" href="{{ url_for('admin.registered_users', page=1) }}">Clear Criteria</a>
+        </form>
+            {% if header is defined %}
+                <h2 class="ui header">
+                    {{ header }}
+                </h2>
+            {% endif %}
             {# Use overflow-x: scroll so that mobile views don't freak out
              # when the table is too wide #}
-            <div style="overflow-x: scroll;">
-                <table class="ui searchable sortable unstackable selectable celled table">
-                    <thead>
-                        <tr>
-                            <th>First name</th>
-                            <th class="sorted ascending">Last name</th>
-                            <th>Company name</th>
-                            <th>Email address</th>
-                            <th>Account type</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for u in users | sort(attribute='last_name') %}
-                        <tr onclick="window.location.href = '{{ url_for('admin.user_info', user_id=u.id) }}';">
+            {% if count > 0 %}
+                <div style="overflow-x: scroll;">
+                    <table class="ui searchable sortable unstackable selectable celled table">
+                        <thead>
+                            <tr>
+                                <th>First name</th>
+                                <th>Last name</th>
+                                <th>Company name</th>
+                                <th>Email address</th>
+                                <th>Account type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for u in users.items %}
+                            <tr onclick="window.location.href = '{{ url_for('admin.user_info', user_id=u.id) }}';">
 
-                            <td>{{ u.first_name }}</td>
-                            <td>{{ u.last_name }}</td>
-                            <td>{{ u.company_name }}</td>
-                            <td>{{ u.email }}</td>
-                            <td class="user role">{{ u.role.name }}</td>
-                        </tr>
+                                <td>{{ u.first_name }}</td>
+                                <td>{{ u.last_name }}</td>
+                                <td>{{ u.company_name }}</td>
+                                <td>{{ u.email }}</td>
+                                <td class="user role">{{ u.role.name }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <br><br>
+                <div class="ui pagination menu">
+                    {% for page in users.iter_pages() %}
+                        {% if page %}
+                            {% if page != users.page %}
+                                {% if current_user.is_admin %}
+                                    {% if 'search=False' in request.query_string %}
+                                        <a class="item" href="{{ url_for('admin.registered_users', page=page, **request.args.to_dict()) }}">{{ page }}</a>
+                                    {% else %}
+                                        <a class="item" href="{{ url_for('admin.registered_users', page=page, search=False, **request.args.to_dict()) }}">{{ page }}</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                <a class="active item">{{ page }}</a>
+                            {% endif %}
+                        {% else %}
+                            <a class="disabled item">...</a>
+                        {% endif %}
                     {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% else %}
+                <h3><a href="{{ url_for('admin.registered_users', page=1) }}">Reset Search</a></h3>
+            {% endif %}
+    </div>
         </div>
     </div>
 

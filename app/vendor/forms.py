@@ -31,7 +31,7 @@ class ChangeListingInformation(Form):
             raise ValidationError('You already have an item with name {}.'.format(field.data))
 
 
-class NewItemForm(Form):	
+class NewItemForm(Form):
     category_id = QuerySelectField('Category',
                                    validators=[DataRequired()],
                                    get_label='name',

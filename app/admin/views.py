@@ -23,28 +23,55 @@ def index():
     return render_template('admin/index.html')
 
 
-@admin.route('/view/all')
+@admin.route('/view-all/')
+@admin.route('/view-all/<int:page>')
 @login_required
 @admin_required
-def listing_view_all():
+def listing_view_all(page=1):
     """Search for listings"""
     main_search_term = request.args.get('main-search', "", type=str)
+    sort_by = request.args.get('sort-by', "", type=str)
     name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
-    listings = Listing.search(available=True,
-                              min_price=min_price,
-                              max_price=max_price,
-                              name_search_term=name_search_term,
-                              main_search_term=main_search_term)
+    category_search = request.args.get('category-search', "", type=str)
+    avail = request.args.get('avail', "", type=str)
+    search = request.args.get('search', "", type=str)
+    listings_raw = Listing.search(
+        sort_by=sort_by,
+        main_search_term=main_search_term,
+        avail=avail,
+        name_search_term=name_search_term,
+        min_price=min_price,
+        max_price=max_price,
+        category_search=category_search
+    )
+    print sort_by
+    print main_search_term
+    # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
+    if search != "False":
+        page = 1
+    listings_paginated_new = listings_raw.paginate(page, 20, False)
+    result_count = listings_raw.count()
 
-    return render_template('admin/view_listings.html',
-                           listings=listings,
-                           main_search_term=main_search_term,
-                           min_price=min_price,
-                           max_price=max_price,
-                           name_search_term=name_search_term,
-                           header="All listings")
+    if result_count > 0:
+        header = "Search Results: {} results in total".format(result_count)
+    else:
+        header = "No Search Results"
+
+    return render_template(
+        'admin/view_listings.html',
+        sort_by=sort_by,
+        listings=listings_paginated_new,
+        main_search_term=main_search_term,
+        avail=avail,
+        name_search_term=name_search_term,
+        min_price=min_price,
+        max_price=max_price,
+        category_search=category_search,
+        header=header,
+        count=result_count
+    )
 
 
 @admin.route('/view-categories')
@@ -165,15 +192,45 @@ def invite_user():
     return render_template('admin/new_user.html', form=form)
 
 
-@admin.route('/users')
+@admin.route('/users-all/')
+@admin.route('/users-all/<int:page>')
 @login_required
 @admin_required
-def registered_users():
+def registered_users(page=1):
     """View all registered users."""
-    users = User.query.all()
-    roles = Role.query.all()
-    return render_template('admin/registered_users.html', users=users,
-                           roles=roles)
+    main_search_term = request.args.get('main-search', "", type=str)
+    sort_by = request.args.get('sort-by', "", type=str)
+    company_search_term = request.args.get('company-search', "", type=str)
+    user_type = request.args.get('user-type', "", type=str)
+    search = request.args.get('search', "", type=str)
+    users_raw = User.user_search(
+        sort_by=sort_by,
+        main_search_term=main_search_term,
+        company_search_term=company_search_term,
+        user_type=user_type,
+    )
+    # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
+    if search != "False":
+        page = 1
+    users_paginated = users_raw.paginate(page, 2, False)
+    result_count = users_raw.count()
+    print result_count
+
+    if result_count > 0:
+        header = "Search Results: {} results in total".format(result_count)
+    else:
+        header = "No Search Results"
+
+    return render_template(
+        'admin/registered_users.html',
+        sort_by=sort_by,
+        main_search_term=main_search_term,
+        company_search_term=company_search_term,
+        user_type=user_type,
+        header=header,
+        users=users_paginated,
+        count=result_count
+    )
 
 
 @admin.route('/user/<int:user_id>')
@@ -232,3 +289,25 @@ def delete_user(user_id):
         db.session.commit()
         flash('Successfully deleted user %s.' % user.full_name(), 'success')
     return redirect(url_for('admin.registered_users'))
+
+
+@admin.route('/items/<int:listing_id>')
+@admin.route('/items/<int:listing_id>/info')
+@login_required
+@admin_required
+def listing_info(listing_id):
+    """View a listing's info."""
+    listing = Listing.query.filter_by(id=listing_id, available=True).first()
+    if listing is None:
+        abort(404)
+
+    if 'backto' in request.args:
+        backto = request.args.get('backto')
+    else:
+        backto = url_for('admin.listing_view_all')
+
+    return render_template(
+        'shared/listing_info.html',
+        listing=listing,
+        backto=backto
+    )
