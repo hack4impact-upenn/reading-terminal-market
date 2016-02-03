@@ -35,7 +35,7 @@ A Flask application template with the boilerplate code already done for you.
 1. Clone the repo
 
     ```
-    $ git clone https://github.com/hack4impact/flask-base.git
+    $ git clone https://github.com/hack4impact/reading-terminal-market
     $ cd flask-base
     ```
 
