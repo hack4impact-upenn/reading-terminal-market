@@ -108,8 +108,32 @@ def manage_cart():
 @merchant_required
 def listing_info(listing_id):
     """View a listing's info."""
-    """TODO: Create listing's info view for merchants"""
-    abort(404)
+    listing = Listing.query.filter_by(id=listing_id, available=True).first()
+    if listing is None:
+        abort(404)
+    item = current_user.get_cart_item(listing_id)
+    if item is None:
+        quantity = 0
+    else:
+        quantity = item.quantity
+
+    if 'backto' in request.args:
+        backto = request.args.get('backto')
+    else:
+        backto = url_for('merchant.listing_view_all')
+
+    if 'cart' in backto:
+        backto_text = 'cart'
+    else:
+        backto_text = 'listings'
+
+    return render_template(
+        'shared/listing_info.html',
+        listing=listing,
+        quantity=quantity,
+        backto=backto,
+        backto_text=backto_text
+    )
 
 
 @merchant.route('/add_to_cart/<int:listing_id>', methods=["PUT"])

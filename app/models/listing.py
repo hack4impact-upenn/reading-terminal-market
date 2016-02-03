@@ -90,10 +90,13 @@ class Listing(db.Model):
         if 'avail' in kwargs:
             avail_criteria = kwargs['avail']
             format(avail_criteria)
-            if avail_criteria == "non_avail" or avail_criteria == "both":
+            if avail_criteria == "non_avail":
                 filter_list.append(Listing.available == False)
-            if avail_criteria == "avail" or avail_criteria == "both":
+            if avail_criteria == "avail":
                 filter_list.append(Listing.available == True)
+            if avail_criteria == "both":
+                filter_list.append(or_(Listing.available == True,
+                                       Listing.available == False))
 
         # used by merchants to filter by availability
         if 'available' in kwargs:
@@ -110,7 +113,7 @@ class Listing(db.Model):
             filter_list.append(Listing.price <= kwargs['max_price'])
 
         filtered_query = Listing.query.filter(*filter_list)
-
+        print Listing.query.filter(*filter_list)
         if 'sort_by' in kwargs and kwargs['sort_by']:
             sort = kwargs['sort_by']
             format(sort)
@@ -127,7 +130,6 @@ class Listing(db.Model):
             sorted_query = filtered_query.order_by(desc(func.lower(Listing.name)))
         else:  # default sort
             sorted_query = filtered_query.order_by(Listing.price)
-
         return sorted_query
 
     def __repr__(self):

@@ -17,6 +17,7 @@
             {# Actual table #}
             {# Use overflow-x: scroll so that mobile views don't freak out
              # when the table is too wide #}
+
             {% if count > 0 %}
                 <div style="overflow-x: scroll;">
                     <table id="listings-table" class="ui searchable sortable unstackable selectable celled table">
@@ -40,53 +41,61 @@
                         </thead>
                         <tbody>
                         {% for l in listings.items %}
+
                             {% if current_user.is_vendor() %}
-                                <tr onclick="window.location.href = '{{ url_for('vendor.listing_info', listing_id=l.id) }}';">
-                                    {% else %}
-                                <tr>
+                                {% set info_link = 'onclick=window.location.href=\'' + url_for('vendor.listing_info', listing_id=l.id) + '\';' %}
+                            {% elif current_user.is_merchant() %}
+                                {% set info_link = 'onclick=window.location.href=\'' +
+                              url_for('merchant.listing_info',
+                              backto=request.path + '?' + request.query_string,
+                              listing_id=l.id) + '\';' %}
+                            {% elif current_user.is_admin() %}
+                                {% set info_link = 'onclick=window.location.href=\'' +
+                              url_for('admin.listing_info',
+                              backto=request.path + '?' + request.query_string,
+                              listing_id=l.id) + '\';' %}
                             {% endif %}
-                        <td>{{ l.name }}</td>
-                        {% if current_user.is_merchant() or current_user.is_admin() %}
-                            <td>{{ l.vendor.company_name }}</td>
-                        {% endif %}
-                        <td>{{  format_price(l.price) }}/{{l.category.unit}}</td>
-                        <td class="truncate">{{ l.description }}</td>
-                        {% if current_user.is_vendor() or current_user.is_admin() %}
-                            <td>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
-                        {% endif %}
-                        <td class="item category">{{ l.category.name }}</td>
 
-
-
-                        {% if current_user.is_merchant() %}
-                            {% if l in cart_listings %}
-                                {% set in_cart = "true" %}
-                                {% set cart_color = "blue" %}
-                            {% else %}
-                                {% set in_cart = "false" %}
-                                {% set cart_color = "grey" %}
+                            <td {{info_link}}>{{ l.name }}</td>
+                            {% if current_user.is_merchant() or current_user.is_admin() %}
+                                <td {{info_link}}>{{ l.vendor.company_name }}</td>
                             {% endif %}
-                            <td class="center aligned cartCell" data-id="{{ l.id }}" data-incart="{{ in_cart }}">
-                                <div class="ui left action input">
-                                    <a class="toggle-cart ui button" id="button_padding">
-                                        <i class="cart icon {{ cart_color }}"></i>
-                                    </a>
-                                    <input class="cart-quantity" id="input_size" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
-                                </div>
-                            </td>
-                            <td class="center aligned favoriteCell">
-                                {% if l in current_user.bookmarks %}
-                                    <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="true">
-                                        <i class="favorite icon yellow"></i>
-                                    </a>
+                            <td {{info_link}}>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>
+                            <td class="truncate" {{info_link}}>{{ l.description }}</td>
+                            {% if current_user.is_vendor() or current_user.is_admin() %}
+                                <td {{info_link}}>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                            {% endif %}
+                            <td class="item category" {{info_link}}>{{ l.category.name }}</td>
+
+                            {% if current_user.is_merchant() %}
+                                {% if l in cart_listings %}
+                                    {% set in_cart = "true" %}
+                                    {% set cart_color = "blue" %}
                                 {% else %}
-                                    <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="false">
-                                        <i class="favorite icon grey"></i>
-                                    </a>
+                                    {% set in_cart = "false" %}
+                                    {% set cart_color = "grey" %}
                                 {% endif %}
-                            </td>
-                        {% endif %}
-                        </tr>
+                                <td class="center aligned cartCell" data-id="{{ l.id }}" data-incart="{{ in_cart }}">
+                                    <div class="ui left action input">
+                                        <a class="toggle-cart ui button" id="button_padding">
+                                            <i class="cart icon {{ cart_color }}"></i>
+                                        </a>
+                                        <input class="cart-quantity" id="input_size" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
+                                    </div>
+                                </td>
+                                <td class="center aligned favoriteCell">
+                                    {% if l in current_user.bookmarks %}
+                                        <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="true">
+                                            <i class="favorite icon yellow"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="false">
+                                            <i class="favorite icon grey"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                            </tr>
                         {% endfor %}
                         </tbody>
                     </table>
@@ -107,6 +116,12 @@
                                     {% else %}
                                         <a class="item" href="{{ url_for('vendor.current_listings', page=page, search=False, **request.args.to_dict()) }}">{{ page }}</a>
                                     {% endif %}
+                                {% elif current_user.is_admin %}
+                                    {% if 'search=False' in request.query_string %}
+                                        <a class="item" href="{{ url_for('admin.listing_view_all', page=page, **request.args.to_dict()) }}">{{ page }}</a>
+                                    {% else %}
+                                        <a class="item" href="{{ url_for('admin.listing_view_all', page=page, search=False, **request.args.to_dict()) }}">{{ page }}</a>
+                                    {% endif %}
                                 {% endif %}
                             {% else %}
                                 <a class="active item">{{ page }}</a>
@@ -121,6 +136,8 @@
                     <h3><a href="{{ url_for('merchant.listing_view_all', page=1) }}">Reset Search</a></h3>
                 {% elif current_user.is_vendor() %}
                     <h3><a href="{{ url_for('vendor.current_listings', page=1) }}">Reset Search</a></h3>
+                {% elif current_user.is_admin() %}
+                    <h3><a href="{{ url_for('admin.listing_view_all', page=1) }}">Reset Search</a></h3>
                 {% endif %}
             {% endif %}
             {% block after %}
