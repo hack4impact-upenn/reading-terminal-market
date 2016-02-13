@@ -1,0 +1,26 @@
+<p>Hello!</p>
+
+<p>A merchant has requested the following items: <p>
+
+<table>
+    <thead>
+    <tr>
+        <th>Item name</th>
+        <th>Quantity</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cart_item in cart_items %}
+        <tr>
+            <td>{{ cart_item.listing.name }}</td>
+            <td>{{ cart_item.quantity| int() }} {{ cart_item.listing.category.unit }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<p>Sincerely,</p>
+
+<p>The {{ config.APP_NAME }} Team</p>
+
+<p><small>Note: replies to this email address are not monitored.</small></p>
