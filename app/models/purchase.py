@@ -110,21 +110,17 @@ class Order(db.Model):
         vendor = User.query.get(vendor_id)
         merchant_id = current_user.id
         merchant = Merchant.query.get(merchant_id)
-
-        # send request email to the vendor
         send_email(vendor.email,
                    'New merchant order request',
                    'merchant/email/order_item',
                    merchant=merchant,
                    cart_items=cart_items)
-
         # send confirmation to the merchant
         send_email(merchant.email,
                    'Confirmation of order request',
                    'merchant/email/confirm_order',
                    vendor=vendor,
                    cart_items=cart_items)
-
         for item in cart_items:
             p = Purchase(
                 order=order,
