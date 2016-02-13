@@ -1,10 +1,11 @@
 from .. import db
-from ..models import User
+from ..models import User, Merchant
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
 from flask.ext.login import current_user
 from collections import defaultdict, OrderedDict
+from ..email import send_email
 
 
 class CartItem(db.Model):
@@ -103,7 +104,17 @@ class Order(db.Model):
                             current_user.cart_items)
 
         order = Order(date, vendor_id)
-        # TODO: email vendor
+
+        vendor = User.query.get(vendor_id)
+        merchant_id = current_user.id
+        merchant = Merchant.query.get(merchant_id)
+
+        send_email(vendor.email,
+                   'New merchant order request',
+                   'merchant/email/order_item',
+                   merchant=merchant,
+                   cart_items=cart_items)
+
         for item in cart_items:
             p = Purchase(
                 order=order,
