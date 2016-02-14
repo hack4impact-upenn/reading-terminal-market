@@ -237,5 +237,18 @@ def decline_order(order_id):
         abort(400)
     order.status = Status.DECLINED
     db.session.commit()
-    # TODO send emails
+
+    merchant_id = order.merchant_id
+    merchant = Merchant.query.get(merchant_id)
+
+    vendor_name = order.company_name
+    purchases = order.purchases
+
+    send_email(merchant.email,
+               'Vendor order request declined',
+               'vendor/email/declined_order',
+               vendor_name=vendor_name,
+               order=order,
+               purchases=purchases)
+
     return jsonify({'order_id': order_id, 'status': 'declined'})
