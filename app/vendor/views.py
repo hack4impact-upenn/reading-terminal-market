@@ -1,5 +1,5 @@
 from ..decorators import vendor_required
-
+from werkzeug import secure_filename
 from flask import (
     render_template,
     abort,
@@ -10,10 +10,11 @@ from flask import (
     jsonify
 )
 from flask.ext.login import login_required, current_user
-from forms import (ChangeListingInformation, NewItemForm)
+from forms import (ChangeListingInformation, NewItemForm, NewCSVForm)
 from . import vendor
 from ..models import Listing, Order, Status
 from .. import db
+import csv
 
 
 @vendor.route('/')
@@ -45,6 +46,48 @@ def new_listing():
               'form-success')
         return redirect(url_for('.new_listing'))
     return render_template('vendor/new_listing.html', form=form)
+
+
+@vendor.route('/csv-upload', methods=['GET', 'POST'])
+@login_required
+@vendor_required
+def csv_upload():
+    """Create a new item."""
+    form = NewCSVForm()
+    """    if form.validate_on_submit():
+        category_id = form.category_id.data.id
+        listing = Listing(
+            name=form.listing_name.data,
+            description=form.listing_description.data,
+            available=True,
+            price=form.listing_price.data,
+            category_id=category_id,
+            vendor_id=current_user.id
+        )
+        db.session.add(listing)
+        db.session.commit()
+    """
+
+
+    if form.validate_on_submit():
+        csv_field = form.file_upload
+        buffer = csv_field.data.stream # csv_field is the FileField obj
+        csv_data = csv.DictReader(buffer, delimiter=',')
+        for row in csv_data:
+            if len(row['Vendor']) > 1:
+                print(row['Vendor'])
+                listing = Listing(
+                    name = str(row['Vendor']),
+                    description = str(row['Description']),
+                    available=True,
+                    price= str(row['Price']),
+                    category_id= str(row['CategoryID']),
+                    vendor_id= str(current_user.id)
+                )
+                db.session.add(listing)
+                db.session.commit()
+        return redirect(url_for('.csv_upload'))
+    return render_template('vendor/new_csv.html', form=form)
 
 
 @vendor.route('/itemslist/')
@@ -83,6 +126,7 @@ def current_listings(page=1):
         count=result_count,
         header=header
     )
+
 
 
 @vendor.route('/items/<int:listing_id>')
