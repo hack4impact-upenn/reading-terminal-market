@@ -1,5 +1,5 @@
 from .. import db
-from ..models import User
+from ..models import User, Merchant
 from datetime import datetime
 import pytz
 from sqlalchemy import CheckConstraint
@@ -106,9 +106,13 @@ class Order(db.Model):
         order = Order(date, vendor_id)
 
         vendor = User.query.get(vendor_id)
+        merchant_id = current_user.id
+        merchant = Merchant.query.get(merchant_id)
+
         send_email(vendor.email,
                    'New merchant order request',
                    'merchant/email/order_item',
+                   merchant=merchant,
                    cart_items=cart_items)
 
         for item in cart_items:

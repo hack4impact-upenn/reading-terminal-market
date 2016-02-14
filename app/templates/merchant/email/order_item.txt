@@ -1,13 +1,1 @@
-Hello!
 
-A merchant has requested the following items:
-
-{% for cart_item in cart_items %}
-  {{ cart_item.listing.name }}: {{ cart_item.quantity| int() }} {{ cart_item.listing.category.unit }}
-{% endfor %}
-
-Sincerely,
-
-The {{ config.APP_NAME }} Team
-
-Note: replies to this email address are not monitored.
