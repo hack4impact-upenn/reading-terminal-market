@@ -242,12 +242,14 @@ def decline_order(order_id):
     merchant = Merchant.query.get(merchant_id)
 
     vendor_name = order.company_name
+    vendor_email = current_user.email
     purchases = order.purchases
 
     send_email(merchant.email,
                'Vendor order request declined',
                'vendor/email/declined_order',
                vendor_name=vendor_name,
+               vendor_email=vendor_email,
                order=order,
                purchases=purchases)
 
