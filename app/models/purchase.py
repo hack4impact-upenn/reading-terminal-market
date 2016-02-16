@@ -109,7 +109,6 @@ class Order(db.Model):
         merchant_id = current_user.id
         merchant = Merchant.query.get(merchant_id)
 
-        # send request email to the vendor
         send_email(vendor.email,
                    'New merchant order request',
                    'merchant/email/order_item',
@@ -122,6 +121,7 @@ class Order(db.Model):
                    'merchant/email/confirm_order',
                    vendor=vendor,
                    cart_items=cart_items)
+
 
         for item in cart_items:
             p = Purchase(
