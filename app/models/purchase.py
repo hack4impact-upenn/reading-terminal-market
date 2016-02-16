@@ -9,7 +9,7 @@ from ..email import send_email
 
 
 class CartItem(db.Model):
-    ''' Functions as association table between listings and merchants '''
+    """Functions as association table between listings and merchants"""
     __tablename__ = "cartItems"
     __table_args__ = (
         CheckConstraint('quantity > 0'),
@@ -24,9 +24,9 @@ class CartItem(db.Model):
 
     @staticmethod
     def get_vendor_cart_items_dict():
-        '''returns a dict where the keys are
+        """returns a dict where the keys are
         vendors and the fields are a list
-        of items in the cart from that vendor'''
+        of items in the cart from that vendor"""
         vendor_items_dict = defaultdict(list)
         for item in current_user.cart_items:
             vendor = item.listing.vendor
@@ -40,13 +40,13 @@ class CartItem(db.Model):
 
     @staticmethod
     def get_vendor_ids():
-        '''returns all the ids of all the vendors represented in a cart'''
+        """returns all the ids of all the vendors represented in a cart"""
         return [item.listing.vendor_id for item in current_user.cart_items]
 
     @staticmethod
     def get_total_price(cart_items=None):
-        '''returns the total price of the given cart_items. if None, returns
-        the total price of all of the current user's cart_items'''
+        """returns the total price of the given cart_items. if None, returns
+        the total price of all of the current user's cart_items"""
         if cart_items is None:
             cart_items = current_user.cart_items
         prices = [item.listing.price * item.quantity for item in cart_items]
@@ -111,10 +111,18 @@ class Order(db.Model):
         merchant_id = current_user.id
         merchant = Merchant.query.get(merchant_id)
 
+        # send request email to the vendor
         send_email(vendor.email,
                    'New merchant order request',
                    'merchant/email/order_item',
                    merchant=merchant,
+                   cart_items=cart_items)
+
+        # send confirmation to the merchant
+        send_email(merchant.email,
+                   'Confirmation of order request',
+                   'merchant/email/confirm_order',
+                   vendor=vendor,
                    cart_items=cart_items)
 
         for item in cart_items:
