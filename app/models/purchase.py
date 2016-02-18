@@ -79,6 +79,7 @@ class Order(db.Model):
 
     vendor_id = db.Column(db.Integer)
     company_name = db.Column(db.String(64))
+    comment = db.Column(db.Text)
 
     def __init__(self, date, vendor_id):
         self.status = Status.PENDING
@@ -87,6 +88,7 @@ class Order(db.Model):
         self.merchant_id = current_user.id
         vendor = User.query.get(vendor_id)
         self.company_name = vendor.company_name
+        self.comment = None
         self.merchant_company_name = current_user.company_name
 
     def __repr__(self):
