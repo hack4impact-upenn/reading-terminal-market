@@ -12,7 +12,7 @@ from flask import (
 from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm)
 from . import vendor
-from ..models import Listing, Order, Status, Merchant
+from ..models import Listing, Order, Status, User
 from .. import db
 from ..email import send_email
 
@@ -211,7 +211,7 @@ def approve_order(order_id):
     db.session.commit()
 
     merchant_id = order.merchant_id
-    merchant = Merchant.query.get(merchant_id)
+    merchant = User.query.get(merchant_id)
 
     vendor_name = order.company_name
     purchases = order.purchases
@@ -239,7 +239,7 @@ def decline_order(order_id):
     db.session.commit()
 
     merchant_id = order.merchant_id
-    merchant = Merchant.query.get(merchant_id)
+    merchant = User.query.get(merchant_id)
 
     vendor_name = order.company_name
     vendor_email = current_user.email
