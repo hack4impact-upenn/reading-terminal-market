@@ -1,0 +1,29 @@
+<p>Hello!</p>
+
+<p>The vendor <b>{{ vendor_name }}</b> has <b>approved</b> your order placed on
+  {{ order.get_date() }} at {{ order.get_time() }} of the following items:<p>
+
+<table>
+    <thead>
+    <tr>
+        <th>Item name</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for purchase in purchases %}
+        <tr>
+            <td>{{ purchase.item_name }}</td>
+            <td>{{ purchase.quantity }}</td>
+            <td>{{ format_price(purchase.item_price * purchase.quantity) }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<p>Sincerely,</p>
+
+<p>The {{ config.APP_NAME }} Team</p>
+
+<p><small>Note: replies to this email address are not monitored.</small></p>

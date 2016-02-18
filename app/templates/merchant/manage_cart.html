@@ -97,15 +97,6 @@
 
         <br>
 
-
-        <form action="{{ url_for('merchant.order_items') }}" method="post">
-            <input type="submit" class="ui teal button cart-button" name="submit"
-                   value="Order from {{ vendor.company_name }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <input type="hidden" name="vendor_id" value="{{ vendor.id }}"/>
-        </form>
-
-
         <a class="ui teal button vendor-cart-button" href="{{ url_for('.manage_cart', confirm_order=True, vendor_id=vendor.id) }}">
             Order from {{ vendor.company_name }}
         </a>

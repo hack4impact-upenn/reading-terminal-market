@@ -1,0 +1,21 @@
+Hello!
+
+The vendor {{ vendor_name }} has unfortunately declined your order placed on
+{{ order.get_date() }} at {{ order.get_time() }} of the following items:
+
+
+{% for purchase in purchases %}
+----------------------------------------
+Item name   : {{ purchase.item_name }}
+Quantity    : {{ purchase.quantity }}
+Total Price : {{ format_price(purchase.item_price * purchase.quantity) }}
+{% endfor %}
+
+
+Please contact the vendor if you have further questions: {{ vendor_email }}.
+
+Sincerely,
+
+The {{ config.APP_NAME }} Team
+
+Note: replies to this email address are not monitored.
