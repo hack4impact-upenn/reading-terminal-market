@@ -198,7 +198,7 @@ def view_orders():
     )
 
 
-@vendor.route('/approve/<int:order_id>', methods=['PUT'])
+@vendor.route('/approve/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def approve_order(order_id):
@@ -228,7 +228,7 @@ def approve_order(order_id):
     return jsonify({'order_id': order_id, 'status': 'approved', 'comment': comment})
 
 
-@vendor.route('/decline/<int:order_id>', methods=['PUT'])
+@vendor.route('/decline/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def decline_order(order_id):

@@ -41,7 +41,9 @@
                     Placed on {{ order.get_date() }} at {{ order.get_time() }}
                 </div>
             </h3>
-
+            {% if order.comment %}
+            <div><b>Comments:</b><span class="order-comments"> {{ order.comment }} </span></div>
+            {% endif %}
             <div><b>Total:</b> {{ order.get_total() }}</div>
             <div style="margin-top: 5px; margin-bottom: 0px"><a class="toggle-details" href="#">Show purchases</a></div>
 
@@ -153,7 +155,7 @@
 
             function approveDeclineRequest(newStatus, orderId, comment, callback) {
                 var comments = { 'comment' : comment}
-                $.ajax({p
+                $.ajax({
                     url: '/vendor/'+ newStatus +'/' + orderId,
                     contentType: "application/json",
                     dataType:"json",
@@ -164,7 +166,7 @@
                             callback();
                         }
                     },
-                    method: 'PUT'
+                    method: 'POST'
                 });
             }
 
@@ -192,7 +194,7 @@
                 var orderId = orderSegment.attr('id').split('-')[1];
                 var statusLabel = orderSegment.find( '.status-label' );
                 var commentContainer = $('body').find('.comment-container').val();
-                console.log(commentContainer);
+                var listingComment = orderSegment.find('.order-comments');
                 switch (newStatus) {
                     case "approved":
                         approveDeclineRequest('approve', orderId, commentContainer, function() {
@@ -200,6 +202,7 @@
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Approved");
                             statusLabel.addClass("green");
+                            listingComment.text(commentContainer);
                              $('.ui.modal')
                                 .modal('hide');
                         });
@@ -210,11 +213,13 @@
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Declined");
                             statusLabel.addClass("red");
+                            listingComment.text(commentContainer);
                             $('.ui.modal')
                                 .modal('hide');
                         });
                         break;
                 }
+                $('.action-button').unbind();
             }
 
             $('.approve').click(function(){approveDeclineCommenter.call(this, 'Approve', function(container) {
