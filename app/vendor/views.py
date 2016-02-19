@@ -215,13 +215,16 @@ def approve_order(order_id):
 
     vendor_name = order.company_name
     purchases = order.purchases
-
+    comment = None
+    if order.comment != "":
+        comment = order.comment
     send_email(merchant.email,
                'Vendor order request approved',
                'vendor/email/approved_order',
                vendor_name=vendor_name,
                order=order,
-               purchases=purchases)
+               purchases=purchases,
+               comment=comment)
 
     return jsonify({'order_id': order_id, 'status': 'approved'})
 
@@ -244,13 +247,16 @@ def decline_order(order_id):
     vendor_name = order.company_name
     vendor_email = current_user.email
     purchases = order.purchases
-
+    comment = None
+    if order.comment != "":
+        comment = order.comment
     send_email(merchant.email,
                'Vendor order request declined',
                'vendor/email/declined_order',
                vendor_name=vendor_name,
                vendor_email=vendor_email,
                order=order,
-               purchases=purchases)
+               purchases=purchases,
+               comment=comment)
 
     return jsonify({'order_id': order_id, 'status': 'declined'})
