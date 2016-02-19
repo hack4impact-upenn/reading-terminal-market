@@ -60,7 +60,7 @@
 
             {% if order.status == 0 %}
                 <div class="approve-decline-container">
-                    <button class="positive ui button tiny compact approve">Approve order</button>
+                    <button class="positive ui button tiny compact approve" id="order-{{ order.id }}">Approve order</button>
                     <button class="negative ui button tiny compact decline">Decline order</button>
                 </div>
             {% endif %}
@@ -70,6 +70,22 @@
 
         <div class="details" style="display: none;">
             {{ order_table(order) }}
+        </div>
+    </div>
+    <div class="ui modal">
+        <div class="header">You are about to <b class="action-type"></b> this order:</div>
+        <div class="content">
+            <div class="ui form">
+                  <div class="field">
+                    <label>Please write any comments to be sent to the customer <em>(optional)</em>:</label>
+                    <textarea rows="2"></textarea>
+                  </div>
+            </div>
+        </div>
+
+        <div class="confirm-action">
+            <button class="negative ui button tiny compact cancel">Cancel</button>
+            <button class="positive ui button tiny compact action-button"><span class="action-type"></span> Order</button>
         </div>
     </div>
 {% endmacro %}
@@ -149,16 +165,29 @@
                 });
             }
 
-
+            function approveDeclineCommenter(newStatus,callback) {
+                if (newStatus !== 'Cancel') {
+                    $('.ui.modal')
+                            .modal({closable: false})
+                            .modal('show');
+                    $('.action-type').text(newStatus);
+                } else {
+                    $('.ui.modal')
+                            .modal('hide');
+                }
+                if (callback !== undefined) {
+                    callback($(this).attr('id'));
+                }
+            }
             function disableApproveDeclineButtons(buttonContainer) {
                 buttonContainer.find( 'button' ).addClass('disabled');
             }
 
-            function approveDeclineHandler(newStatus) {
-                var buttonContainer = $( this ).closest( '.approve-decline-container' );
-                var orderSegment = $( this ).closest( '.order' );
-                var orderId = orderSegment.attr('id').split('-')[1];
+            function approveDeclineHandler(originalID,newStatus) {
+                var orderId = originalID.split('-')[1];
+                var orderSegment = $("body").find(originalID);
                 var statusLabel = orderSegment.find( '.status-label' );
+                var buttonContainer = orderSegment.find( '.approve-decline-container' );
                 switch (newStatus) {
                     case "approved":
                         approveDeclineRequest('approve', orderId, function() {
@@ -166,6 +195,8 @@
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Approved");
                             statusLabel.addClass("green");
+                             $('.ui.modal')
+                                .modal('hide');
                         });
                         break;
                     case "declined":
@@ -179,8 +210,13 @@
                 }
             }
 
-            $('.approve').click(function(){approveDeclineHandler.call(this, 'approved')});
-            $('.decline').click(function(){approveDeclineHandler.call(this, 'declined')});
+            $('.approve').click(function(){approveDeclineCommenter.call(this, 'Approve', function(id) {
+                $('.action-button').bind("click", function() {approveDeclineHandler(id, 'approved')});
+            })});
+            $('.decline').click(function(){approveDeclineCommenter('Decline')});
+            $('.cancel').click(function(){approveDeclineCommenter('Cancel')});
+
+{#            $('.decline').click(function(){approveDeclineHandler.call(this, 'Decline')});#}
         });
 
     </script>
