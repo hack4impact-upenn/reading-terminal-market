@@ -176,18 +176,18 @@
                             .modal('hide');
                 }
                 if (callback !== undefined) {
-                    callback($(this).attr('id'));
+                    callback($(this));
                 }
             }
             function disableApproveDeclineButtons(buttonContainer) {
                 buttonContainer.find( 'button' ).addClass('disabled');
             }
 
-            function approveDeclineHandler(originalID,newStatus) {
-                var orderId = originalID.split('-')[1];
-                var orderSegment = $("body").find(originalID);
+            function approveDeclineHandler(container,newStatus) {
+                var buttonContainer = container.closest( '.approve-decline-container' );
+                var orderSegment = container.closest( '.order' );
+                var orderId = orderSegment.attr('id').split('-')[1];
                 var statusLabel = orderSegment.find( '.status-label' );
-                var buttonContainer = orderSegment.find( '.approve-decline-container' );
                 switch (newStatus) {
                     case "approved":
                         approveDeclineRequest('approve', orderId, function() {
