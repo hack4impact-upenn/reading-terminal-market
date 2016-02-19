@@ -36,7 +36,7 @@ A Flask application template with the boilerplate code already done for you.
 
     ```
     $ git clone https://github.com/hack4impact/reading-terminal-market
-    $ cd reading-terminal-market
+    $ cd flask-base
     ```
 
 2. Initialize a virtualenv
