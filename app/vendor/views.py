@@ -12,8 +12,9 @@ from flask import (
 from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm)
 from . import vendor
-from ..models import Listing, Order, Status
+from ..models import Listing, Order, Status, User
 from .. import db
+from ..email import send_email
 
 
 @vendor.route('/')
@@ -208,7 +209,20 @@ def approve_order(order_id):
         abort(400)
     order.status = Status.APPROVED
     db.session.commit()
-    # TODO send emails
+
+    merchant_id = order.merchant_id
+    merchant = User.query.get(merchant_id)
+
+    vendor_name = order.company_name
+    purchases = order.purchases
+
+    send_email(merchant.email,
+               'Vendor order request approved',
+               'vendor/email/approved_order',
+               vendor_name=vendor_name,
+               order=order,
+               purchases=purchases)
+
     return jsonify({'order_id': order_id, 'status': 'approved'})
 
 
@@ -223,5 +237,20 @@ def decline_order(order_id):
         abort(400)
     order.status = Status.DECLINED
     db.session.commit()
-    # TODO send emails
+
+    merchant_id = order.merchant_id
+    merchant = User.query.get(merchant_id)
+
+    vendor_name = order.company_name
+    vendor_email = current_user.email
+    purchases = order.purchases
+
+    send_email(merchant.email,
+               'Vendor order request declined',
+               'vendor/email/declined_order',
+               vendor_name=vendor_name,
+               vendor_email=vendor_email,
+               order=order,
+               purchases=purchases)
+
     return jsonify({'order_id': order_id, 'status': 'declined'})
