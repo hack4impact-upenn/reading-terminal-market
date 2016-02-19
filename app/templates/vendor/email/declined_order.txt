@@ -12,6 +12,11 @@ Total Price : {{ format_price(purchase.item_price * purchase.quantity) }}
 {% endfor %}
 
 
+{% if comment %}
+Additionally {{ vendor_name }} made the following comment on this order:
+{{ comment }}
+{% endif %}
+
 Please contact the vendor if you have further questions: {{ vendor_email }}.
 
 Sincerely,

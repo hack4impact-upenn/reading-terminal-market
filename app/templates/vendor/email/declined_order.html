@@ -22,6 +22,11 @@
     </tbody>
 </table>
 
+{% if comment %}
+<p>Additionally {{ vendor_name }} made the following comment on this order:</p>
+<b>{{ comment }}</b>
+{% endif %}
+
 <p> Please contact the vendor if you have further questions: {{ vendor_email }}.</p>
 
 <p>Sincerely,</p>
