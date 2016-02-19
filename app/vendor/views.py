@@ -7,7 +7,8 @@ from flask import (
     flash,
     url_for,
     request,
-    jsonify
+    jsonify,
+    json
 )
 from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm, NewCSVForm)
@@ -54,20 +55,7 @@ def new_listing():
 def csv_upload():
     """Create a new item."""
     form = NewCSVForm()
-    """    if form.validate_on_submit():
-        category_id = form.category_id.data.id
-        listing = Listing(
-            name=form.listing_name.data,
-            description=form.listing_description.data,
-            available=True,
-            price=form.listing_price.data,
-            category_id=category_id,
-            vendor_id=current_user.id
-        )
-        db.session.add(listing)
-        db.session.commit()
-    """
-
+    listings = []
 
     if form.validate_on_submit():
         csv_field = form.file_upload
@@ -84,10 +72,20 @@ def csv_upload():
                     category_id= str(row['CategoryID']),
                     vendor_id= str(current_user.id)
                 )
-                db.session.add(listing)
-                db.session.commit()
-        return redirect(url_for('.csv_upload'))
-    return render_template('vendor/new_csv.html', form=form)
+                listings.append(listing)
+                #db.session.add(listing)
+                #db.session.commit()
+        print(len(listings))
+    return render_template('vendor/new_csv.html', form=form, listings=listings)
+
+
+@vendor.route('/csv-preview', methods=['GET','POST'])
+@login_required
+@vendor_required
+def csv_preview(req):
+    print(req.form)
+    return redirect(url_for('.csv_upload'))
+
 
 
 @vendor.route('/itemslist/')
