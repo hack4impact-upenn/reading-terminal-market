@@ -198,7 +198,7 @@ def view_orders():
     )
 
 
-@vendor.route('/approve/<int:order_id>', methods=['PUT'])
+@vendor.route('/approve/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def approve_order(order_id):
@@ -208,6 +208,10 @@ def approve_order(order_id):
     if order.status != Status.PENDING:
         abort(400)
     order.status = Status.APPROVED
+    if request.method == 'POST':
+        print 'yes'
+        order.comment = request.json['comment']
+    # order.comment = 'hi'
     db.session.commit()
 
     merchant_id = order.merchant_id
@@ -215,7 +219,7 @@ def approve_order(order_id):
 
     vendor_name = order.company_name
     purchases = order.purchases
-    comment = None
+    comment = 'hi'
     if order.comment != "":
         comment = order.comment
     send_email(merchant.email,
