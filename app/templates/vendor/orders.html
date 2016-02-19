@@ -72,22 +72,7 @@
             {{ order_table(order) }}
         </div>
     </div>
-    <div class="ui modal">
-        <div class="header">You are about to <b class="action-type"></b> this order:</div>
-        <div class="content">
-            <div class="ui form">
-                  <div class="field">
-                    <label>Please write any comments to be sent to the customer <em>(optional)</em>:</label>
-                    <textarea rows="2"></textarea>
-                  </div>
-            </div>
-        </div>
 
-        <div class="confirm-action">
-            <button class="negative ui button tiny compact cancel">Cancel</button>
-            <button class="positive ui button tiny compact action-button"><span class="action-type"></span> Order</button>
-        </div>
-    </div>
 {% endmacro %}
 
 {% block content %}
@@ -121,7 +106,22 @@
         {% endif %}
 
     </div>
+    <div class="ui modal">
+        <div class="header">You are about to <b class="action-type"></b> this order:</div>
+        <div class="content">
+            <div class="ui form">
+                  <div class="field">
+                    <label>Please write any comments to be sent to the customer <em>(optional)</em>:</label>
+                    <textarea rows="2" class="comment-container"></textarea>
+                  </div>
+            </div>
+        </div>
 
+        <div class="confirm-action">
+            <button class="negative ui button tiny compact cancel">Cancel</button>
+            <button class="positive ui button tiny compact action-button"><span class="action-type"></span> Order</button>
+        </div>
+    </div>
     <script>
 
         $(document).ready(function(){
@@ -151,9 +151,9 @@
 
             });
 
-            function approveDeclineRequest(newStatus, orderId, callback) {
-                var comments = { 'comment' : 'hithereworld'}
-                $.ajax({
+            function approveDeclineRequest(newStatus, orderId, comment, callback) {
+                var comments = { 'comment' : comment}
+                $.ajax({p
                     url: '/vendor/'+ newStatus +'/' + orderId,
                     contentType: "application/json",
                     dataType:"json",
@@ -164,7 +164,7 @@
                             callback();
                         }
                     },
-                    method: 'POST'
+                    method: 'PUT'
                 });
             }
 
@@ -186,14 +186,16 @@
                 buttonContainer.find( 'button' ).addClass('disabled');
             }
 
-            function approveDeclineHandler(container,newStatus) {
+            function approveDeclineHandler(container, newStatus) {
                 var buttonContainer = container.closest( '.approve-decline-container' );
                 var orderSegment = container.closest( '.order' );
                 var orderId = orderSegment.attr('id').split('-')[1];
                 var statusLabel = orderSegment.find( '.status-label' );
+                var commentContainer = $('body').find('.comment-container').val();
+                console.log(commentContainer);
                 switch (newStatus) {
                     case "approved":
-                        approveDeclineRequest('approve', orderId, function() {
+                        approveDeclineRequest('approve', orderId, commentContainer, function() {
                             statusLabel.removeClass("green grey red");
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Approved");
@@ -203,7 +205,7 @@
                         });
                         break;
                     case "declined":
-                        approveDeclineRequest('decline', orderId, function() {
+                        approveDeclineRequest('decline', orderId, commentContainer, function() {
                             statusLabel.removeClass("green grey red");
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Declined");
