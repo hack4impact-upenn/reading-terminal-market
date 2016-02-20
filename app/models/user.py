@@ -300,6 +300,12 @@ class Vendor(User):
     visible = db.Column(db.Boolean, default=False)
     listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
     company_name = db.Column(db.String(64), default="")
+    # public profile information
+    bio = db.Column(db.String(64), default="")
+    address = db.Column(db.String(64), default="")
+    phone_number = db.Column(db.String(64), default="")
+    website = db.Column(db.String(64), default="")
+    public_email = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)

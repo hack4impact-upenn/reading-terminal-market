@@ -1,0 +1,11 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% block content %}
+    <div class="ui container">
+        <h1 class="ui header">Edit Profile</h1>
+        <div class="ui centered two wide column">
+            {{ f.render_form(form) }}
+        </div>
+    </div>
+{% endblock %}

@@ -10,7 +10,7 @@ from flask import (
     jsonify
 )
 from flask.ext.login import login_required, current_user
-from forms import (ChangeListingInformation, NewItemForm)
+from forms import (ChangeListingInformation, NewItemForm, EditProfileForm)
 from . import vendor
 from ..models import Listing, Order, Status, User
 from .. import db
@@ -254,3 +254,29 @@ def decline_order(order_id):
                purchases=purchases)
 
     return jsonify({'order_id': order_id, 'status': 'declined'})
+
+@vendor.route('/profile', methods=['GET'])
+@login_required
+@vendor_required
+def view_profile():
+    return render_template('vendor/profile.html', vendor=current_user)
+
+@vendor.route('/profile/edit', methods=['GET','POST'])
+@login_required
+@vendor_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        current_user.bio = form.bio.data
+        current_user.address = form.address.data
+        current_user.phone_number = form.phone_number.data
+        current_user.website = form.website.data
+        current_user.public_email = form.email.data
+        db.session.commit()
+        return redirect(url_for('vendor.view_profile'))
+    form.bio.data = current_user.bio
+    form.address.data = current_user.address
+    form.phone_number.data = current_user.phone_number
+    form.website.data = current_user.website
+    form.email.data = current_user.public_email
+    return render_template('vendor/edit_profile.html', form=form)

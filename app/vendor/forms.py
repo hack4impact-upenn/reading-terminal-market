@@ -47,3 +47,12 @@ class NewItemForm(Form):
     def validate_listing_name(self, field):
         if current_user.listings.filter_by(name=field.data).first():
             raise ValidationError('You already have an item with this name.')
+
+
+class EditProfileForm(Form):
+    bio = StringField('Bio')
+    address = StringField('Address')
+    phone_number = StringField('Phone Number')
+    website = StringField('Website')
+    email =  StringField('Email')
+    submit = SubmitField('Save')

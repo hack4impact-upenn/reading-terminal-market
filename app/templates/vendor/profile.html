@@ -1,0 +1,23 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+        <div class="ui row">
+            <div class="ui right floated three wide column">
+                <a href="{{ url_for('.edit_profile') }}">
+                    <button class="ui button">Edit Profile</button>
+                </a>
+            </div>
+        </div>
+        <div class="ui row">
+            <div class="ui centered center aligned ten wide column">
+                <h1 class="ui header">{{ vendor.company_name }}</h1>
+                <h3 class="ui header">{{ vendor.website }}</h3>
+                <h3 class="ui header">{{ vendor.address }}</h3>
+                <h3 class="ui header">{{ vendor.public_email }}</h3>
+                <h3 class="ui header">{{ vendor.phone_number }}</h3>
+                <h5 class="ui header"><i>{{ vendor.bio }}</i></h5>
+            </div>
+        </div>
+    </div>
+{% endblock %}
