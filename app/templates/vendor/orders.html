@@ -35,14 +35,14 @@
     {% endif %}
     <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
         <div class="ui left floated basic segment" style="margin-bottom: 0px">
-            <h3 class="ui header">
+            <h3 class="ui header item-title">
                 Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ order_macros.status_label(order.status) }}
                 <div class="sub header">
                     Placed on {{ order.get_date() }} at {{ order.get_time() }}
                 </div>
             </h3>
             {% if order.comment %}
-            <div><b>Comments:</b><span class="order-comments"> {{ order.comment }} </span></div>
+            <div class="order-comments"></div>
             {% endif %}
             <div><b>Total:</b> {{ order.get_total() }}</div>
             <div style="margin-top: 5px; margin-bottom: 0px"><a class="toggle-details" href="#">Show purchases</a></div>
@@ -114,15 +114,15 @@
             <div class="ui form">
                   <div class="field">
                     <label>Please write any comments to be sent to the customer <em>(optional)</em>:</label>
-                    <textarea rows="2" class="comment-container"></textarea>
+                    <textarea rows="5" class="comment-container"></textarea>
                   </div>
             </div>
         </div>
-
-        <div class="confirm-action">
-            <button class="negative ui button tiny compact cancel">Cancel</button>
-            <button class="positive ui button tiny compact action-button"><span class="action-type"></span> Order</button>
+        <div class="actions confirm-action">
+            <button class="negative ui button cancel">Cancel</button>
+            <button class="positive ui button action-button"><span class="action-type"></span> Order</button>
         </div>
+
     </div>
     <script>
 
@@ -194,7 +194,12 @@
                 var orderId = orderSegment.attr('id').split('-')[1];
                 var statusLabel = orderSegment.find( '.status-label' );
                 var commentContainer = $('body').find('.comment-container').val();
-                var listingComment = orderSegment.find('.order-comments');
+                console.log(orderSegment.find('.order-comments').length);
+                if (orderSegment.find('.order-comments').length) {
+                    var listingComment = orderSegment.find('.order-comments');
+                } else if (commentContainer !== "") {
+                    var listingComment = orderSegment.find('.item-title').after('<b>Comment subtitle: </b>' + commentContainer)
+                }
                 switch (newStatus) {
                     case "approved":
                         approveDeclineRequest('approve', orderId, commentContainer, function() {
@@ -202,7 +207,7 @@
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Approved");
                             statusLabel.addClass("green");
-                            listingComment.text(commentContainer);
+                            listingComment.text('<b>Comment something: </b>' + commentContainer);
                              $('.ui.modal')
                                 .modal('hide');
                         });
@@ -213,7 +218,7 @@
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Declined");
                             statusLabel.addClass("red");
-                            listingComment.text(commentContainer);
+                            listingComment.text('<b>Comment: </b>' + commentContainer);
                             $('.ui.modal')
                                 .modal('hide');
                         });
