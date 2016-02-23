@@ -26,6 +26,7 @@
                             <th>Item name</th>
                             {% if current_user.is_merchant() or current_user.is_admin() %}
                                 <th>Company</th>
+                                <th>Favorite Vendor</th>
                             {% endif %}
                             <th>Price</th>
                             <th class="truncate">Description</th>
@@ -60,6 +61,17 @@
                             {% if current_user.is_merchant() or current_user.is_admin() %}
                                 <td {{info_link}}>{{ l.vendor.company_name }}</td>
                             {% endif %}
+                                <td class="center aligned favoriteCell">
+                                    {% if l.vendor_id in current_user.bookmarked_vendors %}
+                                        <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="true">
+                                            <i class="favorite icon yellow"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="false">
+                                            <i class="favorite icon grey"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
                             <td {{info_link}}>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>
                             <td class="truncate" {{info_link}}>{{ l.description }}</td>
                             {% if current_user.is_vendor() or current_user.is_admin() %}

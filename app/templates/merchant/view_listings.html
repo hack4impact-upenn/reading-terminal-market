@@ -135,6 +135,36 @@
 
             });
 
+            $('.toggle-fav-vendor').click(function (event) {
+                var toggledLink = $(this);
+                var isFavVendor = toggledLink.data("isFavVendor");
+                var vendorId = toggledLink.data("id");
+                var newValue = isFavorite === true ? false : true;
+                $.ajax({
+                    url: '/merchant/change-fav-vendor/' + vendorId,
+                    data: JSON.stringify({
+                        isFavVendor: newValue
+                    }),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        toggledLink.data("isFavVendor", data.isFavVendor);
+                        icon = toggledLink.find("i");
+                        icon.removeClass("grey");
+                        icon.removeClass("yellow");
+
+                        if (data.isFavVendor) {
+                            icon.addClass("yellow");
+                        } else {
+                            icon.addClass("grey");
+                        }
+
+                    },
+                    method: 'PUT'
+                });
+
+            });
+
             $('.cart-quantity').change(function (event) {
                 var newQuantity = parseInt($(this).val());
                 var td = $(this).closest('td')

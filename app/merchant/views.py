@@ -199,6 +199,30 @@ def change_favorite(listing_id):
     )
 
 
+@merchant.route('/change-fav-vendor/<int:vendor_id>', methods=['PUT'])
+@login_required
+@merchant_required
+def change_fav_vendor(vendor_id):
+    vendor = Vendor.query.filter_by(id=vendor_id).first()
+    if not vendor:
+        abort(404)
+    if not request.json:
+        abort(400)
+    if 'isFavVendor' not in request.json or type(request.json['isFavVendor']) is not bool:
+        abort(400)
+
+    old_status = vendor in current_user.bookmarked_vendors
+    new_status = request.json.get('isFavVendor', old_status)
+    if new_status and vendor not in current_user.bookmarked_vendors:
+        print current_user.bookmarked_vendors
+        current_user.bookmarked_vendors.append(vendor)
+    elif not new_status and vendor in current_user.bookmarked_vendors:
+        current_user.bookmarked_vendors.remove(vendor)
+    db.session.commit()
+    {'isFavVendor': vendor in current_user.bookmarked_vendors,
+         'name': vendor.company_name}
+
+
 @merchant.route('/orders')
 @login_required
 @merchant_required

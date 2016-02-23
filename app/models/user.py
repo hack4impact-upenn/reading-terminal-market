@@ -317,11 +317,20 @@ bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                                      db.ForeignKey('listings.id'))
                            )
 
+bookmarked_vendors = db.Table('bookmarked_vendors', db.Model.metadata,
+                           db.Column('merchant_id', db.Integer,
+                                     db.ForeignKey('merchant.id')),
+                           db.Column('vendor_id', db.Integer,
+                                     db.ForeignKey('vendor.id'))
+                           )
+
 
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-
+    bookmarked_vendor = db.relationship("Vendor",
+                                        secondary=bookmarked_vendors,
+                                        backref="bookmarked_by")
     bookmarks = db.relationship("Listing",
                                 secondary=bookmarks_table,
                                 backref="bookmarked_by")
