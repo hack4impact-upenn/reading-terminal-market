@@ -321,8 +321,7 @@ bookmarked_vendors = db.Table('bookmarked_vendors', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
                                      db.ForeignKey('merchant.id')),
                            db.Column('vendor_id', db.Integer,
-                                     db.ForeignKey('vendor.id'))
-                           )
+                                     db.ForeignKey('vendor.id')))
 
 
 class Merchant(User):
