@@ -221,7 +221,8 @@ def change_fav_vendor(vendor_id):
     db.session.commit()
     return jsonify(
         {'isFavVendor': vendor in current_user.bookmarked_vendors,
-         'name': vendor.company_name}
+         'vendor_id': vendor.id,
+         'name': vendor.company_name }
     )
 
 

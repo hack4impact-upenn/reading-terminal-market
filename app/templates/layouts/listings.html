@@ -62,7 +62,7 @@
                                 <td {{info_link}}>{{ l.vendor.company_name }}</td>
                             {% endif %}
                                 <td class="center aligned favoriteCell">
-                                    {% if l.vendor_id in current_user.bookmarked_vendors %}
+                                    {% if l.vendor in current_user.bookmarked_vendors %}
                                         <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="true">
                                             <i class="favorite icon yellow"></i>
                                         </a>
