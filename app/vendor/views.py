@@ -1,5 +1,4 @@
 from ..decorators import vendor_required
-from werkzeug import secure_filename
 from flask import (
     render_template,
     abort,
@@ -56,36 +55,24 @@ def csv_upload():
     """Create a new item."""
     form = NewCSVForm()
     listings = []
-
     if form.validate_on_submit():
         csv_field = form.file_upload
-        buffer = csv_field.data.stream # csv_field is the FileField obj
-        csv_data = csv.DictReader(buffer, delimiter=',')
+        buff = csv_field.data.stream
+        csv_data = csv.DictReader(buff, delimiter=',')
         for row in csv_data:
             if len(row['Vendor']) > 1:
-                print(row['Vendor'])
                 listing = Listing(
-                    name = str(row['Vendor']),
-                    description = str(row['Description']),
+                    name=str(row['Vendor']),
+                    description=str(row['Description']),
                     available=True,
-                    price= str(row['Price']),
-                    category_id= str(row['CategoryID']),
-                    vendor_id= str(current_user.id)
+                    price=str(row['Price']),
+                    category_id=str(row['CategoryID']),
+                    vendor_id=str(current_user.id)
                 )
                 listings.append(listing)
-                #db.session.add(listing)
-                #db.session.commit()
-        print(len(listings))
+                db.session.add(listing)
+                db.session.commit()
     return render_template('vendor/new_csv.html', form=form, listings=listings)
-
-
-@vendor.route('/csv-preview', methods=['GET','POST'])
-@login_required
-@vendor_required
-def csv_preview(req):
-    print(req.form)
-    return redirect(url_for('.csv_upload'))
-
 
 
 @vendor.route('/itemslist/')
@@ -124,7 +111,6 @@ def current_listings(page=1):
         count=result_count,
         header=header
     )
-
 
 
 @vendor.route('/items/<int:listing_id>')
