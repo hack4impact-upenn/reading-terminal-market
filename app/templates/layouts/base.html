@@ -67,7 +67,12 @@
                     message = "You have successfully unfavorited " + item;
                 } else if (event.includes("Favorite") && event.includes("true")) {
                     message = "You have successfully favorited " + item;
-                } else if (event.includes("quantity") && (num > 0)) {
+                } else if (event.includes("isFavVendor") && event.includes("true")){
+                    message = "You have successfully favorited the vendor" + item;
+                } else if (event.includes("isFavVendor") && event.includes("false")){
+                    message = "You have successfully unfavorited the vendor" + item;
+                }
+                else if (event.includes("quantity") && (num > 0)) {
                     item = myArray[3];
                     message = "You are now ordering a total of " + num + " of " + item;
                 } else if (event.includes("quantity") && (num == 0)) {

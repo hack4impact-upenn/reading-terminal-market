@@ -219,8 +219,10 @@ def change_fav_vendor(vendor_id):
     elif not new_status and vendor in current_user.bookmarked_vendors:
         current_user.bookmarked_vendors.remove(vendor)
     db.session.commit()
-    {'isFavVendor': vendor in current_user.bookmarked_vendors,
+    return jsonify(
+        {'isFavVendor': vendor in current_user.bookmarked_vendors,
          'name': vendor.company_name}
+    )
 
 
 @merchant.route('/orders')

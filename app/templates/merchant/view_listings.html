@@ -139,7 +139,7 @@
                 var toggledLink = $(this);
                 var isFavVendor = toggledLink.data("isFavVendor");
                 var vendorId = toggledLink.data("id");
-                var newValue = isFavorite === true ? false : true;
+                var newValue = isFavVendor === true ? false : true;
                 $.ajax({
                     url: '/merchant/change-fav-vendor/' + vendorId,
                     data: JSON.stringify({
