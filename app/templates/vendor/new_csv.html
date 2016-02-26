@@ -52,14 +52,33 @@
             </thead>
             <tbody>
             {% for listing in listings %}
-            <tr class="positive">
-                <td>{{listing.name}}</td>
-                <td>{{listing.price}}</td>
-                <td>{{listing.description}}</td>
-                <td>{{listing.Category}}</td>
-                <td><i class="icon checkmark "></i> Submitted Successfully</td>
-            </tr>
-            {% endfor %}
+                {% if listing.updated == 0 %}
+                    <tr class="ui inverted blue table">
+                        <td>{{listing.name}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.description}}</td>
+                        <td>{{listing.Category}}</td>
+                        <td><i class="icon refresh "></i> Updated Listing</td>
+                    </tr>
+
+                {% elif listing.updated == 1 %}
+                    <tr class="ui inverted green table">
+                        <td>{{listing.name}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.description}}</td>
+                        <td>{{listing.Category}}</td>
+                        <td><i class="icon checkmark "></i> Submitted New Listing</td>
+                    </tr>
+                {% elif listing.updated == 2 %}
+                    <tr class="ui inverted red table">
+                        <td>{{listing.name}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.description}}</td>
+                        <td>{{listing.Category}}</td>
+                        <td><i class="icon minus "></i> No Change in Listing</td>
+                    </tr>
+                {% endif %}
+                {% endfor %}
             </tbody>
             <tfoot>
             <tr>

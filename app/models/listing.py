@@ -14,6 +14,7 @@ class Listing(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
+
     # model relationships
     vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
@@ -23,15 +24,19 @@ class Listing(db.Model):
     description = db.Column(db.Text)
     price = db.Column(db.Float)
     available = db.Column(db.Boolean, default=True)
+    product_id=db.Column(db.Integer, default=1)
+    updated=db.Column(db.Integer, default=0)
 
-    def __init__(self, vendor_id, name, available, category_id, price,
-                 description=""):
+    def __init__(self, product_id, vendor_id, name, available, category_id, price,
+                 description="", updated=0):
+        self.product_id = product_id
         self.vendor_id = vendor_id
         self.category_id = category_id
         self.name = name
         self.description = description
         self.price = price
         self.available = available
+        self.updated = updated
 
     def remove_from_carts(self):
         cart_items = CartItem.query.filter_by(listing_id=self.id).all()
@@ -57,6 +62,10 @@ class Listing(db.Model):
         """Delete the listing and remove from all carts"""
         self.remove_from_carts()
         db.session.delete(self)
+        db.session.commit()
+
+    def update_listing(self, new_product_id):
+        self.product_id = new_product_id
         db.session.commit()
 
     @property

@@ -14,6 +14,7 @@ from forms import (ChangeListingInformation, NewItemForm, NewCSVForm)
 from . import vendor
 from ..models import Listing, Order, Status
 from .. import db
+from sqlalchemy import update
 import csv
 
 
@@ -59,19 +60,52 @@ def csv_upload():
         csv_field = form.file_upload
         buff = csv_field.data.stream
         csv_data = csv.DictReader(buff, delimiter=',')
+        #for each row in csv, create a listing
         for row in csv_data:
-            if len(row['Vendor']) > 1:
-                listing = Listing(
-                    name=str(row['Vendor']),
-                    description=str(row['Description']),
-                    available=True,
-                    price=str(row['Price']),
-                    category_id=str(row['CategoryID']),
-                    vendor_id=str(current_user.id)
-                )
-                listings.append(listing)
-                db.session.add(listing)
-                db.session.commit()
+            if db.session.query(Listing).filter(Listing.product_id== str(row['ProductID'])).count():
+                x = db.session.query(Listing).filter(Listing.product_id== str(row['ProductID'])).first()
+                if x.price == float(row['Price']):
+                    print('flag1')
+                    listings.append(Listing(
+                        name=str(row['Vendor']),
+                        description=str(row['Description']),
+                        available=True,
+                        price=str(row['Price']),
+                        category_id=str(row['CategoryID']),
+                        vendor_id=str(current_user.id),
+                        product_id=str(row['ProductID']),
+                        updated=2
+                    ))
+                else:
+                    print(x.price, " ", float(row['Price']))
+                    x.price = str(row['Price'])
+                    db.session.commit()
+                    listings.append(Listing(
+                            name=str(row['Vendor']),
+                            description=str(row['Description']),
+                            available=True,
+                            price=str(row['Price']),
+                            category_id=str(row['CategoryID']),
+                            vendor_id=str(current_user.id),
+                            product_id=str(row['ProductID']),
+                            updated=0
+                        ))
+            else:
+                if len(row['Vendor']) > 1:
+                    listing = Listing(
+                        name=str(row['Vendor']),
+                        description=str(row['Description']),
+                        available=True,
+                        price=str(row['Price']),
+                        category_id=str(row['CategoryID']),
+                        vendor_id=str(current_user.id),
+                        product_id=str(row['ProductID']),
+                        updated=1
+                    )
+                    # check iflisting already exists
+                    listings.append(listing)
+                    db.session.add(listing)
+                    db.session.commit()
     return render_template('vendor/new_csv.html', form=form, listings=listings)
 
 
