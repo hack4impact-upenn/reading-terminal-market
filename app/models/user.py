@@ -309,6 +309,12 @@ class Vendor(User):
     def __repr__(self):
         return '<Vendor %s>' % self.full_name()
 
+    def get_rating_value(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id).all()
+        total_rating = 0.0
+        for rating in ratings:
+            total_rating += rating.star_rating
+        return total_rating / len(ratings)
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,

@@ -54,12 +54,28 @@
                 {% if vendor_info['email'] %}
                     <div class="item"><b>Email: </b> <a href="mailto: {{ vendor_info['email'] }}">{{  vendor_info['email'] }}</a></div>
                 {% endif %}
+                {% if order.status == 1 %}
+                    <a href='#' class="toggle-rating">Rate vendor</a>
+                {% endif %}
             </div>
         </div>
 
 
         <div class="details" style="display: none;">
             {{ order_table(order) }}
+        </div>
+
+        <div class="reviews" style="display: none;">
+            <div style="overflow: hidden; clear:both" class="ui form">
+                <label>Rating: </label><div class="ui star rating"></div>
+                <div class="field">
+                    <label>Please write a review to accompany your rating <em>(optional)</em>:</label>
+                    <textarea rows="2"></textarea>
+                </div>
+                <button class="ui right floated button">
+                    Submit Rating
+                </button>
+          </div>
         </div>
     </div>
 {% endmacro %}
@@ -108,6 +124,22 @@
                 } else {
                     $( this ).text('Hide purchases');
                 }
+            });
+
+            $('.toggle-rating').click(function () {
+                var order = $( this ).closest('.order');
+                var reviews = order.find('.reviews');
+                reviews.toggle();
+                if ($( this ).text() === 'Cancel rating') {
+                    $(this).text('Rate vendor');
+                } else {
+                    $( this ).text('Cancel rating');
+                }
+            });
+
+            $('.ui.rating').rating({
+                initialRating: 0,
+                maxRating: 5
             });
 
             var page_size = {{ page_size }};
