@@ -70,9 +70,9 @@
                 <label>Rating: </label><div class="ui star rating"></div>
                 <div class="field">
                     <label>Please write a review to accompany your rating <em>(optional)</em>:</label>
-                    <textarea rows="2"></textarea>
+                    <textarea rows="2" class="review-box"></textarea>
                 </div>
-                <button class="ui right floated button">
+                <button class="ui right floated button submit-rating">
                     Submit Rating
                 </button>
           </div>
@@ -140,6 +140,41 @@
             $('.ui.rating').rating({
                 initialRating: 0,
                 maxRating: 5
+            });
+
+            function ratingRequest(orderId, rating, review, callback) {
+                var ratingReview = {
+                    'rating': rating,
+                    'review': review
+                };
+                if (callback !== undefined) {
+                    callback();
+                }
+            }
+
+            function ratingHandler(order) {
+                var orderId = order.attr('id').split('-')[1];
+                console.log("ORDER ID: " + orderId);
+                var rating = order.find('.ui.rating').children('.active').length;
+                console.log("RATING: " + rating);
+                var review = order.find('.review-box').val();
+                console.log("REVIEW: " + review);
+
+                ratingRequest(orderId, rating, review, function(){
+                    order.find('.review-box').val('');
+                    $('.ui.rating').rating({
+                        initialRating: 0,
+                        maxRating: 5
+                    });
+                    var reviews = order.find('.reviews');
+                    reviews.hide();
+                    $('.toggle-rating').text('Rate vendor');
+                });
+            }
+
+            $('.submit-rating').click(function(){
+                var order = $( this ).closest('.order');
+                ratingHandler(order);
             });
 
             var page_size = {{ page_size }};
