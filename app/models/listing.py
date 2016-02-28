@@ -102,6 +102,12 @@ class Listing(db.Model):
         if 'available' in kwargs:
             filter_list.append(Listing.available == True)
 
+        if 'fav_vendor' in kwargs and kwargs['fav_vendor']:
+            bookmarked_vendor_ids = [vendor.id for vendor in current_user.bookmarked_vendors]
+            for idMe in bookmarked_vendor_ids:
+                print idMe
+            filter_list.append(Listing.id.in_(bookmarked_vendor_ids))
+
         if 'favorite' in kwargs and kwargs['favorite']:
             bookmark_ids = [listing.id for listing in current_user.bookmarks]
             filter_list.append(Listing.id.in_(bookmark_ids))
