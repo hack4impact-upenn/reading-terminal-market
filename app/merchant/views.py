@@ -21,6 +21,7 @@ def listing_view_all(page=1):
     """Search for listings"""
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
+    fav_vendor = True if request.args.get('fav_vendor') == "on" else False
     sort_by = request.args.get('sortby', "", type=str)
     name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
@@ -30,6 +31,7 @@ def listing_view_all(page=1):
     listings_raw = Listing.search(
         available=True,
         favorite=favorite,
+        fav_vendor=fav_vendor,
         sort_by=sort_by,
         min_price=min_price,
         max_price=max_price,
@@ -59,6 +61,7 @@ def listing_view_all(page=1):
         max_price=max_price,
         sort_by=sort_by,
         name_search_term=name_search_term,
+        fav_vendor=fav_vendor,
         favorite=favorite,
         category_search=category_search,
         cart_listings=current_user.get_cart_listings(),
@@ -196,6 +199,33 @@ def change_favorite(listing_id):
     db.session.commit()
     return jsonify(
         {'isFavorite': listing in current_user.bookmarks, 'name': listing.name}
+    )
+
+
+@merchant.route('/change-fav-vendor/<int:vendor_id>', methods=['PUT'])
+@login_required
+@merchant_required
+def change_fav_vendor(vendor_id):
+    vendor = Vendor.query.filter_by(id=vendor_id).first()
+    if not vendor:
+        abort(404)
+    if not request.json:
+        abort(400)
+    if 'isFavVendor' not in request.json or type(request.json['isFavVendor']) is not bool:
+        abort(400)
+
+    old_status = vendor in current_user.bookmarked_vendors
+    new_status = request.json.get('isFavVendor', old_status)
+    if new_status and vendor not in current_user.bookmarked_vendors:
+        print current_user.bookmarked_vendors
+        current_user.bookmarked_vendors.append(vendor)
+    elif not new_status and vendor in current_user.bookmarked_vendors:
+        current_user.bookmarked_vendors.remove(vendor)
+    db.session.commit()
+    return jsonify(
+        {'isFavVendor': vendor in current_user.bookmarked_vendors,
+         'vendor_id': vendor.id,
+         'name': vendor.company_name }
     )
 
 
