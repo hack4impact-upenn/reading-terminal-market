@@ -48,6 +48,9 @@ class NewItemForm(Form):
         if current_user.listings.filter_by(name=field.data).first():
             raise ValidationError('You already have an item with this name.')
 
+
 class NewCSVForm(Form):
     file_upload = FileField()
     submit = SubmitField('Submit Upload')
+
+

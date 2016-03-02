@@ -300,6 +300,11 @@ class Vendor(User):
     visible = db.Column(db.Boolean, default=False)
     listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
     company_name = db.Column(db.String(64), default="")
+    product_id_col = db.Column(db.String(64), default="ProductID")
+    category_id_col = db.Column(db.String(64), default="CategoryID")
+    listing_description_col = db.Column(db.String(64), default="Description")
+    price_col = db.Column(db.String(64), default="Price")
+    name_col = db.Column(db.String(64), default="Vendor")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
@@ -308,7 +313,6 @@ class Vendor(User):
 
     def __repr__(self):
         return '<Vendor %s>' % self.full_name()
-
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,

@@ -64,20 +64,19 @@ def csv_upload():
         for row in csv_data:
             if db.session.query(Listing).filter(Listing.product_id== str(row['ProductID'])).count():
                 x = db.session.query(Listing).filter(Listing.product_id== str(row['ProductID'])).first()
+                print("price is:", row['Price'])
                 if x.price == float(row['Price']):
-                    print('flag1')
                     listings.append(Listing(
-                        name=str(row['Vendor']),
+                        name=str(),
                         description=str(row['Description']),
                         available=True,
                         price=str(row['Price']),
-                        category_id=str(row['CategoryID']),
+                        category_id=str(-1),
                         vendor_id=str(current_user.id),
                         product_id=str(row['ProductID']),
                         updated=2
                     ))
                 else:
-                    print(x.price, " ", float(row['Price']))
                     x.price = str(row['Price'])
                     db.session.commit()
                     listings.append(Listing(
@@ -85,7 +84,7 @@ def csv_upload():
                             description=str(row['Description']),
                             available=True,
                             price=str(row['Price']),
-                            category_id=str(row['CategoryID']),
+                            category_id=str(-1),
                             vendor_id=str(current_user.id),
                             product_id=str(row['ProductID']),
                             updated=0
@@ -97,7 +96,7 @@ def csv_upload():
                         description=str(row['Description']),
                         available=True,
                         price=str(row['Price']),
-                        category_id=str(row['CategoryID']),
+                        category_id=str(-1),
                         vendor_id=str(current_user.id),
                         product_id=str(row['ProductID']),
                         updated=1
