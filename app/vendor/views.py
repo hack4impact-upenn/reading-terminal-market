@@ -305,7 +305,6 @@ def get_suggestions(search):
     return jsonify({'json_list': final_arr});
 
 
-
 @vendor.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 @vendor_required
@@ -337,5 +336,15 @@ def edit_profile():
     form.phone_number.data = current_user.phone_number
     form.website.data = current_user.website
     form.email.data = current_user.public_email
+    form.featured1.data = current_user.f1
+    form.featured2.data = current_user.f2
+    form.featured3.data = current_user.f3
+    form.featured4.data = current_user.f4
+    form.description1.data = current_user.d1
+    form.description2.data = current_user.d2
+    form.description3.data = current_user.d3
+    form.description4.data = current_user.d4
+
+
 
     return render_template('vendor/edit_profile.html', form=form)

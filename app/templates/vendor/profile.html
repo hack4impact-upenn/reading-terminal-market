@@ -4,9 +4,11 @@
     <div class="ui stackable grid container">
         <div class="ui row">
             <div class="ui right floated three wide column">
+                {% if current_user.is_vendor() %}
                 <a href="{{ url_for('.edit_profile') }}">
                     <button class="ui button">Edit Profile</button>
                 </a>
+                {% endif %}
             </div>
         </div>
         <div class="ui row">
@@ -43,7 +45,11 @@
         <div class="ui five column grid">
             {% if f1 != None %}
                     <div class="column">
+                    {% if current_user.is_vendor() %}
                         <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f1.id) }}">{{ vendor.f1 }}</a></p>
+                    {% else %}
+                        <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f1.id) }}">{{ vendor.f1 }}</a></p>
+                    {% endif %}
                         <p>
                         Notes: {{ vendor.d1 }}<br>Description: {{ f1.description }}
                         </p>
@@ -51,7 +57,11 @@
             {% endif %}
             {% if f2 != None %}
             <div class="column">
+                    {% if current_user.is_vendor() %}
                         <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f2.id) }}">{{ vendor.f2 }}</a></p>
+                    {% else %}
+                        <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f2.id) }}">{{ vendor.f2 }}</a></p>
+                    {% endif %}
                         <p>
                         Notes: {{ vendor.d2 }}<br>Description: {{ f2.description }}
                         </p>
@@ -60,8 +70,11 @@
 
             {% if f3 != None %}
             <div class="column">
+                    {% if current_user.is_vendor() %}
                         <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f3.id) }}">{{ vendor.f3 }}</a></p>
-                        <p>
+                    {% else %}
+                        <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f3.id) }}">{{ vendor.f3 }}</a></p>
+                    {% endif %}                         <p>
                         Notes: {{ vendor.d3 }}<br>Description: {{ f3.description }}
                         </p>
                     </div>
@@ -69,7 +82,11 @@
 
             {% if f4 != None %}
             <div class="column">
+                    {% if current_user.is_vendor() %}
                         <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f4.id) }}">{{ vendor.f4 }}</a></p>
+                    {% else %}
+                        <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f4.id) }}">{{ vendor.f4 }}</a></p>
+                    {% endif %}
                         <p>
                         Notes: {{ vendor.d4 }}<br>Description: {{ f4.description }}
                         </p>
