@@ -63,9 +63,10 @@ def csv_upload():
         #for each row in csv, create a listing
         current_vendor = User.query.filter_by(id=current_user.id).first()
         for row in csv_data:
+            print row[current_vendor.product_id_col].strip()
             #cheap way to skip weird 'categorical' lines
-            if row['ProductID'].isdigit():
-                safe_price = stripPriceHelper(row['Price'])
+            if (row[current_vendor.product_id_col]).strip().isdigit():
+                safe_price = stripPriceHelper(row[current_vendor.price_col])
                 proposed_listing = Listing(
                             name=row[current_vendor.name_col],
                             description=row[current_vendor.listing_description_col],
@@ -75,7 +76,7 @@ def csv_upload():
                             vendor_id=current_user.id,
                             product_id=row[current_vendor.product_id_col],
                             updated=2)
-                queried_listing = Listing.query.filter_by(product_id=row['ProductID']).first()
+                queried_listing = Listing.query.filter_by(product_id=row[current_vendor.product_id_col]).first()
                 if queried_listing:
                     if queried_listing.price == float(safe_price):
                         listings.append(proposed_listing)
