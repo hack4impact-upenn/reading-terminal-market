@@ -87,9 +87,11 @@
             }
 
             $('#notifier .header').html(message);
-            $( '.notifications' ).fadeIn(500).delay(5000).fadeOut(function(){
-                $( '.notifications').clearQueue();
-            });
+            if(message !== "") {
+                $('.notifications').fadeIn(500).delay(5000).fadeOut(function () {
+                    $('.notifications').clearQueue();
+                });
+            }
 
         });
 

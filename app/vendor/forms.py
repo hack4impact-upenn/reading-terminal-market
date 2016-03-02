@@ -12,24 +12,6 @@ from .. import db
 PRICE_MESSAGE = "This value needs to be filled and needs to be a number"
 
 
-class ImageFileRequired(object):
-    """
-    Validates that an uploaded file from a flask_wtf FileField is, in fact an
-    image.  Better than checking the file extension, examines the header of
-    the image using Python's built in imghdr module.
-    """
-
-    def __init__(self, message=None):
-        self.message = message
-
-    def __call__(self, form, field):
-        if field.data is None or imghdr.what('unused', field.data.read()) is None:
-            message = self.message or 'An image file is required'
-            raise ValidationError(message)
-
-        field.data.seek(0)
-
-
 class ChangeListingInformation(Form):
     category_id = QuerySelectField('Category',
                                    validators=[DataRequired()],
@@ -69,11 +51,19 @@ class NewItemForm(Form):
 
 
 class EditProfileForm(Form):
-    image = FileField(u'Image File', validators=[ImageFileRequired()])
+    image = FileField('Image File')
     bio = TextAreaField('Bio')
     address = StringField('Address')
     phone_number = StringField('Phone Number')
     website = StringField('Website (http://www.example.com)',
                           validators=[URL('This URL is invalid. Please enter a valid website name')])
     email = StringField('Email', validators=[Email('Please enter a valid email address')])
+    featured1 = StringField('Featured Item 1')
+    description1 = StringField('Description Item 1')
+    featured2 = StringField('Featured Item 2')
+    description2 = StringField('Description Item 2')
+    featured3 = StringField('Featured Item 3')
+    description3 = StringField('Description Item 3')
+    featured4 = StringField('Featured Item 4')
+    description4 = StringField('Description Item 4')
     submit = SubmitField('Save')

@@ -307,6 +307,14 @@ class Vendor(User):
     website = db.Column(db.String(64), default="")
     public_email = db.Column(db.String(64), default="")
     image = db.Column(db.String(64), default="")
+    f1 = db.Column(db.String(64), default="")
+    d1 = db.Column(db.String(64), default="")
+    f2 = db.Column(db.String(64), default="")
+    d2 = db.Column(db.String(64), default="")
+    f3 = db.Column(db.String(64), default="")
+    d3 = db.Column(db.String(64), default="")
+    f4 = db.Column(db.String(64), default="")
+    d4 = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)

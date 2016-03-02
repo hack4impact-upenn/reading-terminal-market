@@ -7,7 +7,7 @@ from flask import (
     redirect,
     flash,
     url_for,
-    request,
+    send_from_directory,
     jsonify,
     request
 )
@@ -261,9 +261,49 @@ def decline_order(order_id):
 @login_required
 @vendor_required
 def view_profile():
-    return render_template('vendor/profile.html', vendor=current_user)
+    f1 = Listing.query.filter_by(name=current_user.f1).first()
+    f1_ID = f1
+    f2 = Listing.query.filter_by(name=current_user.f2).first()
+    if f2:
+        f2_ID = f2
+    else:
+        f2_ID = None
+    f3 = Listing.query.filter_by(name=current_user.f3).first()
+    if f3:
+        f3_ID = f3
+    else:
+        f3_ID = None
+    f4 = Listing.query.filter_by(name=current_user.f4).first()
+    if f4:
+        f4_ID = f4
+    else:
+        f4_ID = None
+    return render_template('vendor/profile.html', vendor=current_user,
+                           f1=f1_ID, f2=f2_ID, f3=f3_ID, f4=f4_ID)
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+
+@vendor.route('/picture/<filename>', methods=['GET'])
+@login_required
+def get_picture(filename):
+    c = Config()
+    return send_from_directory(c.UPLOAD_FOLDER, filename)
+
+
+@vendor.route('/suggestions/<search>', methods=['GET'])
+@login_required
+def get_suggestions(search):
+    listings_raw = Listing.search(
+        available=True,
+        strict_name_search=search,
+        sort_by='alphaAZ'
+    ).filter_by(vendor_id=current_user.id).limit(10)
+    final_arr = []
+    for a in listings_raw:
+        final_arr.append(a.name)
+    return jsonify({'json_list': final_arr});
+
 
 
 @vendor.route('/profile/edit', methods=['GET', 'POST'])
@@ -278,9 +318,18 @@ def edit_profile():
         current_user.phone_number = form.phone_number.data
         current_user.website = form.website.data
         current_user.public_email = form.email.data
+        current_user.f1 = form.featured1.data
+        current_user.f2 = form.featured2.data
+        current_user.f3 = form.featured3.data
+        current_user.f4 = form.featured4.data
+        current_user.d1 = form.description1.data
+        current_user.d2 = form.description2.data
+        current_user.d3 = form.description3.data
+        current_user.d4 = form.description4.data
         if form.image.data:
-            image_data = request.FILES[form.image.name].read()
-            open(os.path.join(c.UPLOAD_FOLDER, form.image.data), 'w').write(image_data)
+            filename = form.image.data.filename
+            form.image.data.save(os.path.join(c.UPLOAD_FOLDER, filename))
+            current_user.image = filename
         db.session.commit()
         return redirect(url_for('vendor.view_profile'))
     form.bio.data = current_user.bio
@@ -288,4 +337,5 @@ def edit_profile():
     form.phone_number.data = current_user.phone_number
     form.website.data = current_user.website
     form.email.data = current_user.public_email
+
     return render_template('vendor/edit_profile.html', form=form)

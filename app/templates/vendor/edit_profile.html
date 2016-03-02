@@ -7,5 +7,84 @@
         <div class="ui centered two wide column">
             {{ f.render_form(form) }}
         </div>
+
     </div>
+
+
+    <script>
+            $('#featured1').on('input', function (event) {
+                $('#results').remove()
+                $('#featured1').after('<div id="results"></div>');
+                $.ajax({
+                    url: '/vendor/suggestions/'+ $('#featured1').val(),
+                    data: JSON.stringify({
+                        suggestion: $('#featured1').val()
+                    }),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        for(var a in data.json_list) {
+                            $('#results').append('<a class="item" onclick="$(\'#featured1\').val(\''+data.json_list[a]+'\'); $(\'#results\').remove();">'+data.json_list[a]+'</a><br>');
+                        }
+                    },
+                    method: 'GET'
+                });
+            });
+
+    $('#featured2').on('input', function (event) {
+                $('#results').remove()
+                $('#featured2').after('<div id="results"></div>');
+                $.ajax({
+                    url: '/vendor/suggestions/'+ $('#featured2').val(),
+                    data: JSON.stringify({
+                        suggestion: $('#featured2').val()
+                    }),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        for(var a in data.json_list) {
+                            $('#results').append('<a class="item" onclick="$(\'#featured2\').val(\''+data.json_list[a]+'\'); $(\'#results\').remove();">'+data.json_list[a]+'</a><br>');
+                        }
+                    },
+                    method: 'GET'
+                });
+            });
+    $('#featured3').on('input', function (event) {
+                $('#results').remove()
+                $('#featured3').after('<div id="results"></div>');
+                $.ajax({
+                    url: '/vendor/suggestions/'+ $('#featured3').val(),
+                    data: JSON.stringify({
+                        suggestion: $('#featured3').val()
+                    }),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        for(var a in data.json_list) {
+                            $('#results').append('<a class="item" onclick="$(\'#featured3\').val(\''+data.json_list[a]+'\'); $(\'#results\').remove();">'+data.json_list[a]+'</a><br>');
+                        }
+                    },
+                    method: 'GET'
+                });
+            });
+    $('#featured4').on('input', function (event) {
+                $('#results').remove()
+                $('#featured4').after('<div id="results"></div>');
+                $.ajax({
+                    url: '/vendor/suggestions/'+ $('#featured4').val(),
+                    data: JSON.stringify({
+                        suggestion: $('#featured4').val()
+                    }),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        for(var a in data.json_list) {
+                            $('#results').append('<a class="item" onclick="$(\'#featured4\').val(\''+data.json_list[a]+'\'); $(\'#results\').remove();">'+data.json_list[a]+'</a><br>');
+                        }
+                    },
+                    method: 'GET'
+                });
+            });
+
+    </script>
 {% endblock %}
