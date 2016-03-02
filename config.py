@@ -27,6 +27,8 @@ class Config:
     DEFAULT_LAST = 'Cleese'
     DEFAULT_EMAIL = 'test4impact@gmail.com'
 
+    UPLOAD_FOLDER = '/app/static/images/vendor'
+
     @staticmethod
     def init_app(app):
         pass

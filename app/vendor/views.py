@@ -1,5 +1,6 @@
 from ..decorators import vendor_required
-
+from app import os
+from config import Config
 from flask import (
     render_template,
     abort,
@@ -7,7 +8,8 @@ from flask import (
     flash,
     url_for,
     request,
-    jsonify
+    jsonify,
+    request
 )
 from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm, EditProfileForm)
@@ -15,7 +17,6 @@ from . import vendor
 from ..models import Listing, Order, Status, User
 from .. import db
 from ..email import send_email
-
 
 @vendor.route('/')
 @login_required
@@ -255,23 +256,31 @@ def decline_order(order_id):
 
     return jsonify({'order_id': order_id, 'status': 'declined'})
 
+
 @vendor.route('/profile', methods=['GET'])
 @login_required
 @vendor_required
 def view_profile():
     return render_template('vendor/profile.html', vendor=current_user)
 
-@vendor.route('/profile/edit', methods=['GET','POST'])
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+
+@vendor.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 @vendor_required
 def edit_profile():
     form = EditProfileForm()
+    c = Config()
     if form.validate_on_submit():
         current_user.bio = form.bio.data
         current_user.address = form.address.data
         current_user.phone_number = form.phone_number.data
         current_user.website = form.website.data
         current_user.public_email = form.email.data
+        if form.image.data:
+            image_data = request.FILES[form.image.name].read()
+            open(os.path.join(c.UPLOAD_FOLDER, form.image.data), 'w').write(image_data)
         db.session.commit()
         return redirect(url_for('vendor.view_profile'))
     form.bio.data = current_user.bio

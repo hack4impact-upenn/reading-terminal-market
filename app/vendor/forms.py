@@ -1,14 +1,33 @@
+import imghdr
 from flask.ext.wtf import Form
 from flask.ext.login import current_user
-from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField
+from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Email, URL
 from wtforms import ValidationError
 from ..models import Category, Listing
 from .. import db
 
 
 PRICE_MESSAGE = "This value needs to be filled and needs to be a number"
+
+
+class ImageFileRequired(object):
+    """
+    Validates that an uploaded file from a flask_wtf FileField is, in fact an
+    image.  Better than checking the file extension, examines the header of
+    the image using Python's built in imghdr module.
+    """
+
+    def __init__(self, message=None):
+        self.message = message
+
+    def __call__(self, form, field):
+        if field.data is None or imghdr.what('unused', field.data.read()) is None:
+            message = self.message or 'An image file is required'
+            raise ValidationError(message)
+
+        field.data.seek(0)
 
 
 class ChangeListingInformation(Form):
@@ -50,9 +69,11 @@ class NewItemForm(Form):
 
 
 class EditProfileForm(Form):
-    bio = StringField('Bio')
+    image = FileField(u'Image File', validators=[ImageFileRequired()])
+    bio = TextAreaField('Bio')
     address = StringField('Address')
     phone_number = StringField('Phone Number')
-    website = StringField('Website')
-    email =  StringField('Email')
+    website = StringField('Website (http://www.example.com)',
+                          validators=[URL('This URL is invalid. Please enter a valid website name')])
+    email = StringField('Email', validators=[Email('Please enter a valid email address')])
     submit = SubmitField('Save')

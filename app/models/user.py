@@ -306,6 +306,7 @@ class Vendor(User):
     phone_number = db.Column(db.String(64), default="")
     website = db.Column(db.String(64), default="")
     public_email = db.Column(db.String(64), default="")
+    image = db.Column(db.String(64), default="")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
