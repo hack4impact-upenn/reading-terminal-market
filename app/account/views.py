@@ -283,6 +283,7 @@ def csv_settings():
         current_vendor.listing_description_col = form.listing_description_col.data
         current_vendor.price_col = form.price_col.data
         current_vendor.name_col = form.name_col.data
+        db.session.commit()
 
     return render_template('account/manage.html', form=form)
 

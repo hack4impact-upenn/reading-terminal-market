@@ -12,7 +12,7 @@ from flask import (
 from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm, NewCSVForm)
 from . import vendor
-from ..models import Listing, Order, Status
+from ..models import Listing, Order, Status, User
 from .. import db
 from sqlalchemy import update
 import csv
@@ -61,51 +61,43 @@ def csv_upload():
         buff = csv_field.data.stream
         csv_data = csv.DictReader(buff, delimiter=',')
         #for each row in csv, create a listing
+        current_vendor = User.query.filter_by(id=current_user.id).first()
         for row in csv_data:
-            if db.session.query(Listing).filter(Listing.product_id== str(row['ProductID'])).count():
-                x = db.session.query(Listing).filter(Listing.product_id== str(row['ProductID'])).first()
-                print("price is:", row['Price'])
-                if x.price == float(row['Price']):
-                    listings.append(Listing(
-                        name=str(),
-                        description=str(row['Description']),
-                        available=True,
-                        price=str(row['Price']),
-                        category_id=str(-1),
-                        vendor_id=str(current_user.id),
-                        product_id=str(row['ProductID']),
-                        updated=2
-                    ))
-                else:
-                    x.price = str(row['Price'])
-                    db.session.commit()
-                    listings.append(Listing(
-                            name=str(row['Vendor']),
-                            description=str(row['Description']),
+            #cheap way to skip weird 'categorical' lines
+            if row['ProductID'].isdigit():
+                safe_price = stripPriceHelper(row['Price'])
+                proposed_listing = Listing(
+                            name=row[current_vendor.name_col],
+                            description=row[current_vendor.listing_description_col],
                             available=True,
-                            price=str(row['Price']),
+                            price=safe_price,
                             category_id=str(-1),
-                            vendor_id=str(current_user.id),
-                            product_id=str(row['ProductID']),
-                            updated=0
-                        ))
-            else:
-                if len(row['Vendor']) > 1:
-                    listing = Listing(
-                        name=str(row['Vendor']),
-                        description=str(row['Description']),
-                        available=True,
-                        price=str(row['Price']),
-                        category_id=str(-1),
-                        vendor_id=str(current_user.id),
-                        product_id=str(row['ProductID']),
-                        updated=1
-                    )
-                    # check iflisting already exists
-                    listings.append(listing)
-                    db.session.add(listing)
-                    db.session.commit()
+                            vendor_id=current_user.id,
+                            product_id=row[current_vendor.product_id_col],
+                            updated=2)
+                queried_listing = Listing.query.filter_by(product_id=row['ProductID']).first()
+                if queried_listing:
+                    if queried_listing.price == float(safe_price):
+                        listings.append(proposed_listing)
+                    else:
+                        queried_listing.price = float(safe_price)
+                        db.session.commit()
+                        proposed_listing.updated = 0
+                        listings.append(proposed_listing)
+                else:
+                        proposed_listing.updated = 1
+                        listings.append(proposed_listing)
+                        db.session.add(proposed_listing)
+                        db.session.commit()
     return render_template('vendor/new_csv.html', form=form, listings=listings)
+
+#get rid of those pesky dollar signs that mess up parsing
+def stripPriceHelper(price):
+    if not price[0].isdigit():
+        return price[1:]
+    return price
+
+
 
 
 @vendor.route('/itemslist/')
