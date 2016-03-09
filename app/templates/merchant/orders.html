@@ -147,9 +147,19 @@
                     'rating': rating,
                     'review': review
                 };
-                if (callback !== undefined) {
-                    callback();
-                }
+                $.ajax({
+                    url: '/merchant/orders/'+ orderId,
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(ratingReview, null, '\t'),
+                    success: function(data) {
+                        console.log(data);
+                        if (callback !== undefined) {
+                            callback();
+                        }
+                    },
+                    method: 'POST'
+                });
             }
 
             function ratingHandler(order) {

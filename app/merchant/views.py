@@ -1,9 +1,11 @@
-from flask import render_template, abort, request, redirect, url_for, jsonify
+from flask import render_template, abort, request, redirect, url_for, jsonify, flash
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order, Vendor, Status
+from ..models import Listing, CartItem, Order, Vendor, Status, Ratings
 from .. import db
+from datetime import datetime
+import pytz
 
 
 @merchant.route('/')
@@ -222,3 +224,31 @@ def view_orders():
         orders=orders.all(),
         status_filter=status_filter
     )
+
+
+@merchant.route('/orders/<int:order_id>', methods=['POST'])
+@login_required
+@merchant_required
+def review_orders(order_id):
+    order = Order.query.get(order_id)
+    star_rating = request.json['rating']
+    comment = request.json['review']
+    rating = Ratings(
+        vendor_id=order.vendor_id,
+        merchant_id=order.merchant_id,
+        star_rating=star_rating,
+        comment=comment,
+        date_reviewed=datetime.now(pytz.timezone('US/Eastern'))
+        )
+    db.session.add(rating)
+    db.session.commit()
+
+    # testing
+    ratings = Ratings.query.filter_by(vendor_id=order.vendor_id).all()
+    print("THESE ARE RATINGS: \n")
+    print(ratings)
+
+    flash('Successfully reviewed vendor!', 'success')
+
+    return jsonify({'order_id': order_id, 'rating': star_rating,
+                    'comment': comment, 'vendor id': order.vendor_id})

@@ -10,3 +10,12 @@ class Ratings(db.Model):
     star_rating = db.Column(db.Integer)
     comment = db.Column(db.Text)
     date_reviewed = db.Column(db.DateTime)
+
+    def __repr__(self):
+        return "<Rating: id {}, vendor_id {}, merchant_id {}, star_rating {}, \
+        comment {}, date_reviewed {} \n>".format(self.id,
+                                                 self.vendor_id,
+                                                 self.merchant_id,
+                                                 self.star_rating,
+                                                 self.comment,
+                                                 self.date_reviewed)
