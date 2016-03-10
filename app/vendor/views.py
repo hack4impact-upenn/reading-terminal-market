@@ -13,6 +13,7 @@ from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm, NewCSVForm)
 from . import vendor
 from ..models import Listing, Order, Status, User
+from ..models.user import Vendor
 from .. import db
 from sqlalchemy import update
 import csv
@@ -61,35 +62,24 @@ def csv_upload():
         buff = csv_field.data.stream
         csv_data = csv.DictReader(buff, delimiter=',')
         #for each row in csv, create a listing
-        current_vendor = User.query.filter_by(id=current_user.id).first()
+        current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
         for row in csv_data:
-            print row[current_vendor.product_id_col].strip()
             #cheap way to skip weird 'categorical' lines
             if (row[current_vendor.product_id_col]).strip().isdigit():
                 safe_price = stripPriceHelper(row[current_vendor.price_col])
-                proposed_listing = Listing(
-                            name=row[current_vendor.name_col],
-                            description=row[current_vendor.listing_description_col],
-                            available=True,
-                            price=safe_price,
-                            category_id=str(-1),
-                            vendor_id=current_user.id,
-                            product_id=row[current_vendor.product_id_col],
-                            updated=2)
-                queried_listing = Listing.query.filter_by(product_id=row[current_vendor.product_id_col]).first()
+                proposed_listing = Listing.transform_csv_row_to_listing(csv_row=row, price=safe_price)
+                queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
                 if queried_listing:
                     if queried_listing.price == float(safe_price):
                         listings.append(proposed_listing)
                     else:
                         queried_listing.price = float(safe_price)
-                        db.session.commit()
                         proposed_listing.updated = 0
                         listings.append(proposed_listing)
                 else:
-                        proposed_listing.updated = 1
-                        listings.append(proposed_listing)
-                        db.session.add(proposed_listing)
-                        db.session.commit()
+                    proposed_listing.updated = 1
+                    listings.append(proposed_listing)
+                    Listing.add_listing(new_listing=proposed_listing)
     return render_template('vendor/new_csv.html', form=form, listings=listings)
 
 #get rid of those pesky dollar signs that mess up parsing

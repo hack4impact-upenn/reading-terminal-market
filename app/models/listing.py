@@ -44,6 +44,7 @@ class Listing(db.Model):
             db.session.delete(cart_item)
         db.session.commit()
 
+
     def get_quantity_in_cart(self):
         cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
                                              listing_id=self.id).first()
@@ -62,6 +63,28 @@ class Listing(db.Model):
         """Delete the listing and remove from all carts"""
         self.remove_from_carts()
         db.session.delete(self)
+        db.session.commit()
+
+
+    @staticmethod
+    def get_listing_by_product_id(product_id):
+        Listing.query.filter_by(product_id=product_id).first()
+
+    @staticmethod
+    def transform_csv_row_to_listing(csv_row, price=0):
+        return Listing(
+                    name=csv_row[current_user.name_col],
+                    description=csv_row[current_user.listing_description_col],
+                    available=True,
+                    price=price,
+                    category_id=str(-1),
+                    vendor_id=current_user.id,
+                    product_id=csv_row[current_user.product_id_col],
+                    updated=2)
+
+    @staticmethod
+    def add_listing(new_listing):
+        db.session.add(new_listing)
         db.session.commit()
 
     def update_listing(self, new_product_id):

@@ -314,12 +314,17 @@ class Vendor(User):
     def __repr__(self):
         return '<Vendor %s>' % self.full_name()
 
+    @staticmethod
+    def get_vendor_by_user_id(user_id):
+            return User.query.filter_by(id=user_id).first()
+
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
                                      db.ForeignKey('users.id')),
                            db.Column('listing_id', db.Integer,
                                      db.ForeignKey('listings.id'))
                            )
+
 
 
 class Merchant(User):
@@ -348,6 +353,8 @@ class Merchant(User):
 
     def __repr__(self):
         return '<Merchant %s>' % self.full_name()
+
+
 
 
 login_manager.anonymous_user = AnonymousUser
