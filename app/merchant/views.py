@@ -233,15 +233,23 @@ def review_orders(order_id):
     order = Order.query.get(order_id)
     star_rating = request.json['rating']
     comment = request.json['review']
-    rating = Ratings(
-        vendor_id=order.vendor_id,
-        merchant_id=order.merchant_id,
-        star_rating=star_rating,
-        comment=comment,
-        date_reviewed=datetime.now(pytz.timezone('US/Eastern'))
-        )
-    db.session.add(rating)
-    db.session.commit()
+
+    rating = Ratings.query.filter_by(vendor_id=order.vendor_id).first()
+    if not rating:
+        rating = Ratings(
+            vendor_id=order.vendor_id,
+            merchant_id=order.merchant_id,
+            star_rating=star_rating,
+            comment=comment,
+            date_reviewed=datetime.now()
+            )
+        db.session.add(rating)
+        db.session.commit()
+    else:
+        rating.star_rating = star_rating
+        rating.comment = comment
+        rating.date_reviewed = datetime.now()
+        db.session.commit()
 
     # testing
     ratings = Ratings.query.filter_by(vendor_id=order.vendor_id).all()
