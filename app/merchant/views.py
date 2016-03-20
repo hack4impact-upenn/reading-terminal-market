@@ -219,10 +219,14 @@ def view_orders():
     else:
         status_filter = None
 
+    ratings = Ratings.query.filter_by(merchant_id=current_user.id).all()
+    rating_dict = {rating.vendor_id: rating for rating in ratings}
+
     return render_template(
         'merchant/orders.html',
         orders=orders.all(),
-        status_filter=status_filter
+        status_filter=status_filter,
+        ratings=rating_dict
     )
 
 
@@ -259,4 +263,5 @@ def review_orders(order_id):
     flash('Successfully reviewed vendor!', 'success')
 
     return jsonify({'order_id': order_id, 'rating': star_rating,
-                    'comment': comment, 'vendor id': order.vendor_id})
+                    'comment': comment, 'vendor id': order.vendor_id,
+                    'date_reviewed': rating.get_date()})

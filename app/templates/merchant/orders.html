@@ -67,14 +67,41 @@
 
         <div class="reviews" style="display: none;">
             <div style="overflow: hidden; clear:both" class="ui form">
-                <label>Rating: </label><div class="ui star rating"></div>
-                <div class="field">
-                    <label>Please write a review to accompany your rating <em>(optional)</em>:</label>
-                    <textarea rows="2" class="review-box"></textarea>
+                {% set rating = ratings[order.vendor_id] %}
+                {% if rating %}
+                    <div class="ui items">
+                        <div class="item">
+                            <div class="content">
+                                <h4 class="ui header">Previous Review</h4>
+                                <div class="ui star rating prev-rating" data-rating="{{ rating.star_rating }}"></div>
+                                <div class="description">
+                                    <p class="prev-comment">{{ rating.comment }}</p>
+                                </div>
+                                <div class="extra prev-date">
+                                    Reviewed on {{ rating.get_date() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui divider"></div>
+                {% endif %}
+                <div class="ui items">
+                    <div class="item">
+                        <div class="content">
+                            <h4 class="ui header">New Review</h4>
+                            <div class="ui star rating"></div>
+                            <div class="description">
+                                <div class="field">
+                                    <label>Please write a review to accompany your rating <em>(optional)</em>:</label>
+                                    <textarea rows="2" class="review-box"></textarea>
+                                </div>
+                                <button class="ui right floated button submit-rating">
+                                    Submit Rating
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button class="ui right floated button submit-rating">
-                    Submit Rating
-                </button>
           </div>
         </div>
     </div>
@@ -116,30 +143,34 @@
 
         $(document).ready(function(){
             $('.toggle-details').click(function () {
-                var order = $( this ).closest('.order');
+                var order = $(this).closest('.order');
                 var details = order.find('.details');
                 details.toggle();
-                if ($( this ).text() === 'Hide purchases') {
+                if ($(this).text() === 'Hide purchases') {
                     $(this).text('Show purchases');
                 } else {
-                    $( this ).text('Hide purchases');
+                    $(this).text('Hide purchases');
                 }
             });
 
             $('.toggle-rating').click(function () {
-                var order = $( this ).closest('.order');
+                var order = $(this).closest('.order');
                 var reviews = order.find('.reviews');
                 reviews.toggle();
-                if ($( this ).text() === 'Cancel rating') {
+                if ($(this).text() === 'Cancel rating') {
                     $(this).text('Rate vendor');
                 } else {
-                    $( this ).text('Cancel rating');
+                    $(this).text('Cancel rating');
                 }
             });
 
             $('.ui.rating').rating({
                 initialRating: 0,
                 maxRating: 5
+            });
+
+            $('.ui.prev-rating').rating({
+                interactive: false
             });
 
             function ratingRequest(orderId, rating, review, callback) {
@@ -155,7 +186,7 @@
                     success: function(data) {
                         console.log(data);
                         if (callback !== undefined) {
-                            callback();
+                            callback(data);
                         }
                     },
                     method: 'POST'
@@ -165,12 +196,12 @@
             function ratingHandler(order) {
                 var orderId = order.attr('id').split('-')[1];
                 console.log("ORDER ID: " + orderId);
-                var rating = order.find('.ui.rating').children('.active').length;
+                var rating = order.find('.ui.rating').last().children('.active').length;
                 console.log("RATING: " + rating);
                 var review = order.find('.review-box').val();
                 console.log("REVIEW: " + review);
 
-                ratingRequest(orderId, rating, review, function(){
+                ratingRequest(orderId, rating, review, function(data){
                     order.find('.review-box').val('');
                     $('.ui.rating').rating({
                         initialRating: 0,
@@ -179,11 +210,15 @@
                     var reviews = order.find('.reviews');
                     reviews.hide();
                     $('.toggle-rating').text('Rate vendor');
+                    $('.ui.prev-rating').rating('set rating', rating);
+                    $('.prev-comment').text(review);
+                    var date_reviewed = data['date_reviewed'];
+                    $('.prev-date').text("Reviewed on " + date_reviewed);
                 });
             }
 
             $('.submit-rating').click(function(){
-                var order = $( this ).closest('.order');
+                var order = $(this).closest('.order');
                 ratingHandler(order);
             });
 

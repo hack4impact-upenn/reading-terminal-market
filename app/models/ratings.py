@@ -11,6 +11,11 @@ class Ratings(db.Model):
     comment = db.Column(db.Text)
     date_reviewed = db.Column(db.DateTime)
 
+    def get_date(self):
+        """Get date formatted as mm-dd-yyyy"""
+        date = self.date_reviewed.date()
+        return '{}-{}-{}'.format(date.month, date.day, date.year)
+
     def __repr__(self):
         return "<Rating: id {}, vendor_id {}, merchant_id {}, star_rating {}, \
         comment {}, date_reviewed {} \n>".format(self.id,
