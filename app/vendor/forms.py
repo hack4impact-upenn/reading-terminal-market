@@ -47,3 +47,9 @@ class NewItemForm(Form):
     def validate_listing_name(self, field):
         if current_user.listings.filter_by(name=field.data).first():
             raise ValidationError('You already have an item with this name.')
+
+class requestTagForm(Form):
+    tag_name =QuerySelectField('Tags',
+                                validators=[DataRequired()],
+                                get_label='tag_name',
+                                query_factory=lambda: db.session.query(Category).order_by('id'))

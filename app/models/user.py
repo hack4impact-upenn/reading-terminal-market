@@ -323,6 +323,14 @@ bookmarked_vendor_table = db.Table('bookmarked_vendors', db.Model.metadata,
                               db.Column('vendor_id', db.Integer,
                                      db.ForeignKey('vendor.id')))
 
+vendor_tags_table = db.Table('vendor_tags', db.Model.metadata,
+                             db.Column('vendor_id', db.Integer,
+                                       db.ForeignKey('vendor.id')),
+                             db.Column('tag', db.String, db.ForeignKey('tags.tag_names')),
+                             db.Column('approved', db.Boolean))
+
+tags_table = db.Table('tags', db.Model.metadata,
+                      db.Column('tag_names', db.String))
 
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}

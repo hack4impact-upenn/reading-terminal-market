@@ -254,3 +254,4 @@ def decline_order(order_id):
                purchases=purchases)
 
     return jsonify({'order_id': order_id, 'status': 'declined'})
+
