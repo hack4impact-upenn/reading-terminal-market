@@ -67,15 +67,21 @@ def csv_upload():
             #cheap way to skip weird 'categorical' lines
             if (row[current_vendor.product_id_col]).strip().isdigit():
                 safe_price = stripPriceHelper(row[current_vendor.price_col])
-                proposed_listing = Listing.transform_csv_row_to_listing(csv_row=row, price=safe_price)
+                proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
                 queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
                 if queried_listing:
+                    # case: listing exists and price has not changed
                     if queried_listing.price == float(safe_price):
                         listings.append(proposed_listing)
+                    # case: listing exists and price has changed
                     else:
+                        print 'in here', queried_listing
                         queried_listing.price = float(safe_price)
+                        proposed_listing.price = float(safe_price)
                         proposed_listing.updated = 0
                         listings.append(proposed_listing)
+                        db.session.commit()
+                    #case: listing does not yet exist
                 else:
                     proposed_listing.updated = 1
                     listings.append(proposed_listing)

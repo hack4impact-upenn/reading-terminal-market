@@ -65,13 +65,15 @@ class Listing(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-
+    # used in csv parsing
     @staticmethod
     def get_listing_by_product_id(product_id):
-        Listing.query.filter_by(product_id=product_id).first()
+        return Listing.query.filter_by(product_id=product_id).first()
 
+    # used in csv parsing.
+    # adds to DB a new listing iven params in csv row
     @staticmethod
-    def transform_csv_row_to_listing(csv_row, price=0):
+    def add_csv_row_as_listing(csv_row, price=0):
         return Listing(
                     name=csv_row[current_user.name_col],
                     description=csv_row[current_user.listing_description_col],
@@ -89,7 +91,6 @@ class Listing(db.Model):
 
     def update_listing(self, new_product_id):
         self.product_id = new_product_id
-        db.session.commit()
 
     @property
     def category_name(self):
