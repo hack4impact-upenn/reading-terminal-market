@@ -257,7 +257,7 @@ def review_orders(order_id):
     star_rating = request.json['rating']
     comment = request.json['review']
 
-    rating = Ratings.query.filter_by(vendor_id=order.vendor_id).first()
+    rating = Ratings.query.filter_by(vendor_id=order.vendor_id, merchant_id=order.merchant_id).first()
     if not rating:
         rating = Ratings(
             vendor_id=order.vendor_id,

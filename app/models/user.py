@@ -6,6 +6,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, \
 from .. import db, login_manager
 from sqlalchemy import or_, desc, func
 from ..models import Ratings
+import operator
 
 
 class Permission:
@@ -316,7 +317,7 @@ class Vendor(User):
         total_rating = 0.0
         for rating in ratings:
             total_rating += rating.star_rating
-        return total_rating / len(ratings)
+        return '%.1f' % (total_rating / len(ratings))
 
     def get_all_ratings(self):
         ratings = Ratings.query.filter_by(vendor_id=self.id).all()
