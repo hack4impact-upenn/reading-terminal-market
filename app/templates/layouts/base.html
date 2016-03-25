@@ -2,8 +2,10 @@
 
 <!DOCTYPE html>
 <html>
-{% include 'partials/_head.html' %}
-
+<head>
+    {% include 'partials/_head.html' %}
+    {% block custom_scripts %}{% endblock %}
+</head>
 <body>
 <style>
     #notifier {
@@ -53,6 +55,7 @@
                 var event = (request.responseText).toString();
                 var myArray = event.split('"');
                 var item = myArray[myArray.length - 2];
+                var vendorName = myArray[myArray.length - 4];
                 if (event.includes("quantity")) {
                     var num = event.match(/\d+/)[0];
                 } else {
@@ -67,7 +70,12 @@
                     message = "You have successfully unfavorited " + item;
                 } else if (event.includes("Favorite") && event.includes("true")) {
                     message = "You have successfully favorited " + item;
-                } else if (event.includes("quantity") && (num > 0)) {
+                } else if (event.includes("isFavVendor") && event.includes("true")){
+                    message = "You have successfully favorited the vendor " + vendorName;
+                } else if (event.includes("isFavVendor") && event.includes("false")){
+                    message = "You have successfully unfavorited the vendor " + vendorName;
+                }
+                else if (event.includes("quantity") && (num > 0)) {
                     item = myArray[3];
                     message = "You are now ordering a total of " + num + " of " + item;
                 } else if (event.includes("quantity") && (num == 0)) {

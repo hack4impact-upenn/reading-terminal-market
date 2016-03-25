@@ -16,6 +16,8 @@
             {{ f.begin_form(form, flashes) }}
                 {{ f.render_form_field(form.email) }}
                 {{ f.render_form_field(form.password) }}
+                <meter max="4" id="password-strength-meter"></meter>
+                <p id="password-strength-text"></p>
                 <div class="ui two column grid">
                     {{ f.render_form_field(form.remember_me, extra_classes='column') }}
                     <div class="right aligned column">

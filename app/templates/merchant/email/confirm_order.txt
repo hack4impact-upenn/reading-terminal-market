@@ -1,0 +1,15 @@
+Hello!
+
+You have requested the following items from {{ vendor.company_name }}:
+
+{% for cart_item in cart_items %}
+----------------------------------------
+Item name : {{ cart_item.listing.name }}
+Quantity  : {{ cart_item.quantity| int() }} {{ cart_item.listing.category.unit }}
+{% endfor %}
+
+Sincerely,
+
+The {{ config.APP_NAME }} Team
+
+Note: replies to this email address are not monitored.
