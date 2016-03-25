@@ -59,9 +59,12 @@
                             <td {{info_link}}>{{ l.name }}</td>
                             {% if current_user.is_merchant() or current_user.is_admin() %}
                                 <td {{info_link}}>{{ l.vendor.company_name }}
+                                    {% set rating = l.vendor.get_rating_value() %}
+                                    {% if rating != -1 %}
                                     <a class="ui small label">
-                                        <i class="star icon"></i> {{ l.vendor.get_rating_value() }}
+                                        <i class="star icon"></i> {{ rating }}
                                     </a>
+                                    {% endif %}
                                 </td>
                             {% endif %}
                             <td {{info_link}}>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>

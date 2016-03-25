@@ -311,6 +311,8 @@ class Vendor(User):
 
     def get_rating_value(self):
         ratings = Ratings.query.filter_by(vendor_id=self.id).all()
+        if not ratings:
+            return -1.0
         total_rating = 0.0
         for rating in ratings:
             total_rating += rating.star_rating

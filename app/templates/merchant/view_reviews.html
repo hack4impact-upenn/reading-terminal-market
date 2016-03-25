@@ -1,0 +1,40 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<div class="ui stackable centered grid container">
+    <div class="twelve wide column">
+        <a class="ui basic compact button" href="{{ backto }}">
+            <i class="caret left icon"></i>
+            Back to item
+        </a>
+        <h2 class="ui header">
+            Reviews of {{ listing.vendor.company_name }}
+            {% set rating = listing.vendor.get_rating_value() %}
+            {% if rating != -1 %}
+            <a class="ui small label">
+                <i class="star icon"></i> {{ rating }}
+            </a>
+            {% endif %}
+        </h2>
+    </div>
+    <div class="twelve wide column">
+        <div class="ui divided items">
+            {% for rating in listing.vendor.get_all_ratings() %}
+                <div class="item">
+                    <div class="content">
+                        <a class="ui small label">
+                            <i class="star icon"></i> {{ rating.star_rating }}
+                        </a>
+                        <div class="description">
+                            <p>{{ rating.comment }}</p>
+                        </div>
+                        <div class="extra">
+                            Reviewed on {{ rating.get_date() }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
