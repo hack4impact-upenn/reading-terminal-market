@@ -5,7 +5,12 @@
     <table class="ui compact definition table">
 
         <tr><td>Product Name</td><td>{{ listing.name }} </td></tr>
-        <tr><td>Company</td><td>{{ listing.vendor.company_name }} </td></tr>
+        <tr><td>
+            Company</td><td>{{ listing.vendor.company_name }}
+            <a class="ui small label">
+                <i class="star icon"></i> {{ listing.vendor.get_rating_value() }}
+            </a>
+        </td></tr>
         <tr><td>Vendor</td><td>{{ listing.vendor.full_name() }} </td></tr>
         <tr><td>Vendor email</td><td>{{ listing.vendor.email }} </td></tr>
         <tr><td>Price</td><td>${{ '%0.2f' | format(listing.price) }}/{{listing.category.unit}}</td></tr>
@@ -53,6 +58,28 @@
                     </div>
                 {% endif %}
 
+            </div>
+        </div>
+        <div class="twelve wide column">
+            <h3 class="ui header"> Reviews
+                <div class="sub header"><a href="">See more reviews</a></div>
+            </h3>
+            <div class="ui divided items">
+                {% for rating in listing.vendor.get_all_ratings()[:3] %}
+                    <div class="item">
+                        <div class="content">
+                            <a class="ui small label">
+                                <i class="star icon"></i> {{ rating.star_rating }}
+                            </a>
+                            <div class="description">
+                                <p>{{ rating.comment }}</p>
+                            </div>
+                            <div class="extra">
+                                Reviewed on {{ rating.get_date() }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

@@ -5,7 +5,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, \
     BadSignature, SignatureExpired
 from .. import db, login_manager
 from sqlalchemy import or_, desc, func
-
+from ..models import Ratings
 
 
 class Permission:
@@ -315,6 +315,10 @@ class Vendor(User):
         for rating in ratings:
             total_rating += rating.star_rating
         return total_rating / len(ratings)
+
+    def get_all_ratings(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id).all()
+        return ratings
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
