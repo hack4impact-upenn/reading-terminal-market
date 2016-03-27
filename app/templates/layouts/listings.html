@@ -61,6 +61,7 @@
                             {% if current_user.is_merchant() or current_user.is_admin() %}
                                 <td {{info_link}}>{{ l.vendor.company_name }}</td>
                             {% endif %}
+                            {% if current_user.is_merchant() %}
                                 <td class="center aligned favoriteCell">
                                     {% if l.vendor in current_user.bookmarked_vendors %}
                                         <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="true">
@@ -72,6 +73,7 @@
                                         </a>
                                     {% endif %}
                                 </td>
+                            {% endif %}
                             <td {{info_link}}>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>
                             <td class="truncate" {{info_link}}>{{ l.description }}</td>
                             {% if current_user.is_vendor() or current_user.is_admin() %}
