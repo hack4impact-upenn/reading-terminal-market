@@ -300,6 +300,8 @@ class Vendor(User):
     visible = db.Column(db.Boolean, default=False)
     listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
     company_name = db.Column(db.String(64), default="")
+    tags = db.relationship("TagAssociation", back_populates="vendor")
+
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
@@ -308,7 +310,6 @@ class Vendor(User):
 
     def __repr__(self):
         return '<Vendor %s>' % self.full_name()
-
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
@@ -322,15 +323,6 @@ bookmarked_vendor_table = db.Table('bookmarked_vendors', db.Model.metadata,
                                      db.ForeignKey('users.id')),
                               db.Column('vendor_id', db.Integer,
                                      db.ForeignKey('vendor.id')))
-
-vendor_tags_table = db.Table('vendor_tags', db.Model.metadata,
-                             db.Column('vendor_id', db.Integer,
-                                       db.ForeignKey('vendor.id')),
-                             db.Column('tag', db.String, db.ForeignKey('tags.tag_names')),
-                             db.Column('approved', db.Boolean))
-
-tags_table = db.Table('tags', db.Model.metadata,
-                      db.Column('tag_names', db.String))
 
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}

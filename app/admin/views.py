@@ -7,10 +7,10 @@ from forms import (
     ChangeUserEmailForm,
     NewUserForm,
     InviteUserForm,
-    NewCategoryForm
+    NewCategoryForm,
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant, Category, Listing
+from ..models import User, Role, Vendor, Merchant, Category, Listing, Tag
 from .. import db
 from ..email import send_email
 
@@ -311,3 +311,23 @@ def listing_info(listing_id):
         listing=listing,
         backto=backto
     )
+
+@admin.route('/view-tags')
+@login_required
+@admin_required
+def view_tags():
+    form = NewCategoryForm()
+    if form.validate_on_submit():
+        category_name = form.category_name.data
+        if Category.query.filter_by(name=category_name).first():
+            flash('Category {} already exists'.format(category_name),
+                  'form-error')
+        else:
+            category = Category(name=category_name, unit=form.unit.data)
+            db.session.add(category)
+            db.session.commit()
+            flash('Category {} successfully created'.format(category.name),
+                  'form-success')
+    return render_template('admin/view_tags.html')
+
+

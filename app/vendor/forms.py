@@ -3,8 +3,8 @@ from flask.ext.login import current_user
 from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length
-from wtforms import ValidationError
-from ..models import Category, Listing
+from wtforms import ValidationError,  widgets,SelectMultipleField
+from ..models import Category, Listing, User
 from .. import db
 
 
@@ -48,8 +48,4 @@ class NewItemForm(Form):
         if current_user.listings.filter_by(name=field.data).first():
             raise ValidationError('You already have an item with this name.')
 
-class requestTagForm(Form):
-    tag_name =QuerySelectField('Tags',
-                                validators=[DataRequired()],
-                                get_label='tag_name',
-                                query_factory=lambda: db.session.query(Category).order_by('id'))
+

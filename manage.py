@@ -2,7 +2,7 @@
 import os
 from app import create_app, db
 from app.models import (User, Role, Vendor, Merchant, Listing, Category,
-                        CartItem)
+                        CartItem, Tag)
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import Config

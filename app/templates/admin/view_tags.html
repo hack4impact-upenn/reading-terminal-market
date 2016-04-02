@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Tags Page</title>
+</head>
+ <div style="overflow-x: scroll;">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                        <tr>
+                            <th class="sorted ascending seven wide">Tag Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for t in tags | sort(attribute='tag_name') %}
+                        <tr>
+                            <td>{{ t.tag_name }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+</html>
