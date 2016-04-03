@@ -13,6 +13,7 @@ from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm, NewCSVForm)
 from . import vendor
 from ..models import Listing, Order, Status, User
+from ..models.listing import Updated
 from ..models.user import Vendor
 import csv
 from .. import db
@@ -72,18 +73,19 @@ def csv_upload():
                 if queried_listing:
                     # case: listing exists and price has not changed
                     if queried_listing.price == float(safe_price):
+                        proposed_listing.updated = Updated.NO_CHANGE
                         listings.append(proposed_listing)
                     # case: listing exists and price has changed
                     else:
                         print 'in here', queried_listing
                         queried_listing.price = float(safe_price)
                         proposed_listing.price = float(safe_price)
-                        proposed_listing.updated = 0
+                        proposed_listing.updated = Updated.PRICE_CHANGE
                         listings.append(proposed_listing)
                         db.session.commit()
                     #case: listing does not yet exist
                 else:
-                    proposed_listing.updated = 1
+                    proposed_listing.updated = Updated.NEW_ITEM
                     listings.append(proposed_listing)
                     Listing.add_listing(new_listing=proposed_listing)
     return render_template('vendor/new_csv.html', form=form, listings=listings)

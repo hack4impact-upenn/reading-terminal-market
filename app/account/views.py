@@ -275,7 +275,6 @@ def change_name():
 @login_required
 def csv_settings():
     form = CSVColumnForm()
-    print("#################", current_user.id)
     if form.validate_on_submit():
         current_vendor = User.query.filter_by(id=current_user.id).first()
         current_vendor.product_id_col = form.product_id_col.data

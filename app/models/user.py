@@ -7,7 +7,6 @@ from .. import db, login_manager
 from sqlalchemy import or_, desc, func
 
 
-
 class Permission:
     GENERAL = 0x01
     VENDOR = 0x02
@@ -316,7 +315,7 @@ class Vendor(User):
 
     @staticmethod
     def get_vendor_by_user_id(user_id):
-            return User.query.filter_by(id=user_id).first()
+            return Vendor.query.filter_by(id=user_id).first()
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,

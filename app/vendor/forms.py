@@ -50,7 +50,7 @@ class NewItemForm(Form):
 
 
 class NewCSVForm(Form):
-    file_upload = FileField()
+    file_upload = FileField(validators=[DataRequired()])
     submit = SubmitField('Submit Upload')
 
 

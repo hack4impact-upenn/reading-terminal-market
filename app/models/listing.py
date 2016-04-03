@@ -6,6 +6,10 @@ from flask.ext.login import current_user
 from sqlalchemy import UniqueConstraint
 
 
+class Updated:
+    PRICE_CHANGE, NEW_ITEM, NO_CHANGE = range(3)
+
+
 class Listing(db.Model):
     __tablename__ = "listings"
     __table_args__ = (
@@ -28,7 +32,7 @@ class Listing(db.Model):
     updated=db.Column(db.Integer, default=0)
 
     def __init__(self, product_id, vendor_id, name, available, category_id, price,
-                 description="", updated=0):
+                 description="", updated=Updated.NO_CHANGE):
         self.product_id = product_id
         self.vendor_id = vendor_id
         self.category_id = category_id
@@ -36,14 +40,12 @@ class Listing(db.Model):
         self.description = description
         self.price = price
         self.available = available
-        self.updated = updated
 
     def remove_from_carts(self):
         cart_items = CartItem.query.filter_by(listing_id=self.id).all()
         for cart_item in cart_items:
             db.session.delete(cart_item)
         db.session.commit()
-
 
     def get_quantity_in_cart(self):
         cart_item = CartItem.query.filter_by(merchant_id=current_user.id,
@@ -82,7 +84,7 @@ class Listing(db.Model):
                     category_id=str(-1),
                     vendor_id=current_user.id,
                     product_id=csv_row[current_user.product_id_col],
-                    updated=2)
+                    updated=Updated.PRICE_CHANGE)
 
     @staticmethod
     def add_listing(new_listing):
