@@ -2,12 +2,21 @@
 {% import 'macros/form_macros.html' as f %}
 
 {% set deletion_endpoint = 'admin.delete_user_request' %}
+{% if user.is_vendor() %}
+    {% set endpoints = [
+        ('admin.user_info', 'User information'),
+        ('admin.change_user_email', 'Change email address'),
+        ('admin.manage_tags', 'Manage tags'),
+        (deletion_endpoint, 'Delete user')
+    ] %}
 
-{% set endpoints = [
-    ('admin.user_info', 'User information'),
-    ('admin.change_user_email', 'Change email address'),
-    (deletion_endpoint, 'Delete user')
-] %}
+{% else %}
+    {% set endpoints = [
+        ('admin.user_info', 'User information'),
+        ('admin.change_user_email', 'Change email address'),
+        (deletion_endpoint, 'Delete user')
+    ] %}
+{% endif %}
 
 {% macro navigation(items) %}
     <div class="ui vertical fluid secondary menu">
@@ -26,6 +35,17 @@
         <tr><td>Email address</td><td>{{ user.email }}</td></tr>
         <tr><td>Account type</td><td>{{ user.role.name }}</td></tr>
         <tr><td>Company name</td><td>{{ user.company_name }}</td></tr>
+    </table>
+{% endmacro %}
+
+{% macro manage_tags(user) %}
+
+    <table class="ui compact definition table">
+        {% for t in tags | sort(attribute='tag_name') %}
+            <tr>
+                <td>{{ t.tag_name }}</td>
+            </tr>
+        {% endfor %}
     </table>
 {% endmacro %}
 
@@ -72,6 +92,8 @@
                     </div>
                 {% elif form %}
                     {{ f.render_form(form) }}
+                {% elif flag %}
+                    {{ manage_tags(user) }}
                 {% else %}
                     {{ user_info(user) }}
                 {% endif %}

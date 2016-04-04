@@ -8,6 +8,7 @@ from forms import (
     NewUserForm,
     InviteUserForm,
     NewCategoryForm,
+    AdminCreateTagForm
 )
 from . import admin
 from ..models import User, Role, Vendor, Merchant, Category, Listing, Tag
@@ -233,7 +234,6 @@ def registered_users(page=1):
     )
 
 
-@admin.route('/user/<int:user_id>')
 @admin.route('/user/<int:user_id>/info')
 @login_required
 @admin_required
@@ -243,6 +243,19 @@ def user_info(user_id):
     if user is None:
         abort(404)
     return render_template('admin/manage_user.html', user=user)
+
+@admin.route('/user/<int:user_id>/tags', methods = ['GET', 'POST'])
+@login_required
+@admin_required
+def manage_tags(user_id):
+    """View a user's profile."""
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        abort(404)
+    if not user.is_vendor():
+        abort(404)
+    tags = user.tags
+    return render_template('admin/manage_user.html', user=user, tags=tags, flag = True)
 
 
 @admin.route('/user/<int:user_id>/change-email', methods=['GET', 'POST'])
@@ -312,22 +325,25 @@ def listing_info(listing_id):
         backto=backto
     )
 
-@admin.route('/view-tags')
+
+@admin.route('/view-tags', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def view_tags():
-    form = NewCategoryForm()
+    form = AdminCreateTagForm()
+    tags = Tag.query.all()
     if form.validate_on_submit():
-        category_name = form.category_name.data
-        if Category.query.filter_by(name=category_name).first():
-            flash('Category {} already exists'.format(category_name),
+        tag_name  = form.tag_name.data
+        if Tag.query.filter_by(tag_name=tag_name).first():
+            flash('Tag {} already exists'.format(tag_name),
                   'form-error')
         else:
-            category = Category(name=category_name, unit=form.unit.data)
-            db.session.add(category)
+            tag = Tag(tag_name=tag_name)
+            db.session.add(tag)
             db.session.commit()
-            flash('Category {} successfully created'.format(category.name),
+            flash('Tag {} successfully created'.format(tag.tag_name),
                   'form-success')
-    return render_template('admin/view_tags.html')
+        return redirect(url_for('admin.view_tags'))
+    return render_template('admin/view_tags.html', form=form, tags=tags)
 
 

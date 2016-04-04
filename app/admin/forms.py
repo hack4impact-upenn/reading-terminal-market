@@ -63,10 +63,6 @@ class NewCategoryForm(Form):
 
 
 class AdminCreateTagForm(Form):
-    listing_name = StringField('Tag Name',
-                               validators=[DataRequired(), Length(1, 1000)])
+    tag_name = StringField('Tag Name',
+                               validators=[InputRequired(), Length(1, 1000)])
     submit = SubmitField('Create New Tag')
-
-    def validate_tag_name(self, field):
-        if current_user.tags.filter_by(name=field.data).first():
-            raise ValidationError('You already have a tag with this name.')
