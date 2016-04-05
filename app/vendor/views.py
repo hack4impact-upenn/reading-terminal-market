@@ -16,6 +16,7 @@ from ..models import Listing, Order, Status, User
 from ..models.listing import Updated
 from ..models.user import Vendor
 import csv
+import re
 from .. import db
 from ..email import send_email
 
@@ -92,10 +93,8 @@ def csv_upload():
 
 #get rid of those pesky dollar signs that mess up parsing
 def stripPriceHelper(price):
-    if not price[0].isdigit():
-        return price[1:]
-    return price
-
+    r = re.compile("\$(\d+.\d+)")
+    return r.search(price.replace(',','')).group(1)
 
 
 
