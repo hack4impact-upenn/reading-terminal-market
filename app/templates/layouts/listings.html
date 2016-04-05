@@ -32,8 +32,9 @@
                             <th class="truncate">Description</th>
                             {% if current_user.is_vendor() or current_user.is_admin() %}
                                 <th>Availability</th>
+                                <th>Unit</th>
+                                <th>Quantity</th>
                             {% endif %}
-                            <th>Category</th>
                             {% if current_user.is_merchant() %}
                                 <th>Add to Cart</th>
                                 <th>Favorite</th>
@@ -72,12 +73,12 @@
                                         </a>
                                     {% endif %}
                                 </td>
-                            <td {{info_link}}>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>
                             <td class="truncate" {{info_link}}>{{ l.description }}</td>
                             {% if current_user.is_vendor() or current_user.is_admin() %}
                                 <td {{info_link}}>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
+                                <td {{info_link}}>{{l.unit}}</td>
+                                <td {{info_link}}>{{l.quantity}}</td>
                             {% endif %}
-                            <td class="item category" {{info_link}}>{{ l.category.name }}</td>
 
                             {% if current_user.is_merchant() %}
                                 {% if l in cart_listings %}

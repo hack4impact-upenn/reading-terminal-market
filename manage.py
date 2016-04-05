@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import (User, Role, Vendor, Merchant, Listing, Category,
+from app.models import (User, Role, Vendor, Merchant, Listing,
                         CartItem)
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -75,11 +75,10 @@ def setup_test_vendor_merchant():
 
 @manager.command
 def setup_test_listings():
-    c = Category(name="Milk", unit="Gallons")
-    db.session.add(c)
     l1 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
-        category_id=Category.query.filter_by(name="Milk").first().id,
+        unit = "lbs",
+        quantity="0",
         name="Broccoli",
         description="Best Broccoli Around",
         price=5.00,
@@ -88,8 +87,9 @@ def setup_test_listings():
     )
     l2 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
-        category_id=Category.query.filter_by(name="Milk").first().id,
         name="Eggs",
+        unit = "oz",
+        quantity="2",
         description="Best Eggs Around",
         price=12.00,
         available=True,
@@ -97,8 +97,9 @@ def setup_test_listings():
     )
     l3 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven2").first().id,
-        category_id=Category.query.filter_by(name="Milk").first().id,
         name="Salmon",
+        unit = "gal",
+        quantity="500",
         description="Best Salmon Around",
         price=13.00,
         available=True,
@@ -119,7 +120,8 @@ def setup_test_listings():
     for i in range(100):
         u = Listing(
             vendor_id=3,
-            category_id=1,
+            unit= "lbs",
+            quantity="200",
             name=fake.word(),
             description=fake.sentence(nb_words=10, variable_nb_words=True),
             price=randint(1,100),

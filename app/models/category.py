@@ -1,4 +1,4 @@
-from .. import db
+"""from .. import db
 
 
 class Category(db.Model):
@@ -6,5 +6,5 @@ class Category(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    unit = db.Column(db.String(32))
     listings = db.relationship("Listing", backref="category")
+"""

@@ -34,13 +34,13 @@ def new_listing():
     """Create a new item."""
     form = NewItemForm()
     if form.validate_on_submit():
-        category_id = form.category_id.data.id
         listing = Listing(
             name=form.listing_name.data,
             description=form.listing_description.data,
             available=True,
+            unit= "lbs",
+            quantity="0",
             price=form.listing_price.data,
-            category_id=category_id,
             vendor_id=current_user.id
         )
         db.session.add(listing)
@@ -58,6 +58,7 @@ def csv_upload():
     """Create a new item."""
     form = NewCSVForm()
     listings = []
+    current_row = 0
     if form.validate_on_submit():
         csv_field = form.file_upload
         buff = csv_field.data.stream
@@ -170,7 +171,6 @@ def change_listing_info(listing_id):
     form.listing_id = listing_id
 
     if form.validate_on_submit():
-        listing.category_id = form.category_id.data.id
         listing.name = form.listing_name.data
         listing.description = form.listing_description.data
         if form.listing_available.data:
@@ -185,7 +185,6 @@ def change_listing_info(listing_id):
     form.listing_name.default = listing.name
     form.listing_description.default = listing.description
     form.listing_price.default = listing.price
-    form.category_id.default = listing.category
     form.listing_available.default = listing.available
 
     form.process()

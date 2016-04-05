@@ -7,12 +7,14 @@ from forms import (
     ChangeUserEmailForm,
     NewUserForm,
     InviteUserForm,
-    NewCategoryForm
+
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant, Category, Listing
+from ..models import User, Role, Vendor, Merchant, Listing
 from .. import db
+from .. vendor.forms import NewCSVForm
 from ..email import send_email
+import csv
 
 
 @admin.route('/')
@@ -34,7 +36,6 @@ def listing_view_all(page=1):
     name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
-    category_search = request.args.get('category-search', "", type=str)
     avail = request.args.get('avail', "", type=str)
     search = request.args.get('search', "", type=str)
     listings_raw = Listing.search(
@@ -44,7 +45,6 @@ def listing_view_all(page=1):
         name_search_term=name_search_term,
         min_price=min_price,
         max_price=max_price,
-        category_search=category_search
     )
     print sort_by
     print main_search_term
@@ -68,39 +68,14 @@ def listing_view_all(page=1):
         name_search_term=name_search_term,
         min_price=min_price,
         max_price=max_price,
-        category_search=category_search,
         header=header,
         count=result_count
     )
 
 
-@admin.route('/view-categories')
-@login_required
-@admin_required
-def view_categories():
-    """Manage categories availabe to vendors"""
-    categories = Category.query.all()
-    return render_template('admin/view_categories.html', categories=categories)
 
 
-@admin.route('/add-category', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def add_category():
-    form = NewCategoryForm()
-    if form.validate_on_submit():
-        category_name = form.category_name.data
-        if Category.query.filter_by(name=category_name).first():
-            flash('Category {} already exists'.format(category_name),
-                  'form-error')
-        else:
-            category = Category(name=category_name, unit=form.unit.data)
-            db.session.add(category)
-            db.session.commit()
-            flash('Category {} successfully created'.format(category.name),
-                  'form-success')
-        return redirect(url_for('admin.add_category'))
-    return render_template('admin/add_category.html', form=form)
+
 
 
 @admin.route('/category/<int:category_id>/delete')
@@ -264,6 +239,46 @@ def change_user_email(user_id):
     return render_template('admin/manage_user.html', user=user, form=form)
 
 
+@admin.route('/user/<int:user_id>/test-csv', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def test_csv(user_id):
+    current_vendor = Vendor.query.filter_by(id=user_id).first()
+    if current_vendor is None:
+        abort(404)
+    form = NewCSVForm()
+    if form.validate_on_submit():
+        parser_row = 0
+        parser_col = 0
+        try:
+            csv_file = form.file_upload
+            buff = csv_file.data.stream
+            csv_data = csv.DictReader(buff, delimiter=',')
+            csv_data.next()
+            #for each row in csv, create a listing
+            for row in csv_data:
+                parser_col = 'product id'
+                prod_id = row[current_vendor.product_id_col]
+                parser_col = 'description'
+                listing_description = row[current_vendor.listing_description_col]
+                parser_col = 'price'
+                price_col = row[current_vendor.price_col]
+                parser_col = 'name'
+                name_col = row[current_vendor.name_col]
+                parser_col = 'unit'
+                unit_col = row[current_vendor.unit_col]
+                parser_col = 'quanitity'
+                quantity_col = row[current_vendor.quantity_col]
+                parser_row += 1
+        except KeyError:
+            flash("Error parsing {}'s CSV File at row {}, at {} column"
+                  .format(current_vendor.full_name(), parser_row, parser_col), 'form-error')
+        flash("Successfully parsed {}'s CSV file!"
+              .format(current_vendor.full_name()),
+              'form-success')
+    return render_template('admin/manage_user.html', user=current_vendor, form=form)
+
+
 @admin.route('/user/<int:user_id>/delete')
 @login_required
 @admin_required
@@ -311,3 +326,4 @@ def listing_info(listing_id):
         listing=listing,
         backto=backto
     )
+
