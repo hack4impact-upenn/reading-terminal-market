@@ -9,7 +9,7 @@ from . import account
 from ..decorators import merchant_or_vendor_required
 from .. import db
 from ..email import send_email
-from ..models import User
+from ..models import User, Vendor
 from .forms import (
     LoginForm,
     CreateUserFromInviteForm,
@@ -19,7 +19,8 @@ from .forms import (
     ResetPasswordForm,
     ChangeCompanyNameForm,
     ChangeNameForm,
-    CreateMerchantVendorFromInviteForm
+    CreateMerchantVendorFromInviteForm,
+    CSVColumnForm
 )
 
 
@@ -268,3 +269,21 @@ def change_name():
         db.session.commit()
         flash('Your name has been updated.', 'form-success')
     return render_template('account/manage.html', form=form)
+
+
+@account.route('/manage/csv-settings', methods=['GET', 'POST'])
+@login_required
+def csv_settings():
+    form = CSVColumnForm()
+    if form.validate_on_submit():
+        current_vendor = User.query.filter_by(id=current_user.id).first()
+        current_vendor.product_id_col = form.product_id_col.data
+        current_vendor.category_id_col = form.category_id_col.data
+        current_vendor.listing_description_col = form.listing_description_col.data
+        current_vendor.price_col = form.price_col.data
+        current_vendor.name_col = form.name_col.data
+        db.session.commit()
+
+    return render_template('account/manage.html', form=form)
+
+

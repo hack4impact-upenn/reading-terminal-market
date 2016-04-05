@@ -6,7 +6,7 @@ from wtforms.fields import (
     SubmitField
 )
 from wtforms.fields.html5 import EmailField
-from wtforms.validators import InputRequired, Length, Email, EqualTo
+from wtforms.validators import InputRequired, DataRequired, Length, Email, EqualTo
 from wtforms import ValidationError
 from ..models import User
 
@@ -110,3 +110,12 @@ class ChangeNameForm(Form):
         InputRequired(),
         Length(1, 64)])
     submit = SubmitField('Update name')
+
+
+class CSVColumnForm(Form):
+    product_id_col = StringField('Product ID Column Name', validators=[DataRequired(), Length(1, 1000)])
+    category_id_col = StringField('Category ID Column Name', validators=[DataRequired(), Length(1, 1000)])
+    listing_description_col = StringField('Description Column Name', validators=[DataRequired(), Length(1, 1000)])
+    price_col = StringField('Price Column Name', validators=[DataRequired(), Length(1, 1000)])
+    name_col = StringField('Name/Brand Column Name', validators=[DataRequired(), Length(1, 1000)])
+    submit = SubmitField('Submit')
