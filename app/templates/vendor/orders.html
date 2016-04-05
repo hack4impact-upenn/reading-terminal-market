@@ -35,13 +35,15 @@
     {% endif %}
     <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
         <div class="ui left floated basic segment" style="margin-bottom: 0px">
-            <h3 class="ui header">
+            <h3 class="ui header item-title">
                 Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ order_macros.status_label(order.status) }}
                 <div class="sub header">
                     Placed on {{ order.get_date() }} at {{ order.get_time() }}
                 </div>
             </h3>
-
+            {% if order.comment %}
+            <div class="order-comments"></div>
+            {% endif %}
             <div><b>Total:</b> {{ order.get_total() }}</div>
             <div style="margin-top: 5px; margin-bottom: 0px"><a class="toggle-details" href="#">Show purchases</a></div>
 
@@ -60,7 +62,7 @@
 
             {% if order.status == 0 %}
                 <div class="approve-decline-container">
-                    <button class="positive ui button tiny compact approve">Approve order</button>
+                    <button class="positive ui button tiny compact approve" id="order-{{ order.id }}">Approve order</button>
                     <button class="negative ui button tiny compact decline">Decline order</button>
                 </div>
             {% endif %}
@@ -72,6 +74,7 @@
             {{ order_table(order) }}
         </div>
     </div>
+
 {% endmacro %}
 
 {% block content %}
@@ -105,7 +108,22 @@
         {% endif %}
 
     </div>
+    <div class="ui modal">
+        <div class="header">You are about to <b class="action-type"></b> this order:</div>
+        <div class="content">
+            <div class="ui form">
+                  <div class="field">
+                    <label>Please write any comments to be sent to the customer <em>(optional)</em>:</label>
+                    <textarea rows="5" class="comment-container"></textarea>
+                  </div>
+            </div>
+        </div>
+        <div class="actions confirm-action">
+            <button class="negative ui button cancel">Cancel</button>
+            <button class="positive ui button action-button"><span class="action-type"></span> Order</button>
+        </div>
 
+    </div>
     <script>
 
         $(document).ready(function(){
@@ -135,52 +153,87 @@
 
             });
 
-            function approveDeclineRequest(newStatus, orderId, callback) {
+            function approveDeclineRequest(newStatus, orderId, comment, callback) {
+                var comments = { 'comment' : comment}
                 $.ajax({
                     url: '/vendor/'+ newStatus +'/' + orderId,
                     contentType: "application/json",
                     dataType:"json",
+                    data: JSON.stringify(comments, null, '\t'),
                     success: function(data) {
+                        console.log(data);
                         if (callback !== undefined) {
                             callback();
                         }
                     },
-                    method: 'PUT'
+                    method: 'POST'
                 });
             }
 
-
+            function approveDeclineCommenter(newStatus,callback) {
+                if (newStatus !== 'Cancel') {
+                    $('.ui.modal')
+                            .modal({closable: false})
+                            .modal('show');
+                    $('.action-type').text(newStatus);
+                } else {
+                    $('.ui.modal')
+                            .modal('hide');
+                }
+                if (callback !== undefined) {
+                    callback($(this));
+                }
+            }
             function disableApproveDeclineButtons(buttonContainer) {
                 buttonContainer.find( 'button' ).addClass('disabled');
             }
 
-            function approveDeclineHandler(newStatus) {
-                var buttonContainer = $( this ).closest( '.approve-decline-container' );
-                var orderSegment = $( this ).closest( '.order' );
+            function approveDeclineHandler(container, newStatus) {
+                var buttonContainer = container.closest( '.approve-decline-container' );
+                var orderSegment = container.closest( '.order' );
                 var orderId = orderSegment.attr('id').split('-')[1];
                 var statusLabel = orderSegment.find( '.status-label' );
+                var commentContainer = $('body').find('.comment-container').val();
+                console.log(orderSegment.find('.order-comments').length);
+                if (orderSegment.find('.order-comments').length) {
+                    var listingComment = orderSegment.find('.order-comments');
+                } else if (commentContainer !== "") {
+                    var listingComment = orderSegment.find('.item-title').after('<b>Comment subtitle: </b>' + commentContainer)
+                }
                 switch (newStatus) {
                     case "approved":
-                        approveDeclineRequest('approve', orderId, function() {
+                        approveDeclineRequest('approve', orderId, commentContainer, function() {
                             statusLabel.removeClass("green grey red");
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Approved");
                             statusLabel.addClass("green");
+                            listingComment.text('<b>Comment something: </b>' + commentContainer);
+                             $('.ui.modal')
+                                .modal('hide');
                         });
                         break;
                     case "declined":
-                        approveDeclineRequest('decline', orderId, function() {
+                        approveDeclineRequest('decline', orderId, commentContainer, function() {
                             statusLabel.removeClass("green grey red");
                             disableApproveDeclineButtons(buttonContainer);
                             statusLabel.text("Declined");
                             statusLabel.addClass("red");
+                            listingComment.text('<b>Comment: </b>' + commentContainer);
+                            $('.ui.modal')
+                                .modal('hide');
                         });
                         break;
                 }
+                $('.action-button').unbind();
             }
 
-            $('.approve').click(function(){approveDeclineHandler.call(this, 'approved')});
-            $('.decline').click(function(){approveDeclineHandler.call(this, 'declined')});
+            $('.approve').click(function(){approveDeclineCommenter.call(this, 'Approve', function(container) {
+                $('.action-button').bind("click", function() {approveDeclineHandler(container, 'approved')});
+            })});
+            $('.decline').click(function(){approveDeclineCommenter.call(this, 'Decline', function(container) {
+                $('.action-button').bind("click", function() {approveDeclineHandler(container, 'declined')});
+            })});
+            $('.cancel').click(function(){approveDeclineCommenter('Cancel')});
         });
 
     </script>

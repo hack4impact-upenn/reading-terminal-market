@@ -248,7 +248,7 @@ def view_orders():
     )
 
 
-@vendor.route('/approve/<int:order_id>', methods=['PUT'])
+@vendor.route('/approve/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def approve_order(order_id):
@@ -258,6 +258,7 @@ def approve_order(order_id):
     if order.status != Status.PENDING:
         abort(400)
     order.status = Status.APPROVED
+    order.comment = request.json['comment']
     db.session.commit()
 
     merchant_id = order.merchant_id
@@ -265,18 +266,19 @@ def approve_order(order_id):
 
     vendor_name = order.company_name
     purchases = order.purchases
-
+    comment = order.comment
     send_email(merchant.email,
                'Vendor order request approved',
                'vendor/email/approved_order',
                vendor_name=vendor_name,
                order=order,
-               purchases=purchases)
+               purchases=purchases,
+               comment=comment)
 
-    return jsonify({'order_id': order_id, 'status': 'approved'})
+    return jsonify({'order_id': order_id, 'status': 'approved', 'comment': comment})
 
 
-@vendor.route('/decline/<int:order_id>', methods=['PUT'])
+@vendor.route('/decline/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def decline_order(order_id):
@@ -286,6 +288,7 @@ def decline_order(order_id):
     if order.status != Status.PENDING:
         abort(400)
     order.status = Status.DECLINED
+    order.comment = request.json['comment']
     db.session.commit()
 
     merchant_id = order.merchant_id
@@ -294,13 +297,14 @@ def decline_order(order_id):
     vendor_name = order.company_name
     vendor_email = current_user.email
     purchases = order.purchases
-
+    comment = order.comment
     send_email(merchant.email,
                'Vendor order request declined',
                'vendor/email/declined_order',
                vendor_name=vendor_name,
                vendor_email=vendor_email,
                order=order,
-               purchases=purchases)
+               purchases=purchases,
+               comment=comment)
 
-    return jsonify({'order_id': order_id, 'status': 'declined'})
+    return jsonify({'order_id': order_id, 'status': 'declined', 'comment': comment})
