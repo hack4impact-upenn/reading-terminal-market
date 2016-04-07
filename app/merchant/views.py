@@ -257,6 +257,10 @@ def review_orders(order_id):
     star_rating = request.json['rating']
     comment = request.json['review']
 
+    if not comment or star_rating == 0:
+        flash('Minimum 1 star rating and review mandatory', 'error')
+        return redirect(url_for('.view_orders'))
+
     rating = Ratings.query.filter_by(vendor_id=order.vendor_id, merchant_id=order.merchant_id).first()
     if not rating:
         rating = Ratings(
@@ -278,8 +282,6 @@ def review_orders(order_id):
     ratings = Ratings.query.filter_by(vendor_id=order.vendor_id).all()
     print("THESE ARE RATINGS: \n")
     print(ratings)
-
-    flash('Successfully reviewed vendor!', 'success')
 
     return jsonify({'order_id': order_id, 'rating': star_rating,
                     'comment': comment, 'vendor id': order.vendor_id,

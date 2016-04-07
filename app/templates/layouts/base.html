@@ -58,7 +58,7 @@
                 } else {
                     var num = -1;
                 }
-                
+
                 if (event.includes('order_id')) {
                     var orderId = event.match(/\d+/)[0];
                 }
@@ -77,6 +77,8 @@
                     message = "You have approved order #" + orderId ;
                 } else if (event.includes("declined")) {
                     message = "You have declined order #" + orderId ;
+                } else if (event.includes("rating")) {
+                    message = "You have successfully rated vendor!";
                 }
             }
 
@@ -86,6 +88,7 @@
             });
 
         });
+
 
     </script>
 {% endif %}

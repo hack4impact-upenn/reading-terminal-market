@@ -321,6 +321,7 @@ class Vendor(User):
 
     def get_all_ratings(self):
         ratings = Ratings.query.filter_by(vendor_id=self.id).all()
+        ratings.sort(key=lambda r: r.date_reviewed, reverse=True)
         return ratings
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
