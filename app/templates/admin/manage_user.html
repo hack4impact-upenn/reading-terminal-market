@@ -47,6 +47,7 @@
             </tr>
         {% endfor %}
     </table>
+    {{ f.render_form(form) }}
 {% endmacro %}
 
 {% block content %}
@@ -90,10 +91,10 @@
                         </a>
                     </div>
                     </div>
-                {% elif form %}
-                    {{ f.render_form(form) }}
                 {% elif flag %}
                     {{ manage_tags(user) }}
+                {% elif form %}
+                    {{ f.render_form(form) }}
                 {% else %}
                     {{ user_info(user) }}
                 {% endif %}

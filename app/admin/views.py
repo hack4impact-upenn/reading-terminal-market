@@ -8,10 +8,11 @@ from forms import (
     NewUserForm,
     InviteUserForm,
     NewCategoryForm,
-    AdminCreateTagForm
+    AdminCreateTagForm,
+    AdminAddTagToVendorForm
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant, Category, Listing, Tag
+from ..models import User, Role, Vendor, Merchant, Category, Listing, Tag, TagAssociation
 from .. import db
 from ..email import send_email
 
@@ -239,7 +240,7 @@ def registered_users(page=1):
 @admin_required
 def user_info(user_id):
     """View a user's profile."""
-    user = User.query.filter_by(id=user_id).first()
+    user = Vendor.query.filter_by(id=user_id).first()
     if user is None:
         abort(404)
     return render_template('admin/manage_user.html', user=user)
@@ -249,13 +250,24 @@ def user_info(user_id):
 @admin_required
 def manage_tags(user_id):
     """View a user's profile."""
+    form = AdminAddTagToVendorForm()
     user = User.query.filter_by(id=user_id).first()
     if user is None:
         abort(404)
     if not user.is_vendor():
         abort(404)
-    tags = user.tags
-    return render_template('admin/manage_user.html', user=user, tags=tags, flag = True)
+    if form.validate_on_submit():
+        print "############## HERE", user.id
+        a = TagAssociation()
+        a.tag = form.tag_name.data
+        a.vendor = user
+        user.tags.append(a)
+        db.session.commit()
+    tag_ids = user.tags
+    def tag_id_to_name (tag_association):
+        return Tag.query.filter_by(id=tag_association.tag_id).first()
+    tags = map(tag_id_to_name, tag_ids)
+    return render_template('admin/manage_user.html', user=user, tags=tags, form=form, flag=True)
 
 
 @admin.route('/user/<int:user_id>/change-email', methods=['GET', 'POST'])
