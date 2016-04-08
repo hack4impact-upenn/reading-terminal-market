@@ -302,6 +302,8 @@ class Vendor(User):
     company_name = db.Column(db.String(64), default="")
     tags = db.relationship("TagAssociation", back_populates="vendor")
 
+    def get_tags(self):
+        return [str(tag.tag.tag_name) for tag in self.tags]
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)

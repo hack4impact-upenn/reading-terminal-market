@@ -59,7 +59,7 @@
 
                             <td {{info_link}}>{{ l.name }}</td>
                             {% if current_user.is_merchant() or current_user.is_admin() %}
-                                <td {{info_link}}>{{ l.vendor.company_name }}</td>
+                                <td {{info_link}}>{{ l.vendor.company_name }} {% for tag in l.vendor.get_tags() %}<a class="ui label green">{{ tag }}</a> {% endfor %}</td>
                             {% endif %}
                                 <td class="center aligned favoriteCell">
                                     {% if l.vendor in current_user.bookmarked_vendors %}
