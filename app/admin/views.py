@@ -2,6 +2,7 @@ from ..decorators import admin_required
 
 from flask import render_template, abort, redirect, request, flash, url_for
 from flask.ext.login import login_required, current_user
+import pint
 
 from forms import (
     ChangeUserEmailForm,
@@ -15,6 +16,7 @@ from .. import db
 from .. vendor.forms import NewCSVForm
 from ..email import send_email
 import csv
+from pint import UnitRegistry, UndefinedUnitError
 
 
 @admin.route('/')
@@ -82,15 +84,6 @@ def listing_view_all(page=1):
 @login_required
 @admin_required
 def delete_category(category_id):
-    category = Category.query.filter_by(id=category_id).first()
-    if not category:
-        flash('The category you are trying to delete does not exist.', 'error')
-    elif len(category.listings) > 0:
-        flash('You cannot delete a category with that has listings.', 'error')
-    else:
-        db.session.delete(category)
-        db.session.commit()
-        flash('Successfully deleted category {}.'.format(category.name), 'success')
     return redirect(url_for('admin.view_categories'))
 
 
@@ -239,9 +232,6 @@ def change_user_email(user_id):
     return render_template('admin/manage_user.html', user=user, form=form)
 
 
-
-
-
 @admin.route('/user/<int:user_id>/test-csv', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -251,21 +241,59 @@ def test_csv(user_id):
         abort(404)
     form = NewCSVForm()
     if form.validate_on_submit():
+        columns = [current_vendor.product_id_col,current_vendor.listing_description_col, current_vendor.unit_col,
+                   current_vendor.price_col, current_vendor.name_col, current_vendor.quantity_col]
         csv_file = form.file_upload
         buff = csv_file.data.stream
         csv_data = csv.DictReader(buff, delimiter=',')
-        #for each row in csv, create a listing
-        csv_cols =  csv_data.next().keys()
-        print csv_cols
-        test_row_existence(current_vendor, csv_file)
+        c = current_vendor.product_id_col
+        row_count = 0
+        for row in csv_data:
+            row_count += 1
+            for c in columns:
+                if c not in row:
+                    flash("Error parsing {}'s CSV file. Couldn't find {} column at row {}"
+                          .format(current_vendor.full_name(),c, row_count),
+                          'form-error')
+                    render_template('admin/manage_user.html', user=current_vendor, form=form)
+                if row[current_vendor.product_id_col]=="" and row[current_vendor.listing_description_col]=="":
+                    flash("Successfully parsed {}'s CSV file!"
+                    .format(current_vendor.full_name()), 'form-success')
+                    return render_template('admin/manage_user.html', user=current_vendor, form=form)
+            if not(
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                              col=current_vendor.price_col, row_count=row_count) and
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                               col=current_vendor.quantity_col,row_count=row_count) and
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                               col=current_vendor.product_id_col,row_count=row_count)):
+                return render_template('admin/manage_user.html', user=current_vendor, form=form)
+            if not is_proper_unit(current_vendor.full_name(), current_vendor.unit_col,row, row_count):
+                return render_template('admin/manage_user.html', user=current_vendor, form=form)
         flash("Successfully parsed {}'s CSV file!"
-              .format(current_vendor.full_name()),
-              'form-success')
+
+          .format(current_vendor.full_name()),
+          'form-success')
     return render_template('admin/manage_user.html', user=current_vendor, form=form)
 
 
-def test_unit_row(current_vendor, csv_file):
-    
+def is_numeric_col(current_vendor, row, col, row_count):
+    if not row[col].isdigit() and row[col]:
+        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {} "
+              .format(current_vendor.full_name(),col, row_count),
+              'form-error')
+        return False
+    return True
+
+def is_proper_unit(vendor_name, unit, row, row_count):
+    ureg = UnitRegistry()
+    try:
+        ureg.parse_expression(row[unit])
+    except UndefinedUnitError:
+        flash("Error parsing {}'s CSV file. Bad entry in the {} column, at row {} "
+              .format(vendor_name, unit, row_count),'form-error')
+        return False
+    return True
 
 
 

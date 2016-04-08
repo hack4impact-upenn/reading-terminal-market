@@ -18,7 +18,6 @@ class Listing(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-
     # model relationships
     vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     unit = db.Column(db.String(32))

@@ -79,7 +79,6 @@ def csv_upload():
                         listings.append(proposed_listing)
                     # case: listing exists and price has changed
                     else:
-                        print 'in here', queried_listing
                         queried_listing.price = float(safe_price)
                         proposed_listing.price = float(safe_price)
                         proposed_listing.updated = Updated.PRICE_CHANGE
