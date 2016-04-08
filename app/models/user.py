@@ -324,6 +324,19 @@ class Vendor(User):
         ratings.sort(key=lambda r: r.date_reviewed, reverse=True)
         return ratings
 
+    def get_ratings_query(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id)
+        sorted_ratings = ratings.order_by(desc(Ratings.date_reviewed))
+        return sorted_ratings
+
+    def get_ratings_breakdown(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id)
+        ratings_breakdown = {"1.0": 0, "2.0": 0, "3.0": 0, "4.0": 0, "5.0": 0}
+        for rating in ratings:
+            ratings_breakdown[rating.star_rating] = ratings_breakdown.get(rating.star_rating, 0) + 1
+        return ratings_breakdown
+
+
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
                                      db.ForeignKey('users.id')),

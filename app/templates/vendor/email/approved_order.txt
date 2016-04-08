@@ -11,6 +11,8 @@ Quantity    : {{ purchase.quantity }}
 Total Price : {{ format_price(purchase.item_price * purchase.quantity) }}
 {% endfor %}
 
+You are also able to review your experience with this vendor under your Orders tab.
+
 Sincerely,
 
 The {{ config.APP_NAME }} Team

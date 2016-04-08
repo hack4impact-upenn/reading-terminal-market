@@ -16,10 +16,36 @@
             </a>
             {% endif %}
         </h2>
+
+        <h3>Breakdown of Reviews</h3>
+        <p> {{ total_num_ratings }} reviewers</p>
+        <div class="ui list">
+            <div class="item">
+                <div class="ui star rating" data-rating="5"></div> |
+                {{ (ratings_breakdown.get(5.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+            <div class="item">
+                <div class="ui star rating" data-rating="4"></div> |
+                {{ (ratings_breakdown.get(4.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+            <div class="item">
+                <div class="ui star rating" data-rating="3"></div> |
+                {{ (ratings_breakdown.get(3.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+            <div class="item">
+                <div class="ui star rating" data-rating="2"></div> |
+                {{ (ratings_breakdown.get(2.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+            <div class="item">
+                <div class="ui star rating" data-rating="1"></div> |
+                {{ (ratings_breakdown.get(1.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+        </div>
     </div>
+
     <div class="twelve wide column">
         <div class="ui divided items">
-            {% for rating in listing.vendor.get_all_ratings() %}
+            {% for rating in ratings.items %}
                 <div class="item">
                     <div class="content">
                         <a class="ui small label">
@@ -36,5 +62,29 @@
             {% endfor %}
         </div>
     </div>
+    <div class="row">
+        <div class="ui pagination menu">
+            {% for page in ratings.iter_pages() %}
+                {% if page %}
+                    {% if page != ratings.page %}
+                        <a class="item" href="{{ url_for('merchant.review_info', listing_id=listing.id, page=page) }}">{{ page }}</a>
+                    {% else %}
+                        <a class="active item">{{ page }}</a>
+                    {% endif %}
+                {% else %}
+                    <a class="disabled item">...</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
 </div>
+
+<script>
+    $(document).ready(function(){
+        $('.ui.rating').rating({
+            interactive: false,
+            maxRating: 5
+        });
+    });
+</script>
 {% endblock %}

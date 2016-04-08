@@ -142,18 +142,28 @@ def listing_info(listing_id):
 @merchant.route('/items/<int:listing_id>/info/reviews')
 @login_required
 @merchant_required
-def review_info(listing_id):
+def review_info(listing_id, page=1):
     """View ratings for Vendor selling the listing"""
     listing = Listing.query.filter_by(id=listing_id, available=True).first()
     if listing is None:
         abort(404)
+
+    page = request.args.get('page', 1, type=int)
+    ratings_raw = listing.vendor.get_ratings_query()
+    ratings_paginated = ratings_raw.paginate(page, 3, False)
+
+    ratings_breakdown = listing.vendor.get_ratings_breakdown()
+    total_num_ratings = sum(ratings_breakdown.values())
 
     backto = url_for('merchant.listing_info', listing_id=listing_id)
 
     return render_template(
         'merchant/view_reviews.html',
         listing=listing,
-        backto=backto
+        backto=backto,
+        ratings=ratings_paginated,
+        ratings_breakdown=ratings_breakdown,
+        total_num_ratings=total_num_ratings
     )
 
 
