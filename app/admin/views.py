@@ -239,6 +239,9 @@ def change_user_email(user_id):
     return render_template('admin/manage_user.html', user=user, form=form)
 
 
+
+
+
 @admin.route('/user/<int:user_id>/test-csv', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -248,35 +251,22 @@ def test_csv(user_id):
         abort(404)
     form = NewCSVForm()
     if form.validate_on_submit():
-        parser_row = 0
-        parser_col = 0
-        try:
-            csv_file = form.file_upload
-            buff = csv_file.data.stream
-            csv_data = csv.DictReader(buff, delimiter=',')
-            csv_data.next()
-            #for each row in csv, create a listing
-            for row in csv_data:
-                parser_col = 'product id'
-                prod_id = row[current_vendor.product_id_col]
-                parser_col = 'description'
-                listing_description = row[current_vendor.listing_description_col]
-                parser_col = 'price'
-                price_col = row[current_vendor.price_col]
-                parser_col = 'name'
-                name_col = row[current_vendor.name_col]
-                parser_col = 'unit'
-                unit_col = row[current_vendor.unit_col]
-                parser_col = 'quanitity'
-                quantity_col = row[current_vendor.quantity_col]
-                parser_row += 1
-        except KeyError:
-            flash("Error parsing {}'s CSV File at row {}, at {} column"
-                  .format(current_vendor.full_name(), parser_row, parser_col), 'form-error')
+        csv_file = form.file_upload
+        buff = csv_file.data.stream
+        csv_data = csv.DictReader(buff, delimiter=',')
+        #for each row in csv, create a listing
+        csv_cols =  csv_data.next().keys()
+        print csv_cols
+        test_row_existence(current_vendor, csv_file)
         flash("Successfully parsed {}'s CSV file!"
               .format(current_vendor.full_name()),
               'form-success')
     return render_template('admin/manage_user.html', user=current_vendor, form=form)
+
+
+def test_unit_row(current_vendor, csv_file):
+    
+
 
 
 @admin.route('/user/<int:user_id>/delete')
