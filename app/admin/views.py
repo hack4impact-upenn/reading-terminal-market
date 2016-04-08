@@ -214,7 +214,7 @@ def registered_users(page=1):
     # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
     if search != "False":
         page = 1
-    users_paginated = users_raw.paginate(page, 2, False)
+    users_paginated = users_raw.paginate(page, 20, False)
     result_count = users_raw.count()
     print result_count
 
@@ -240,7 +240,7 @@ def registered_users(page=1):
 @admin_required
 def user_info(user_id):
     """View a user's profile."""
-    user = Vendor.query.filter_by(id=user_id).first()
+    user = User.query.filter_by(id=user_id).first()
     if user is None:
         abort(404)
     return render_template('admin/manage_user.html', user=user)
@@ -258,17 +258,44 @@ def manage_tags(user_id):
         abort(404)
     if form.validate_on_submit():
         print "############## HERE", user.id
-        a = TagAssociation()
-        a.tag = form.tag_name.data
-        a.vendor = user
-        user.tags.append(a)
-        db.session.commit()
+        if TagAssociation.query.filter_by(vendor=user, tag=form.tag_name.data).count() == 0:
+            a = TagAssociation()
+            a.tag = form.tag_name.data
+            a.vendor = user
+            user.tags.append(a)
+            db.session.commit()
+            flash('Successfully added tag', 'success')
+        else:
+            flash('Error: Tag already exists for user', 'error')
     tag_ids = user.tags
     def tag_id_to_name (tag_association):
         return Tag.query.filter_by(id=tag_association.tag_id).first()
     tags = map(tag_id_to_name, tag_ids)
     return render_template('admin/manage_user.html', user=user, tags=tags, form=form, flag=True)
 
+@admin.route('/user/<int:user_id>/<int:tag_id>/rmtag', methods = ['GET', 'POST'])
+@login_required
+@admin_required
+def delete_tag(user_id, tag_id):
+    """View a user's profile."""
+    user = User.query.filter_by(id=user_id).first()
+    tag = Tag.query.filter_by(id=tag_id).first()
+    if user is None:
+        abort(404)
+    if not user.is_vendor():
+        abort(404)
+    if TagAssociation.query.filter_by(vendor=user, tag=tag).count() == 1:
+        print "############## HERE", user.id
+        tag_to_remove = TagAssociation.query.filter_by(vendor=user, tag=tag).delete()
+        print tag_to_remove
+        db.session.commit()
+        message = 'Successfully removed tag'
+        type = 'success'
+    else:
+        message = 'Error'
+        type= 'error'
+    flash(message,type)
+    return redirect(url_for('admin.manage_tags', user_id=user.id), code=302, Response=None)
 
 @admin.route('/user/<int:user_id>/change-email', methods=['GET', 'POST'])
 @login_required

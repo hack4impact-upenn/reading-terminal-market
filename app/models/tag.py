@@ -14,7 +14,8 @@ class Tag(db.Model):
 
 class TagAssociation(db.Model):
     __tablename__ = "tagassociation"
-    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'))
     tag = db.relationship("Tag", back_populates="vendors")
     vendor = db.relationship("Vendor", back_populates="tags")
