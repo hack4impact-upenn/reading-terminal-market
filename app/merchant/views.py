@@ -143,7 +143,7 @@ def listing_info(listing_id):
 @login_required
 @merchant_required
 def review_info(listing_id, page=1):
-    """View ratings for Vendor selling the listing"""
+    """View all ratings for Vendor selling the listing"""
     listing = Listing.query.filter_by(id=listing_id, available=True).first()
     if listing is None:
         abort(404)
@@ -267,6 +267,7 @@ def review_orders(order_id):
     star_rating = request.json['rating']
     comment = request.json['review']
 
+    # TODO: flash on orders page
     if not comment or star_rating == 0:
         flash('Minimum 1 star rating and review mandatory', 'error')
         return redirect(url_for('.view_orders'))
@@ -287,11 +288,6 @@ def review_orders(order_id):
         rating.comment = comment
         rating.date_reviewed = datetime.now()
         db.session.commit()
-
-    # testing
-    ratings = Ratings.query.filter_by(vendor_id=order.vendor_id).all()
-    print("THESE ARE RATINGS: \n")
-    print(ratings)
 
     return jsonify({'order_id': order_id, 'rating': star_rating,
                     'comment': comment, 'vendor id': order.vendor_id,
