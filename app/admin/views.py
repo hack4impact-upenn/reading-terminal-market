@@ -255,7 +255,7 @@ def test_csv(user_id):
                     flash("Error parsing {}'s CSV file. Couldn't find {} column at row {}"
                           .format(current_vendor.full_name(),c, row_count),
                           'form-error')
-                    render_template('admin/manage_user.html', user=current_vendor, form=form)
+                    return render_template('admin/manage_user.html', user=current_vendor, form=form)
                 if row[current_vendor.product_id_col]=="" and row[current_vendor.listing_description_col]=="":
                     flash("Successfully parsed {}'s CSV file!"
                     .format(current_vendor.full_name()), 'form-success')
@@ -271,7 +271,6 @@ def test_csv(user_id):
             if not is_proper_unit(current_vendor.full_name(), current_vendor.unit_col,row, row_count):
                 return render_template('admin/manage_user.html', user=current_vendor, form=form)
         flash("Successfully parsed {}'s CSV file!"
-
           .format(current_vendor.full_name()),
           'form-success')
     return render_template('admin/manage_user.html', user=current_vendor, form=form)
@@ -284,6 +283,7 @@ def is_numeric_col(current_vendor, row, col, row_count):
               'form-error')
         return False
     return True
+
 
 def is_proper_unit(vendor_name, unit, row, row_count):
     ureg = UnitRegistry()
