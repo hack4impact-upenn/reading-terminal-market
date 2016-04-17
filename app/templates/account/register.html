@@ -39,4 +39,11 @@
             {{ f.end_form(form) }}
         </div>
     </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.3.0/zxcvbn.js"></script>
+    <script>
+    $('#password').keyup(function() {
+        var input = $('#password').val();
+        var result = zxcvn(input);
+        console.log(result);
+    })
 {% endblock %}

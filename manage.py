@@ -83,7 +83,8 @@ def setup_test_listings():
         name="Broccoli",
         description="Best Broccoli Around",
         price=5.00,
-        available=True
+        available=True,
+        product_id=1
     )
     l2 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
@@ -91,7 +92,8 @@ def setup_test_listings():
         name="Eggs",
         description="Best Eggs Around",
         price=12.00,
-        available=True
+        available=True,
+        product_id=2
     )
     l3 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven2").first().id,
@@ -99,7 +101,8 @@ def setup_test_listings():
         name="Salmon",
         description="Best Salmon Around",
         price=13.00,
-        available=True
+        available=True,
+        product_id=3
     )
     db.session.add(l1)
     db.session.add(l2)
@@ -112,6 +115,7 @@ def setup_test_listings():
     fake = Faker()
 
     seed()
+    count = 0
     for i in range(100):
         u = Listing(
             vendor_id=3,
@@ -119,7 +123,8 @@ def setup_test_listings():
             name=fake.word(),
             description=fake.sentence(nb_words=10, variable_nb_words=True),
             price=randint(1,100),
-            available=True
+            available=True,
+            product_id = i*100 % 5
         )
         db.session.add(u)
         try:

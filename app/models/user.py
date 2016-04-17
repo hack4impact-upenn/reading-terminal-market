@@ -7,7 +7,6 @@ from .. import db, login_manager
 from sqlalchemy import or_, desc, func
 
 
-
 class Permission:
     GENERAL = 0x01
     VENDOR = 0x02
@@ -301,7 +300,11 @@ class Vendor(User):
     listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
     company_name = db.Column(db.String(64), default="")
     tags = db.relationship("TagAssociation", back_populates="vendor")
-
+    product_id_col = db.Column(db.String(64), default="ProductID")
+    category_id_col = db.Column(db.String(64), default="CategoryID")
+    listing_description_col = db.Column(db.String(64), default="Description")
+    price_col = db.Column(db.String(64), default="Price")
+    name_col = db.Column(db.String(64), default="Vendor")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
@@ -310,6 +313,10 @@ class Vendor(User):
 
     def __repr__(self):
         return '<Vendor %s>' % self.full_name()
+
+    @staticmethod
+    def get_vendor_by_user_id(user_id):
+            return Vendor.query.filter_by(id=user_id).first()
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
@@ -324,6 +331,11 @@ bookmarked_vendor_table = db.Table('bookmarked_vendors', db.Model.metadata,
                               db.Column('vendor_id', db.Integer,
                                      db.ForeignKey('vendor.id')))
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> cc9c83a36974cbf3aa9d4f44f6272c40bfa50578
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
@@ -352,6 +364,8 @@ class Merchant(User):
 
     def __repr__(self):
         return '<Merchant %s>' % self.full_name()
+
+
 
 
 login_manager.anonymous_user = AnonymousUser
