@@ -49,11 +49,6 @@ class NewItemForm(Form):
             raise ValidationError('You already have an item with this name.')
 
 
-<<<<<<< HEAD
-=======
 class NewCSVForm(Form):
     file_upload = FileField(validators=[DataRequired()])
     submit = SubmitField('Submit Upload')
-
-
->>>>>>> cc9c83a36974cbf3aa9d4f44f6272c40bfa50578

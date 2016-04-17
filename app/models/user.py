@@ -331,11 +331,6 @@ bookmarked_vendor_table = db.Table('bookmarked_vendors', db.Model.metadata,
                               db.Column('vendor_id', db.Integer,
                                      db.ForeignKey('vendor.id')))
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> cc9c83a36974cbf3aa9d4f44f6272c40bfa50578
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)

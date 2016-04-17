@@ -278,7 +278,6 @@ def approve_order(order_id):
     return jsonify({'order_id': order_id, 'status': 'approved', 'comment': comment})
 
 
-<<<<<<< HEAD
 '''@vendor.route('/request-tag', methods=['PUT'])
 @login_required
 @vendor_required
@@ -292,10 +291,7 @@ def request_tag():
                 User.vendor_tags_table.delete(current_user, tag)'''
 
 
-@vendor.route('/decline/<int:order_id>', methods=['PUT'])
-=======
 @vendor.route('/decline/<int:order_id>', methods=['POST'])
->>>>>>> cc9c83a36974cbf3aa9d4f44f6272c40bfa50578
 @login_required
 @vendor_required
 def decline_order(order_id):
@@ -322,10 +318,4 @@ def decline_order(order_id):
                order=order,
                purchases=purchases,
                comment=comment)
-
-<<<<<<< HEAD
-    return jsonify({'order_id': order_id, 'status': 'declined'})
-
-=======
     return jsonify({'order_id': order_id, 'status': 'declined', 'comment': comment})
->>>>>>> cc9c83a36974cbf3aa9d4f44f6272c40bfa50578
