@@ -19,7 +19,7 @@
              # when the table is too wide #}
 
             {% if count > 0 %}
-                <div style="overflow-x: scroll;">
+                <div class="listings">
                     <table id="listings-table" class="ui searchable sortable unstackable selectable celled table">
                         <thead>
                         <tr>
@@ -144,14 +144,4 @@
             {% endblock %}
         </div>
     </div>
-
-
-    <style>
-        .truncate {
-            max-width: 100px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    </style>
 {% endblock %}

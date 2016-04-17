@@ -5,19 +5,7 @@
 {% include 'partials/_head.html' %}
 
 <body>
-<style>
-    #notifier {
-        z-index: 1000000;
-        position: fixed;
-        bottom: 20px;
-        width: 250px;
-        left: 50%;
-        margin-left: -37.5%;
-        height: 70px;
-        font-size: 12px;
-    }
-</style>
-<div class="notifications" style="display:none">
+<div class="notifications">
     <div class='ui green message' id='notifier'>
         <i class='close icon'></i>
         <div class='header' id='dynamicflash'></div>
@@ -35,7 +23,7 @@
 
 {# Implement CSRF protection for site #}
 {% if csrf_token() %}
-    <div style="visibility: hidden; display: none">
+    <div class="csrf-token">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     </div>
 
@@ -58,7 +46,7 @@
                 } else {
                     var num = -1;
                 }
-                
+
                 if (event.includes('order_id')) {
                     var orderId = event.match(/\d+/)[0];
                 }

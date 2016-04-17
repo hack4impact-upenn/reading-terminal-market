@@ -34,7 +34,7 @@
         {% set display = "display:none" %}
     {% endif %}
     <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
-        <div class="ui left floated basic segment" style="margin-bottom: 0px">
+        <div class="ui left floated basic segment">
             <h3 class="ui header">
                 Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ order_macros.status_label(order.status) }}
                 <div class="sub header">
@@ -42,7 +42,7 @@
                 </div>
             </h3>
             <div><b>Total:</b> {{ order.get_total() }}</div>
-            <div style="margin-top: 5px; margin-bottom: 0px"><a href='#' class="toggle-details">Show purchases</a></div>
+            <div class="order-segment-details"><a href='#' class="toggle-details">Show purchases</a></div>
 
         </div>
         <div class="ui right floated basic segment">
@@ -58,7 +58,7 @@
         </div>
 
 
-        <div class="details" style="display: none;">
+        <div class="details">
             {{ order_table(order) }}
         </div>
     </div>
