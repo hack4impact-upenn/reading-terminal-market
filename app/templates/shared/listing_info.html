@@ -25,7 +25,7 @@
 
 
 {% block content %}
-    <div class="ui stackable centered grid container">
+    <div class="ui stackable centered grid container listing-info">
         <div class="twelve wide column">
             <a class="ui basic compact button" href="{{ backto }}">
                 <i class="caret left icon"></i>
@@ -33,7 +33,7 @@
             </a>
             <h2 class="ui header">
                 {{ listing.name }}
-                <div style="padding-bottom: 8px;" class="sub header">View and buy {{listing.name}}.</div>
+                <div class="sub header listing-info-header">View and buy {{listing.name}}.</div>
                 {% if current_user.is_merchant() %}
                     <button data-isfavorite="{% if listing in current_user.bookmarks %}true{% else %}false{% endif %}"
                             class="ui yellow button {% if listing not in current_user.bookmarks %}basic{% endif %}" id="favorite">

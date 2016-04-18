@@ -1,91 +1,106 @@
-@media -sass-debug-info {
-    filename {
-    }
-
-    line {
-        font-family: \000037
-    }
+@media -sass-debug-info{filename{}line{font-family:\000033}}
+.admin-listing-info .ui.header .sub.header.listing-info-header {
+  padding-bottom: 8px;
 }
 
+@media -sass-debug-info{filename{}line{font-family:\000037}}
 nav {
-    margin-bottom: 40px !important;
+  margin-bottom: 40px !important;
 }
 
-@media -sass-debug-info {
-    filename {
-    }
-
-    line {
-        font-family: \0000312
-    }
-}
-
+@media -sass-debug-info{filename{}line{font-family:\0000312}}
 .ui.fixed.main.menu .right.menu > .item:last-of-type {
-    border-right: 1px solid rgba(34, 36, 38, 0.09804);
+  border-right: 1px solid rgba(34, 36, 38, 0.09804);
 }
 
-@media -sass-debug-info {
-    filename {
-    }
-
-    line {
-        font-family: \0000318
-    }
-}
-
+@media -sass-debug-info{filename{}line{font-family:\0000318}}
 nav .mobile.only.row .ui.vertical.menu {
-    margin-top: 40px;
-    display: none;
+  margin-top: 40px;
+  display: none;
 }
 
-@media -sass-debug-info {
-    filename {
-    }
-
-    line {
-        font-family: \0000325
-    }
-}
-
+@media -sass-debug-info{filename{}line{font-family:\0000325}}
 .flashes > .ui.message:last-of-type {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
-@media -sass-debug-info {
-    filename {
-    }
-
-    line {
-        font-family: \0000330
-    }
-}
-
+@media -sass-debug-info{filename{}line{font-family:\0000330}}
 table.selectable tr:hover {
-    cursor: pointer !important;
+  cursor: pointer !important;
 }
 
-.vendor-cart-button {
-	float: right;
+/**** BASE.SCSS ****/
+@media -sass-debug-info{filename{}line{font-family:\000032}}
+#notifier {
+  z-index: 1000000;
+  position: fixed;
+  bottom: 20px;
+  width: 250px;
+  left: 50%;
+  margin-left: -37.5%;
+  height: 70px;
+  font-size: 12px;
 }
 
-#main-cart-button {
-  float: none;
+@media -sass-debug-info{filename{}line{font-family:\0000313}}
+.notifications {
+  display: none;
 }
 
-.toggle-cart {
-    float: left;
-    width: 30%;
+@media -sass-debug-info{filename{}line{font-family:\0000317}}
+.csrf-token {
+  visibility: hidden;
+  display: none;
 }
 
-#button_padding {
-  padding-left: 10px;
-  padding-right: 8px;
+/**** LISTINGS.SCSS ****/
+@media -sass-debug-info{filename{}line{font-family:\0000323}}
+.listings {
+  overflow-x: scroll;
 }
 
-#input_size {
-  width: 60px;
+@media -sass-debug-info{filename{}line{font-family:\0000327}}
+.truncate {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-#slider-range{
-  margin-top:10px;
+@media -sass-debug-info{filename{}line{font-family:\000032}}
+.merchant-listings, .merchant-cart {
+  overflow-x: scroll;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\000038}}
+.order .segment {
+  margin-bottom: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000311}}
+.order .segment .order-segment-details {
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000317}}
+.order .details {
+  display: none;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\000033}}
+.listing-info .ui.header .sub.header.listing-info-header {
+  padding-bottom: 8px;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\000032}}
+.order .segment {
+  margin-bottom: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\000035}}
+.order .segment .order-segment-details {
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000311}}
+.order .details {
+  display: none;
 }

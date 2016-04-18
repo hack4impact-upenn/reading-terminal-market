@@ -8,7 +8,6 @@ from sqlalchemy import or_, desc, func
 from ..models import Ratings
 import operator
 
-
 class Permission:
     GENERAL = 0x01
     VENDOR = 0x02
@@ -301,6 +300,11 @@ class Vendor(User):
     visible = db.Column(db.Boolean, default=False)
     listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
     company_name = db.Column(db.String(64), default="")
+    product_id_col = db.Column(db.String(64), default="ProductID")
+    category_id_col = db.Column(db.String(64), default="CategoryID")
+    listing_description_col = db.Column(db.String(64), default="Description")
+    price_col = db.Column(db.String(64), default="Price")
+    name_col = db.Column(db.String(64), default="Vendor")
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
@@ -336,6 +340,9 @@ class Vendor(User):
             ratings_breakdown[rating.star_rating] = ratings_breakdown.get(rating.star_rating, 0) + 1
         return ratings_breakdown
 
+    @staticmethod
+    def get_vendor_by_user_id(user_id):
+            return Vendor.query.filter_by(id=user_id).first()
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
@@ -344,11 +351,20 @@ bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                                      db.ForeignKey('listings.id'))
                            )
 
+bookmarked_vendor_table = db.Table('bookmarked_vendors', db.Model.metadata,
+                              db.Column('merchant_id', db.Integer,
+                                     db.ForeignKey('users.id')),
+                              db.Column('vendor_id', db.Integer,
+                                     db.ForeignKey('vendor.id')))
+
+
 
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-
+    bookmarked_vendors = db.relationship("Vendor",
+                                        secondary=bookmarked_vendor_table,
+                                        backref="bookmarked_vendor_by")
     bookmarks = db.relationship("Listing",
                                 secondary=bookmarks_table,
                                 backref="bookmarked_by")
@@ -371,6 +387,8 @@ class Merchant(User):
 
     def __repr__(self):
         return '<Merchant %s>' % self.full_name()
+
+
 
 
 login_manager.anonymous_user = AnonymousUser

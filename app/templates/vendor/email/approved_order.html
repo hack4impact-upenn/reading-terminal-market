@@ -24,6 +24,10 @@
 
 <p>You are also able to review your experience with this vendor under your Orders tab.</p>
 
+{% if comment %}
+<p>Additionally {{ vendor_name }} made the following comment on this order:</p>
+<b>{{ comment }}</b>
+{% endif %}
 <p>Sincerely,</p>
 
 <p>The {{ config.APP_NAME }} Team</p>
