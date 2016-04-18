@@ -1,5 +1,4 @@
 from ..decorators import vendor_required
-
 from flask import (
     render_template,
     abort,
@@ -7,12 +6,17 @@ from flask import (
     flash,
     url_for,
     request,
-    jsonify
+    jsonify,
+    json
 )
 from flask.ext.login import login_required, current_user
-from forms import (ChangeListingInformation, NewItemForm)
+from forms import (ChangeListingInformation, NewItemForm, NewCSVForm)
 from . import vendor
 from ..models import Listing, Order, Status, User
+from ..models.listing import Updated
+from ..models.user import Vendor
+import csv
+import re
 from .. import db
 from ..email import send_email
 
@@ -46,6 +50,52 @@ def new_listing():
               'form-success')
         return redirect(url_for('.new_listing'))
     return render_template('vendor/new_listing.html', form=form)
+
+
+@vendor.route('/csv-upload', methods=['GET', 'POST'])
+@login_required
+@vendor_required
+def csv_upload():
+    """Create a new item."""
+    form = NewCSVForm()
+    listings = []
+    if form.validate_on_submit():
+        csv_field = form.file_upload
+        buff = csv_field.data.stream
+        csv_data = csv.DictReader(buff, delimiter=',')
+        #for each row in csv, create a listing
+        current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
+        for row in csv_data:
+            #cheap way to skip weird 'categorical' lines
+            if (row[current_vendor.product_id_col]).strip().isdigit():
+                safe_price = stripPriceHelper(row[current_vendor.price_col])
+                proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
+                queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
+                if queried_listing:
+                    # case: listing exists and price has not changed
+                    if queried_listing.price == float(safe_price):
+                        proposed_listing.updated = Updated.NO_CHANGE
+                        listings.append(proposed_listing)
+                    # case: listing exists and price has changed
+                    else:
+                        print 'in here', queried_listing
+                        queried_listing.price = float(safe_price)
+                        proposed_listing.price = float(safe_price)
+                        proposed_listing.updated = Updated.PRICE_CHANGE
+                        listings.append(proposed_listing)
+                        db.session.commit()
+                    #case: listing does not yet exist
+                else:
+                    proposed_listing.updated = Updated.NEW_ITEM
+                    listings.append(proposed_listing)
+                    Listing.add_listing(new_listing=proposed_listing)
+    return render_template('vendor/new_csv.html', form=form, listings=listings)
+
+#get rid of those pesky dollar signs that mess up parsing
+def stripPriceHelper(price):
+    r = re.compile("\$(\d+.\d+)")
+    return r.search(price.replace(',','')).group(1)
+
 
 
 @vendor.route('/itemslist/')
@@ -198,7 +248,7 @@ def view_orders():
     )
 
 
-@vendor.route('/approve/<int:order_id>', methods=['PUT'])
+@vendor.route('/approve/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def approve_order(order_id):
@@ -208,6 +258,7 @@ def approve_order(order_id):
     if order.status != Status.PENDING:
         abort(400)
     order.status = Status.APPROVED
+    order.comment = request.json['comment']
     db.session.commit()
 
     merchant_id = order.merchant_id
@@ -215,18 +266,19 @@ def approve_order(order_id):
 
     vendor_name = order.company_name
     purchases = order.purchases
-
+    comment = order.comment
     send_email(merchant.email,
                'Vendor order request approved',
                'vendor/email/approved_order',
                vendor_name=vendor_name,
                order=order,
-               purchases=purchases)
+               purchases=purchases,
+               comment=comment)
 
-    return jsonify({'order_id': order_id, 'status': 'approved'})
+    return jsonify({'order_id': order_id, 'status': 'approved', 'comment': comment})
 
 
-@vendor.route('/decline/<int:order_id>', methods=['PUT'])
+@vendor.route('/decline/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def decline_order(order_id):
@@ -236,6 +288,7 @@ def decline_order(order_id):
     if order.status != Status.PENDING:
         abort(400)
     order.status = Status.DECLINED
+    order.comment = request.json['comment']
     db.session.commit()
 
     merchant_id = order.merchant_id
@@ -244,13 +297,14 @@ def decline_order(order_id):
     vendor_name = order.company_name
     vendor_email = current_user.email
     purchases = order.purchases
-
+    comment = order.comment
     send_email(merchant.email,
                'Vendor order request declined',
                'vendor/email/declined_order',
                vendor_name=vendor_name,
                vendor_email=vendor_email,
                order=order,
-               purchases=purchases)
+               purchases=purchases,
+               comment=comment)
 
-    return jsonify({'order_id': order_id, 'status': 'declined'})
+    return jsonify({'order_id': order_id, 'status': 'declined', 'comment': comment})

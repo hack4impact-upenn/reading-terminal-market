@@ -80,6 +80,7 @@ class Order(db.Model):
 
     vendor_id = db.Column(db.Integer)
     company_name = db.Column(db.String(64))
+    comment = db.Column(db.Text)
 
     def __init__(self, date, vendor_id):
         self.status = Status.PENDING
@@ -88,6 +89,7 @@ class Order(db.Model):
         self.merchant_id = current_user.id
         vendor = User.query.get(vendor_id)
         self.company_name = vendor.company_name
+        self.comment = None
         self.merchant_company_name = current_user.company_name
 
     def __repr__(self):
@@ -108,21 +110,17 @@ class Order(db.Model):
         vendor = User.query.get(vendor_id)
         merchant_id = current_user.id
         merchant = User.query.get(merchant_id)
-
         send_email(vendor.email,
                    'New merchant order request',
                    'merchant/email/order_item',
                    merchant=merchant,
                    cart_items=cart_items)
-
         # send confirmation to the merchant
         send_email(merchant.email,
                    'Confirmation of order request',
                    'merchant/email/confirm_order',
                    vendor=vendor,
                    cart_items=cart_items)
-
-
         for item in cart_items:
             p = Purchase(
                 order=order,
