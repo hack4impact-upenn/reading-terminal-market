@@ -43,7 +43,7 @@
     <table class="ui compact definition table">
         {% for t in tags | sort(attribute='tag_name') %}
             <tr>
-                <td>{{ t.tag_name }}</td>
+                <td>{{ t.tag_name }} <a style="color: red; float: right" href="{{ url_for('admin.delete_tag',user_id = user.id, tag_id = t.id) }}">Delete Tag from Vendor</a></td>
             </tr>
         {% endfor %}
     </table>
