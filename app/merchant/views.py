@@ -297,11 +297,6 @@ def review_orders(order_id):
     star_rating = request.json['rating']
     comment = request.json['review']
 
-    # TODO: flash on orders page
-    if not comment or star_rating == 0:
-        flash('Minimum 1 star rating and review mandatory', 'error')
-        return redirect(url_for('.view_orders'))
-
     rating = Ratings.query.filter_by(vendor_id=order.vendor_id, merchant_id=order.merchant_id).first()
     if not rating:
         rating = Ratings(
