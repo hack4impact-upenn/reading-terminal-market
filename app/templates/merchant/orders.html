@@ -97,7 +97,7 @@
                                     <label>Please write a review to accompany your rating (mandatory):</label>
                                     <textarea rows="2" class="review-box"></textarea>
                                 </div>
-                                <button class="ui right floated button submit-rating">
+                                <button class="ui right floated button submit-rating" disabled>
                                     Submit Rating
                                 </button>
                             </div>
@@ -168,12 +168,31 @@
 
             $('.ui.rating').rating({
                 initialRating: 0,
-                maxRating: 5
+                maxRating: 5,
+                onRate: function(value) {
+                    var order = $(this).closest('.order');
+                    validateNonEmpty(order);
+                }
+            });
+
+            $('.review-box').on("change input", function() {
+                var order = $(this).closest('.order');
+                validateNonEmpty(order);
             });
 
             $('.ui.prev-rating').rating({
                 interactive: false
             });
+
+            function validateNonEmpty(order) {
+                var rating = order.find('.ui.rating').last().children('.active').length;
+                var review = $.trim(order.find('.review-box').val());
+                if (review && rating != 0) {
+                    $('.submit-rating').prop('disabled', false);
+                } else {
+                    $('.submit-rating').prop('disabled', true);
+                }
+            }
 
             function ratingRequest(orderId, rating, review, callback) {
                 var ratingReview = {
