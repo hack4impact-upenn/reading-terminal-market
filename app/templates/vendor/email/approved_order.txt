@@ -12,6 +12,10 @@ Total Price : {{ format_price(purchase.item_price * purchase.quantity) }}
 {% endfor %}
 
 You are also able to review your experience with this vendor under your Orders tab.
+{% if comment %}
+Additionally {{ vendor_name }} made the following comment on this order:
+{{ comment }}
+{% endif %}
 
 Sincerely,
 

@@ -2,22 +2,12 @@
 
 <!DOCTYPE html>
 <html>
-{% include 'partials/_head.html' %}
-
+<head>
+    {% include 'partials/_head.html' %}
+    {% block custom_scripts %}{% endblock %}
+</head>
 <body>
-<style>
-    #notifier {
-        z-index: 1000000;
-        position: fixed;
-        bottom: 20px;
-        width: 250px;
-        left: 50%;
-        margin-left: -37.5%;
-        height: 70px;
-        font-size: 12px;
-    }
-</style>
-<div class="notifications" style="display:none">
+<div class="notifications">
     <div class='ui green message' id='notifier'>
         <i class='close icon'></i>
         <div class='header' id='dynamicflash'></div>
@@ -35,7 +25,7 @@
 
 {# Implement CSRF protection for site #}
 {% if csrf_token() %}
-    <div style="visibility: hidden; display: none">
+    <div class="csrf-token">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     </div>
 
@@ -53,6 +43,7 @@
                 var event = (request.responseText).toString();
                 var myArray = event.split('"');
                 var item = myArray[myArray.length - 2];
+                var vendorName = myArray[myArray.length - 4];
                 if (event.includes("quantity")) {
                     var num = event.match(/\d+/)[0];
                 } else {
@@ -67,7 +58,12 @@
                     message = "You have successfully unfavorited " + item;
                 } else if (event.includes("Favorite") && event.includes("true")) {
                     message = "You have successfully favorited " + item;
-                } else if (event.includes("quantity") && (num > 0)) {
+                } else if (event.includes("isFavVendor") && event.includes("true")){
+                    message = "You have successfully favorited the vendor " + vendorName;
+                } else if (event.includes("isFavVendor") && event.includes("false")){
+                    message = "You have successfully unfavorited the vendor " + vendorName;
+                }
+                else if (event.includes("quantity") && (num > 0)) {
                     item = myArray[3];
                     message = "You are now ordering a total of " + num + " of " + item;
                 } else if (event.includes("quantity") && (num == 0)) {

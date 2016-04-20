@@ -26,11 +26,14 @@
             <h2 class="ui header">
                 Vendor Dashboard
             </h2>
-            <div class="ui two column stackable grid">
+            <div class="ui three column stackable grid">
                 {{ dashboard_option('Current Items', 'vendor.current_listings',
                                     description='View and manage your items', icon='list icon') }}
                 {{ dashboard_option('Add New Item', 'vendor.new_listing',
                                     description='Add a new item to sell', icon='add square icon') }}
+                {{ dashboard_option('Upload CSV', 'vendor.csv_upload',
+                                    description='Upload CSV of new items', icon='add square icon') }}
+
             </div>
         </div>
     </div>

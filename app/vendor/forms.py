@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from flask.ext.login import current_user
-from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField
+from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length
 from wtforms import ValidationError
@@ -47,3 +47,10 @@ class NewItemForm(Form):
     def validate_listing_name(self, field):
         if current_user.listings.filter_by(name=field.data).first():
             raise ValidationError('You already have an item with this name.')
+
+
+class NewCSVForm(Form):
+    file_upload = FileField(validators=[DataRequired()])
+    submit = SubmitField('Submit Upload')
+
+

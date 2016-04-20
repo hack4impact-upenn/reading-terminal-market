@@ -6,6 +6,10 @@ from flask.ext.login import current_user
 from sqlalchemy import UniqueConstraint
 
 
+class Updated:
+    PRICE_CHANGE, NEW_ITEM, NO_CHANGE = range(3)
+
+
 class Listing(db.Model):
     __tablename__ = "listings"
     __table_args__ = (
@@ -13,6 +17,7 @@ class Listing(db.Model):
     )
 
     id = db.Column(db.Integer, primary_key=True)
+
 
     # model relationships
     vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -23,9 +28,12 @@ class Listing(db.Model):
     description = db.Column(db.Text)
     price = db.Column(db.Float)
     available = db.Column(db.Boolean, default=True)
+    product_id=db.Column(db.Integer, default=1)
+    updated=db.Column(db.Integer, default=0)
 
-    def __init__(self, vendor_id, name, available, category_id, price,
-                 description=""):
+    def __init__(self, product_id, vendor_id, name, available, category_id, price,
+                 description="", updated=Updated.NO_CHANGE):
+        self.product_id = product_id
         self.vendor_id = vendor_id
         self.category_id = category_id
         self.name = name
@@ -58,6 +66,33 @@ class Listing(db.Model):
         self.remove_from_carts()
         db.session.delete(self)
         db.session.commit()
+
+    # used in csv parsing
+    @staticmethod
+    def get_listing_by_product_id(product_id):
+        return Listing.query.filter_by(product_id=product_id).first()
+
+    # used in csv parsing.
+    # adds to DB a new listing iven params in csv row
+    @staticmethod
+    def add_csv_row_as_listing(csv_row, price=0):
+        return Listing(
+                    name=csv_row[current_user.name_col],
+                    description=csv_row[current_user.listing_description_col],
+                    available=True,
+                    price=price,
+                    category_id=str(-1),
+                    vendor_id=current_user.id,
+                    product_id=csv_row[current_user.product_id_col],
+                    updated=Updated.PRICE_CHANGE)
+
+    @staticmethod
+    def add_listing(new_listing):
+        db.session.add(new_listing)
+        db.session.commit()
+
+    def update_listing(self, new_product_id):
+        self.product_id = new_product_id
 
     @property
     def category_name(self):
@@ -101,6 +136,10 @@ class Listing(db.Model):
         # used by merchants to filter by availability
         if 'available' in kwargs:
             filter_list.append(Listing.available == True)
+
+        if 'fav_vendor' in kwargs and kwargs['fav_vendor']:
+            bookmarked_vendor_ids = [vendor.id for vendor in current_user.bookmarked_vendors]
+            filter_list.append(Listing.vendor_id.in_(bookmarked_vendor_ids))
 
         if 'favorite' in kwargs and kwargs['favorite']:
             bookmark_ids = [listing.id for listing in current_user.bookmarks]
