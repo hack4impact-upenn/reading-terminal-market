@@ -42,9 +42,76 @@
     <div class="ui divider"></div>
 
 {% endmacro %}
+{% macro make_guider() %}
+<script type="text/javascript">
+    guiders.createGuider({
+      buttons: [
+                {name: "Next"}],
+      description: "You can add items here to purchase eventually.",
+      highlight: true,
+      id: "first_curr",
+      next: "second_cart",
+      overlay: true,
+      title: "This is your cart!",
+      width: 300,
+      position: 6,
+      arrowSize:20
+    }).show();
+
+    guiders.createGuider({
+        attachTo: "#cart",
+        buttons: [
+                {name: "Next"}],
+        description: ".",
+        highlight: true,
+        id: "second_cart",
+        next: "third_order",
+        overlay: true,
+        title: "These are the items you put into your cart!.",
+        width: 300,
+        position: 6,
+        arrowSize:20
+    });
+
+        guiders.createGuider({
+        attachTo: "#order",
+        buttons: [{
+                  name: "Sounds good. I'm going to try this out now. ",
+                  onclick: function() { guiders.hideAll(); }
+                }],
+        description: "Press here and submit your order. The vendor will receive an email notification soon!",
+        highlight: true,
+        id: "third_order",
+        next: "fourth_delete",
+        overlay: true,
+        title: "Ready to order?",
+        width: 300,
+        position: 3,
+        arrowSize:20
+    });
+
+        guiders.createGuider({
+        attachTo: "#order",
+        buttons: [{
+                  name: "Ok, got it. Let me play around with this. ",
+                  onclick: function() { guiders.hideAll(); }
+                }],
+        description: "You can choose to sort by price or name here.",
+        highlight: true,
+        id: "fourth_order",
+        next: "second_add",
+        overlay: true,
+        title: "Not quite the right order?",
+        width: 300,
+        position: 6,
+        arrowSize:20
+    });
+
+</script>
+{% endmacro %}
 
 {% macro vendor_cart(vendor, cart_items) %}
-    <div>
+    <div id="cart">
         <h3 class="ui header">
             Cart for {{ vendor.company_name }}
 
@@ -59,7 +126,7 @@
                 <tr>
                     <th class="four wide">Item name</th>
                     <th class="two wide">Unit price</th>
-                    <th class="two wide">Quantity</th>
+                    <th id="quantity" class="two wide">Quantity</th>
                     <th class="one wide">Total price</th>
                     <th class="one wide">Remove</th>
                 </tr>
@@ -169,7 +236,7 @@
         <div class="merchant-cart">
             {% if vendor_items_dict %}
                 <form action="{{ url_for('merchant.order_items') }}" method="post">
-                    <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">
+                    <input id="order" type="submit" class="ui button positive" name="submit" value="Order from all vendors">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 </form>
                 <br>
@@ -233,4 +300,5 @@
         })();
 
     </script>
+        {{make_guider()}}
 {% endblock %}
