@@ -73,3 +73,8 @@ class AdminAddTagToVendorForm(Form):
                                  get_label='tag_name',
                                  query_factory=lambda: db.session.query(Tag).order_by('id'))
      submit = SubmitField('Assign this Tag to Vendor')
+
+class AdminCreateItemTagForm(Form):
+    item_tag_name = StringField('Tag Name',
+                               validators=[InputRequired(), Length(1, 1000)])
+    submit = SubmitField('Create New Item Tag')

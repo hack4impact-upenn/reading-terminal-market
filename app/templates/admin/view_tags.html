@@ -2,10 +2,12 @@
 {% import 'macros/form_macros.html' as f %}
 
 {% block content %}
+     <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
                 <table class="ui searchable sortable unstackable selectable celled table">
                     <thead>
                         <tr>
-                            <th class="sorted ascending two wide">Tag Name</th>
+                            <th class="sorted ascending two wide">Vendor Tag Names</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,7 +25,7 @@
 
             {{ f.begin_form(form, flashes) }}
 
-                <div class="two fields">
+                <div class="one field">
                     {{ f.render_form_field(form.tag_name) }}
                 </div>
 
@@ -34,6 +36,9 @@
                     {{ f.render_form_field(field) }}
                 {% endfor %}
             {{ f.end_form() }}
+    </div>
+    </div>
+
 {% endblock %}
 
 </html>
