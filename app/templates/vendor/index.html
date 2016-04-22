@@ -1,7 +1,10 @@
 {% extends 'layouts/base.html' %}
 
-{% macro dashboard_option(title, endpoint, description=None, icon=None) %}
-    <a class="column" href="{{ url_for(endpoint) }}">
+
+
+{% macro dashboard_option(id, title, endpoint, description=None, icon=None) %}
+
+    <a id= "{{ id }}" class="column" href="{{ url_for(endpoint) }}">
         <div class="ui padded segment">
             <h3 class="ui header">
                 {% if icon is not none %}
@@ -19,6 +22,61 @@
         </div>
     </a>
 {% endmacro %}
+{% macro make_guider() %}
+<script type="text/javascript">
+
+    guiders.createGuider({
+      attachTo: "#curr",
+
+      buttons: [
+                {name: "Next"}],
+      description: "Go ahead and check it out!.",
+      highlight: true,
+      id: "first_curr",
+      next: "second_add",
+      overlay: true,
+      title: "Here you can check your company's listings available to the market.",
+      width: 300,
+      position: 6,
+      arrowSize:20
+    }).show();
+
+    guiders.createGuider({
+      attachTo: "#add",
+      buttons: [
+                {name: "Next"}],
+      description: "You can add them one at a time here!.",
+      highlight: true,
+      id: "second_add",
+      next: "third_csv",
+      overlay: true,
+      title: "What if I want more listings?.",
+      width: 300,
+      position: 6,
+      arrowSize:20
+    });
+
+    guiders.createGuider({
+      attachTo: "#csv",
+      buttons: [{
+                  name: "sounds good!",
+                  onclick: function() { guiders.hideAll(); }
+                }],
+      description: "Nope! You can export a CSV of your listings here.",
+      highlight: true,
+      id: "third_csv",
+      next: "third_csv",
+      overlay: true,
+      title: "What if I have 1000's of listings? Won't uploading them take forever?",
+      width: 300,
+      position: 6,
+      arrowSize:20
+    });
+
+
+</script>
+{% endmacro %}
+
 
 {% block content %}
     <div class="ui stackable centered grid container">
@@ -27,12 +85,14 @@
                 Vendor Dashboard
             </h2>
             <div class="ui three column stackable grid">
-                {{ dashboard_option('Current Items', 'vendor.current_listings',
+
+                {{ dashboard_option('curr', 'Current Items', 'vendor.current_listings',
                                     description='View and manage your items', icon='list icon') }}
-                {{ dashboard_option('Add New Item', 'vendor.new_listing',
+                {{ dashboard_option('add','Add New Item', 'vendor.new_listing',
                                     description='Add a new item to sell', icon='add square icon') }}
-                {{ dashboard_option('Upload CSV', 'vendor.csv_upload',
+                {{ dashboard_option('csv','Upload CSV', 'vendor.csv_upload',
                                     description='Upload CSV of new items', icon='add square icon') }}
+                                {{make_guider()}}
 
             </div>
         </div>

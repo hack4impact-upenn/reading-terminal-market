@@ -1,6 +1,64 @@
 {% extends 'layouts/listings.html' %}
 {% import 'macros/form_macros.html' as f %}
 
+{% macro make_guider() %}
+<script type="text/javascript">
+
+    guiders.createGuider({
+      attachTo: "#filter_form",
+
+      buttons: [
+                {name: "Next"}],
+      description: "Go ahead and check it out!.",
+      highlight: true,
+      id: "first_form",
+      next: "second_search",
+      title: "Here you can search and filter through all of your current listings.",
+      width: 400,
+      position: 5,
+    }).show();
+
+    guiders.createGuider({
+      attachTo: "#search",
+      buttons: [{
+                  name: "Custom Button",
+                  onclick: function() { alert("Hello!"); }
+                },
+                {name: "Next"}],
+      description: "Or even its description",
+      highlight: true,
+      id: "second_search",
+      next: "third_avail",
+      overlay: true,
+      title: "You can search by the item name.",
+      width: 300,
+      position: 5,
+      arrowSize:20
+    });
+
+      guiders.createGuider({
+      attachTo: "#availability",
+      buttons: [{
+                  name: "Ok, enough already- let me check this out",
+                  onclick: function() { guiders.hideAll(); }
+                },
+                {name: "Next"}],
+      description: "Or sort by its price and name",
+      overlay: true,
+      highlight: true,
+      id: "third_avail",
+      next: "fourth_filter",
+      title: "You can toggle whether the item is available.",
+      width: 300,
+      position: 5,
+    });
+
+
+
+</script>
+{% endmacro %}
+
+
 {% block before %}
     {% set flashes = {
         'error':   get_flashed_messages(category_filter=['form-error']),
@@ -20,14 +78,14 @@
         </div>
     </h2>
 
-    <form class="ui form segment">
+    <form id="filter_form" class="ui form segment">
         <div class="twelve wide field">
-            <label>Search names and descriptions</label>
-            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
+            <label id="label_form">Search names and descriptions</label>
+            <input id ="search" value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
         </div>
 
-        <div class="inline field">
-            <select class="ui selection dropdown" name="avail">
+        <div id="availability" class="inline field">
+            <select  class="ui selection dropdown" name="avail">
                 {% if request.args.get('avail') == "avail" %}
                     {% set selected = 'selected' %}
                 {% elif request.args.get('avail') == "non_avail" %}
@@ -65,11 +123,11 @@
             {% set display = 'display:none' %}
         {% endif %}
         <br>
-        <button class="ui button blue" type="submit">Search</button>
+        <button id="filterer" class="ui button blue" type="submit">Search</button>
         <a class="ui button" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
     </form>
 {% endblock %}
 
 {% block after %}
-
+{{ make_guider() }}
 {% endblock %}
