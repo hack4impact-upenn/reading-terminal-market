@@ -77,4 +77,6 @@ class AdminAddTagToVendorForm(Form):
 class AdminCreateItemTagForm(Form):
     item_tag_name = StringField('Tag Name',
                                validators=[InputRequired(), Length(1, 1000)])
+    tag_color = StringField('Tag Color',
+                            validators=[InputRequired(), Length(1,1000)])
     submit = SubmitField('Create New Item Tag')

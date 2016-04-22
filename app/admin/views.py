@@ -395,11 +395,12 @@ def view_item_tags():
     tags = ItemTag.query.all()
     if form.validate_on_submit():
         tag_name = form.item_tag_name.data
+        tag_color = form.tag_color.data
         if ItemTag.query.filter_by(item_tag_name=tag_name).first():
             flash('Tag {} already exists'.format(tag_name),
                   'form-error')
         else:
-            tag = ItemTag(item_tag_name=tag_name)
+            tag = ItemTag(item_tag_name=tag_name, tag_color = tag_color)
             db.session.add(tag)
             db.session.commit()
             flash('Tag {} successfully created'.format(tag.item_tag_name),

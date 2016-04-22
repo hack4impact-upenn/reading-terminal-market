@@ -24,3 +24,4 @@ class ItemTag(db.Model):
     __tablename__ = "itemtag"
     id = db.Column(db.Integer, primary_key=True)
     item_tag_name = db.Column(db.String(64))
+    tag_color = db.Column(db.String(64))
