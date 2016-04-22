@@ -57,7 +57,7 @@
                               listing_id=l.id) + '\';' %}
                             {% endif %}
 
-                            <td {{info_link}}>{{ l.name }}</td>
+                            <td {{info_link}} data-title="title">{{ l.name }}</td>
                             {% if current_user.is_merchant() or current_user.is_admin() %}
                                 <td {{info_link}}>{{ l.vendor.company_name }} {% for tag in l.vendor.get_tags() %}<a class="ui label green">{{ tag }}</a> {% endfor %}</td>
                             {% endif %}
@@ -166,4 +166,6 @@
             text-overflow: ellipsis;
         }
     </style>
+
+
 {% endblock %}
