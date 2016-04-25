@@ -2,9 +2,23 @@
 {% import 'macros/form_macros.html' as f %}
 
 {% block content %}
+
+<!-- CUSTOM PAGE STYLES -->
+<style>
+.menu {
+    display:none !important;
+}
+/*body {
+  background: url("{{ url_for('static', filename='images/bg.jpg')}}");
+  background-size: cover;
+}*/
+</style>
+<!-- END CUSTOM PAGE STYLES -->
+
+
     <div class="ui grid container">
-        <div class="eight wide computer sixteen wide mobile centered column">
-            <h2 class="ui dividing header">Log in</h2>
+        <div class="eight wide computer ten wide tablet fourteen wide mobile centered column login-contain animated fadeIn">
+            <h2 class="ui header login"><span class="thin-title">Reading Terminal Market</span><br><span class="procure">Procurement Platform</span></h2>
 
             {% set flashes = {
                 'error':   get_flashed_messages(category_filter=['form-error']),
@@ -14,24 +28,24 @@
             } %}
 
             {{ f.begin_form(form, flashes) }}
-                {{ f.render_form_field(form.email) }}
-                {{ f.render_form_field(form.password) }}
-                <meter max="4" id="password-strength-meter"></meter>
-                <p id="password-strength-text"></p>
-                <div class="ui two column grid">
-                    {{ f.render_form_field(form.remember_me, extra_classes='column') }}
-                    <div class="right aligned column">
-                        <a href="{{ url_for('account.reset_password_request') }}">Forgot password?</a>
-                    </div>
-                </div>
+                {{ f.render_form_field(form.email, extra_classes="custom-login") }}
+                {{ f.render_form_field(form.password, extra_classes="custom-login") }}
 
                 {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
                 {{ f.form_message(flashes['warning'], header='Check your email.', class='warning') }}
                 {{ f.form_message(flashes['info'], header='Information', class='info') }}
                 {{ f.form_message(flashes['success'], header='Success!', class='success') }}
 
-                {{ f.render_form_field(form.submit) }}
+                {{ f.render_form_field(form.submit, extra_classes="custom-login") }}
             {{ f.end_form(form) }}
+            <div class="ui two column grid login-extras">
+                <div class="left aligned column">
+                    {{ f.render_form_field(form.remember_me, extra_classes='login-keep') }}
+                </div>
+                <div class="right aligned column">
+                    <a href="{{ url_for('account.reset_password_request') }}" class="login-forgot">Forgot password?</a>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

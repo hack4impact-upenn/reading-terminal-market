@@ -3,30 +3,150 @@
   padding-bottom: 8px;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\000037}}
+@media -sass-debug-info{filename{}line{font-family:\000036}}
+body {
+  font-family: 'Arial' !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000310}}
 nav {
   margin-bottom: 40px !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000312}}
-.ui.fixed.main.menu .right.menu > .item:last-of-type {
-  border-right: 1px solid rgba(34, 36, 38, 0.09804);
+@media -sass-debug-info{filename{}line{font-family:\0000314}}
+.custom-nav-class div.ui {
+  background-color: #F4AD18 !important;
+  color: #FFFFFF;
+  height: 75px;
+  font-size: 1em;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000320}}
+.custom-nav-class .item {
+  font-weight: 300 !important;
+  font-size: 1.15em;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000324}}
+.custom-nav-class .item:before {
+  display: none;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000327}}
+.custom-nav-class .header.item {
+  border-left: none !important;
+  text-transform: uppercase;
+  position: relative;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000332}}
+.custom-nav-class .header.item:after {
+  content: '';
+  width: 1px;
+  height: 50px;
+  top: 12.5px;
+  right: 0px;
+  position: absolute;
+  background: #FFFFFF;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000318}}
+@media -sass-debug-info{filename{}line{font-family:\0000345}}
 nav .mobile.only.row .ui.vertical.menu {
   margin-top: 40px;
   display: none;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000325}}
+@media -sass-debug-info{filename{}line{font-family:\0000352}}
 .flashes > .ui.message:last-of-type {
   margin-bottom: 2rem;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000330}}
+@media -sass-debug-info{filename{}line{font-family:\0000357}}
 table.selectable tr:hover {
   cursor: pointer !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000361}}
+.custom-flash {
+  position: fixed !important;
+  top: 50px;
+  right: 10px;
+  font-size: 1.5em;
+  z-index: 1000;
+  border-radius: 0px !important;
+  border-color: transparent !important;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000369}}
+.custom-flash div {
+  color: #000 !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000373}}
+.error-custom {
+  background-color: red;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000379}}
+.custom-login input {
+  border-radius: 0px !important;
+  margin-top: -10px !important;
+  height: 60px;
+  opacity: 0.85;
+  font-weight: 200;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000386}}
+.custom-login label {
+  display: none !important;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000389}}
+.custom-login #submit {
+  width: 100%;
+  background: #3FC380;
+  color: #FFF;
+  font-weight: 500;
+  font-size: 1.25em;
+  margin-bottom: 20px;
+  margin-top: 0px !important;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000398}}
+.custom-login input:hover {
+  opacity: 1;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003102}}
+.form-red {
+  color: red;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003105}}
+.login-contain {
+  padding-top: 25vh !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003108}}
+.thin-title {
+  font-weight: 200;
+  font-size: 1.25em;
+  text-transform: uppercase;
+  color: #000000;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003114}}
+.procure {
+  font-weight: 500;
+  font-size: 2.0em;
+  line-height: 1.0em;
+  color: #000000;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003120}}
+.login {
+  padding-bottom: 15px !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003124}}
+.login-extras .login-forgot {
+  color: #000000;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003128}}
+.login-extras .login-keep label {
+  color: #000000 !important;
 }
 
 /**** BASE.SCSS ****/
