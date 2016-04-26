@@ -20,8 +20,21 @@ nav {
   .item {
     font-weight: 300 !important;
     font-size: 1.15em;
+    position: relative;
+  }
+  .item:after {
+    background: rgba(255,255,255,0.35);
+    content:'';
+    position: absolute;
+    width: 1px;
+    height: 30px;
+    top: 22.5px;
+    right: 0px;
   }
   .item:before {
+    display: none;
+  }
+  .item:last-of-type:after {
     display:none;
   }
   .header.item {
@@ -31,7 +44,7 @@ nav {
   }
   .header.item:after {
     content:'';
-    width: 1px;
+    width: 2px;
     height: 50px;
     top: 12.5px;
     right: 0px;
@@ -42,10 +55,19 @@ nav {
 
 // Mobile nav
 nav .mobile.only.row {
-    .ui.vertical.menu {
-        margin-top: 40px;
-        display: none;
+  .ui.vertical.menu {
+    margin-top: 75px;
+    display: none;
+    background-color: #000000;
+    z-index: 10;
+    a.item {
+      background-color: #FFFFFF;
+      border-bottom: 1px solid #CCC;
     }
+    a.item:hover{ 
+      background-color: #CCC;
+    }
+  }
 }
 
 // Flashes

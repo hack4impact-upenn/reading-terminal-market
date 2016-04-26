@@ -24,21 +24,36 @@ nav {
 .custom-nav-class .item {
   font-weight: 300 !important;
   font-size: 1.15em;
+  position: relative;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000324}}
+@media -sass-debug-info{filename{}line{font-family:\0000325}}
+.custom-nav-class .item:after {
+  background: rgba(255, 255, 255, 0.35);
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 30px;
+  top: 22.5px;
+  right: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000334}}
 .custom-nav-class .item:before {
   display: none;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000327}}
+@media -sass-debug-info{filename{}line{font-family:\0000337}}
+.custom-nav-class .item:last-of-type:after {
+  display: none;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000340}}
 .custom-nav-class .header.item {
   border-left: none !important;
   text-transform: uppercase;
   position: relative;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000332}}
+@media -sass-debug-info{filename{}line{font-family:\0000345}}
 .custom-nav-class .header.item:after {
   content: '';
-  width: 1px;
+  width: 2px;
   height: 50px;
   top: 12.5px;
   right: 0px;
@@ -46,23 +61,34 @@ nav {
   background: #FFFFFF;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000345}}
+@media -sass-debug-info{filename{}line{font-family:\0000358}}
 nav .mobile.only.row .ui.vertical.menu {
-  margin-top: 40px;
+  margin-top: 75px;
   display: none;
+  background-color: #000000;
+  z-index: 10;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000363}}
+nav .mobile.only.row .ui.vertical.menu a.item {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #CCC;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000367}}
+nav .mobile.only.row .ui.vertical.menu a.item:hover {
+  background-color: #CCC;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000352}}
+@media -sass-debug-info{filename{}line{font-family:\0000374}}
 .flashes > .ui.message:last-of-type {
   margin-bottom: 2rem;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000357}}
+@media -sass-debug-info{filename{}line{font-family:\0000379}}
 table.selectable tr:hover {
   cursor: pointer !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000361}}
+@media -sass-debug-info{filename{}line{font-family:\0000383}}
 .custom-flash {
   position: fixed !important;
   top: 50px;
@@ -72,17 +98,17 @@ table.selectable tr:hover {
   border-radius: 0px !important;
   border-color: transparent !important;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000369}}
+@media -sass-debug-info{filename{}line{font-family:\0000391}}
 .custom-flash div {
   color: #000 !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000373}}
+@media -sass-debug-info{filename{}line{font-family:\0000395}}
 .error-custom {
   background-color: red;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000379}}
+@media -sass-debug-info{filename{}line{font-family:\00003101}}
 .custom-login input {
   border-radius: 0px !important;
   margin-top: -10px !important;
@@ -90,11 +116,11 @@ table.selectable tr:hover {
   opacity: 0.85;
   font-weight: 200;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000386}}
+@media -sass-debug-info{filename{}line{font-family:\00003108}}
 .custom-login label {
   display: none !important;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000389}}
+@media -sass-debug-info{filename{}line{font-family:\00003111}}
 .custom-login #submit {
   width: 100%;
   background: #3FC380;
@@ -104,22 +130,22 @@ table.selectable tr:hover {
   margin-bottom: 20px;
   margin-top: 0px !important;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000398}}
+@media -sass-debug-info{filename{}line{font-family:\00003120}}
 .custom-login input:hover {
   opacity: 1;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003102}}
+@media -sass-debug-info{filename{}line{font-family:\00003124}}
 .form-red {
   color: red;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003105}}
+@media -sass-debug-info{filename{}line{font-family:\00003127}}
 .login-contain {
   padding-top: 25vh !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003108}}
+@media -sass-debug-info{filename{}line{font-family:\00003130}}
 .thin-title {
   font-weight: 200;
   font-size: 1.25em;
@@ -127,7 +153,7 @@ table.selectable tr:hover {
   color: #000000;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003114}}
+@media -sass-debug-info{filename{}line{font-family:\00003136}}
 .procure {
   font-weight: 500;
   font-size: 2.0em;
@@ -135,16 +161,16 @@ table.selectable tr:hover {
   color: #000000;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003120}}
+@media -sass-debug-info{filename{}line{font-family:\00003142}}
 .login {
   padding-bottom: 15px !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003124}}
+@media -sass-debug-info{filename{}line{font-family:\00003146}}
 .login-extras .login-forgot {
   color: #000000;
 }
-@media -sass-debug-info{filename{}line{font-family:\00003128}}
+@media -sass-debug-info{filename{}line{font-family:\00003150}}
 .login-extras .login-keep label {
   color: #000000 !important;
 }
