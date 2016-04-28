@@ -15,13 +15,25 @@
     }
 
     .details {
+        padding-left: 1rem;
+        padding-right: 1rem;
         display: none;
+    }
+
+    .reviews {
+        padding: 0 1rem 1rem 1rem;
     }
 }
 
 // Order Cards
 .ui.cards > .card.order {
     width: 100%;
+}
+
+// No Orders
+.ui.cards > .no-order-text {
+    color: $light-gray;
+    padding: 1rem;
 }
 
 // Order Card Top Header
@@ -51,6 +63,11 @@
 
     > .ui.column > .column > .order-card-user-actions > * {
         display: inline-block;
+    }
+
+    .comments {
+        overflow-y: scroll;
+        height: 80px;
     }
 }
 
@@ -83,7 +100,28 @@
         color: $error-red !important;
     }
 
-    > .description > .field > label {
-        color: $dark-gray;
+    > .description > .field {
+        > label {
+            color: $dark-gray;
+        }
+
+        > textarea {
+            color: $light-gray;
+        }
+    }
+
+    > .description > .ui.button.submit-rating {
+        border: solid 1px $medium-gray;
+        color: $medium-gray;
+        background-color: $white;
+
+        &:hover {
+            background-color: $hover-background-gray;
+            color: $darkest-gray;
+        }
+    }
+
+    > .description > .ui.button.submit-rating::hover {
+
     }
 }

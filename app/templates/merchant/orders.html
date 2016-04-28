@@ -67,7 +67,7 @@
               </div>
               <div class="ten wide column">
                   <div><b>Total:</b> {{ order.get_total() }}</div>
-                  <div>
+                  <div class="comments">
                       <b>Comments:</b> {{ order.comment }}
                   </div>
               </div>
@@ -127,7 +127,7 @@
     <div class="ui stackable grid container">
     <div class="sixteen wide tablet twelve wide computer centered column">
         <h2 class="ui header">
-            Manage orders
+            <span class="title">Manage orders</span>
             <div class="sub header">
                 View and manage your orders.
             </div>
@@ -139,7 +139,7 @@
             {% for order in orders[:page_size] %}
                 {{ order_segment(order) }}
             {% else %}
-                <h3>You have not made any orders.</h3>
+                <h3 class="no-order-text">You have not made any orders.</h3>
             {% endfor %}
         </div>
 

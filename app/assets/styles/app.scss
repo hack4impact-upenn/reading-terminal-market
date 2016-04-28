@@ -47,3 +47,15 @@ table.selectable tr:hover {
 body {
     font-family: $main-font;
 }
+
+// Common
+// Title and Sub-title heading
+.ui.header {
+    .title {
+        color: $darkest-gray;
+    }
+
+    .sub.header {
+        color: $medium-gray;
+    }
+}
