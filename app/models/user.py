@@ -307,6 +307,9 @@ class Vendor(User):
     price_col = db.Column(db.String(64), default="Price")
     name_col = db.Column(db.String(64), default="Vendor")
 
+    def get_tags(self):
+        return [str(tag.tag.tag_name) for tag in self.tags]
+
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
         self.visible = kwargs.get('visible', False)
