@@ -1,12 +1,13 @@
 {% extends 'layouts/base.html' %}
 {% import 'macros/form_macros.html' as f %}
 
+
+
 {% set endpoints = [
     ('account.manage', 'Account information'),
     ('account.change_email_request', 'Change email address'),
     ('account.change_password', 'Change password'),
-    ('account.change_name', 'Change name'),
-    ('account.csv_settings', 'CSV Settings')
+    ('account.change_name', 'Change name')
 ] %}
 
 {% macro navigation(items) %}
@@ -17,6 +18,11 @@
                 {{ name }}
             </a>
         {% endfor %}
+        {% if current_user.is_vendor() %}
+            <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{url_for('account.csv_settings') }}">
+                CSV Settings
+            </a>
+        {% endif %}
         {% if current_user.is_merchant_or_vendor() %}
             <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{ url_for('account.change_company_name') }}">
                 Change company name
@@ -34,6 +40,15 @@
             <tr><td>Company name</td><td>{{ user.company_name }}</td></tr>
         {% endif %}
     </table>
+        {% if user.is_merchant_or_vendor() and user.tutorial_completed %}
+            <a  href="{{ url_for('merchant.index') }}"id="replay_tutorial" class="ui animated fade button small" tabindex="0">
+              <div class="hidden content">Click Here!</div>
+              <div class="visible content">
+                Want to replay the tutorial?
+              </div>
+                </a>
+        {% endif %}
+
 {% endmacro %}
 
 {% block content %}
@@ -57,4 +72,18 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#replay_tutorial").click( function()
+               {
+                    $.ajax({
+                            url: '/merchant/tutorial_completed',
+                            type: 'POST',
+                    });
+                    $('#notifier').hide();
+               });
+        });
+
+    </script>
 {% endblock %}
+

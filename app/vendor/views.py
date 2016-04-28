@@ -63,10 +63,10 @@ def csv_upload():
         csv_field = form.file_upload
         buff = csv_field.data.stream
         csv_data = csv.DictReader(buff, delimiter=',')
-        #for each row in csv, create a listing
+        # for each row in csv, create a listing
         current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
         for row in csv_data:
-            #cheap way to skip weird 'categorical' lines
+            # cheap way to skip weird 'categorical' lines
             if (row[current_vendor.product_id_col]).strip().isdigit():
                 safe_price = stripPriceHelper(row[current_vendor.price_col])
                 proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
@@ -84,7 +84,7 @@ def csv_upload():
                         proposed_listing.updated = Updated.PRICE_CHANGE
                         listings.append(proposed_listing)
                         db.session.commit()
-                    #case: listing does not yet exist
+                    # case: listing does not yet exist
                 else:
                     proposed_listing.updated = Updated.NEW_ITEM
                     listings.append(proposed_listing)

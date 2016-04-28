@@ -43,13 +43,14 @@
 
 {% endmacro %}
 {% macro make_guider() %}
+{
 <script type="text/javascript">
     guiders.createGuider({
       buttons: [
                 {name: "Next"}],
       description: "You can add items here to purchase eventually.",
       highlight: true,
-      id: "first_curr",
+      id: "first_cart",
       next: "second_cart",
       overlay: true,
       title: "This is your cart!",
@@ -68,6 +69,7 @@
         next: "third_order",
         overlay: true,
         title: "These are the items you put into your cart!.",
+        onHide: function() {guiders._dehighlightElement("#cart");},
         width: 300,
         position: 6,
         arrowSize:20
@@ -76,34 +78,18 @@
         guiders.createGuider({
         attachTo: "#order",
         buttons: [{
-                  name: "Sounds good. I'm going to try this out now. ",
-                  onclick: function() { guiders.hideAll(); }
-                }],
+                    name: "Go to My Orders",
+                    onclick: function() {  window.location.href= "{{ url_for('merchant.view_orders') }}#guider=first_order" }
+                  }],
         description: "Press here and submit your order. The vendor will receive an email notification soon!",
         highlight: true,
         id: "third_order",
         next: "fourth_delete",
+        onHide: function() {guiders._dehighlightElement("#order");},
         overlay: true,
         title: "Ready to order?",
         width: 300,
         position: 3,
-        arrowSize:20
-    });
-
-        guiders.createGuider({
-        attachTo: "#order",
-        buttons: [{
-                  name: "Ok, got it. Let me play around with this. ",
-                  onclick: function() { guiders.hideAll(); }
-                }],
-        description: "You can choose to sort by price or name here.",
-        highlight: true,
-        id: "fourth_order",
-        next: "second_add",
-        overlay: true,
-        title: "Not quite the right order?",
-        width: 300,
-        position: 6,
         arrowSize:20
     });
 
@@ -300,5 +286,8 @@
         })();
 
     </script>
-        {{make_guider()}}
+    {% if not tut_completed %}
+
+    {{make_guider()}}
+    {% endif %}
 {% endblock %}

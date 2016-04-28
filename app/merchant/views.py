@@ -2,7 +2,7 @@ from flask import render_template, abort, request, redirect, url_for, jsonify, f
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order, Vendor, Status, Ratings
+from ..models import Listing, CartItem, Order, Vendor, Status, Ratings, User
 from .. import db
 from datetime import datetime
 import pytz
@@ -21,6 +21,8 @@ def index():
 @merchant_required
 def listing_view_all(page=1):
     """Search for listings"""
+    tut_completed =  User.query.filter_by(id=current_user.id).first().tutorial_completed
+    print 'tut completed is:', tut_completed
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
     fav_vendor = True if request.args.get('fav_vendor') == "on" else False
@@ -57,6 +59,7 @@ def listing_view_all(page=1):
 
     return render_template(
         'merchant/view_listings.html',
+        tut_completed=tut_completed,
         listings=listings_paginated,
         main_search_term=main_search_term,
         min_price=min_price,
@@ -287,6 +290,17 @@ def view_orders():
         status_filter=status_filter,
         ratings=rating_dict
     )
+
+
+@merchant.route('/tutorial_completed', methods=['POST'])
+@login_required
+@merchant_required
+def tutorial_completed():
+    current_tutorial_status = User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    User.query.filter_by(id=current_user.id).first().tutorial_completed = \
+        not User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    db.session.commit();
+    return '', 204
 
 
 @merchant.route('/orders/<int:order_id>', methods=['POST'])

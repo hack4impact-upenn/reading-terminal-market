@@ -22,61 +22,6 @@
         </div>
     </a>
 {% endmacro %}
-{% macro make_guider() %}
-<script type="text/javascript">
-
-    guiders.createGuider({
-      attachTo: "#curr",
-
-      buttons: [
-                {name: "Next"}],
-      description: "Go ahead and check it out!.",
-      highlight: true,
-      id: "first_curr",
-      next: "second_add",
-      overlay: true,
-      title: "Here you can check your company's listings available to the market.",
-      width: 300,
-      position: 6,
-      arrowSize:20
-    }).show();
-
-    guiders.createGuider({
-      attachTo: "#add",
-      buttons: [
-                {name: "Next"}],
-      description: "You can add them one at a time here!.",
-      highlight: true,
-      id: "second_add",
-      next: "third_csv",
-      overlay: true,
-      title: "What if I want more listings?.",
-      width: 300,
-      position: 6,
-      arrowSize:20
-    });
-
-    guiders.createGuider({
-      attachTo: "#csv",
-      buttons: [{
-                  name: "sounds good!",
-                  onclick: function() { guiders.hideAll(); }
-                }],
-      description: "Nope! You can export a CSV of your listings here.",
-      highlight: true,
-      id: "third_csv",
-      next: "third_csv",
-      overlay: true,
-      title: "What if I have 1000's of listings? Won't uploading them take forever?",
-      width: 300,
-      position: 6,
-      arrowSize:20
-    });
-
-
-</script>
-{% endmacro %}
-
 
 {% block content %}
     <div class="ui stackable centered grid container">
@@ -92,8 +37,6 @@
                                     description='Add a new item to sell', icon='add square icon') }}
                 {{ dashboard_option('csv','Upload CSV', 'vendor.csv_upload',
                                     description='Upload CSV of new items', icon='add square icon') }}
-                                {{make_guider()}}
-
             </div>
         </div>
     </div>

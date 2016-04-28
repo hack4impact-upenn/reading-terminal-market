@@ -1,62 +1,6 @@
 {% extends 'layouts/listings.html' %}
 {% import 'macros/form_macros.html' as f %}
 
-{% macro make_guider() %}
-<script type="text/javascript">
-
-    guiders.createGuider({
-      attachTo: "#filter_form",
-
-      buttons: [
-                {name: "Next"}],
-      description: "Go ahead and check it out!.",
-      highlight: true,
-      id: "first_form",
-      next: "second_search",
-      title: "Here you can search and filter through all of your current listings.",
-      width: 400,
-      position: 5,
-    }).show();
-
-    guiders.createGuider({
-      attachTo: "#search",
-      buttons: [{
-                  name: "Custom Button",
-                  onclick: function() { alert("Hello!"); }
-                },
-                {name: "Next"}],
-      description: "Or even its description",
-      highlight: true,
-      id: "second_search",
-      next: "third_avail",
-      overlay: true,
-      title: "You can search by the item name.",
-      width: 300,
-      position: 5,
-      arrowSize:20
-    });
-
-      guiders.createGuider({
-      attachTo: "#availability",
-      buttons: [{
-                  name: "Ok, enough already- let me check this out",
-                  onclick: function() { guiders.hideAll(); }
-                },
-                {name: "Next"}],
-      description: "Or sort by its price and name",
-      overlay: true,
-      highlight: true,
-      id: "third_avail",
-      next: "fourth_filter",
-      title: "You can toggle whether the item is available.",
-      width: 300,
-      position: 5,
-    });
-
-
-
-</script>
-{% endmacro %}
 
 
 {% block before %}
@@ -129,5 +73,4 @@
 {% endblock %}
 
 {% block after %}
-{{ make_guider() }}
 {% endblock %}
