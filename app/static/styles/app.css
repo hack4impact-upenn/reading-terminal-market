@@ -66,7 +66,7 @@ nav .mobile.only.row .ui.vertical.menu {
   margin-top: 75px;
   display: none;
   background-color: #000000;
-  z-index: 10;
+  z-index: 100000;
 }
 @media -sass-debug-info{filename{}line{font-family:\0000364}}
 nav .mobile.only.row .ui.vertical.menu a.item {
@@ -239,24 +239,96 @@ table.selectable tr:hover {
   top: 75px;
   height: 75px;
   padding: 20px;
-  width: 100% !important;
+  width: 75% !important;
   border-radius: 0px !important;
+  background: #FFFFFF !important;
+  z-index: 500;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000335}}
+@media screen and (max-width: 768px) {
+@media -sass-debug-info{filename{}line{font-family:\0000325}}
+  .listing-contain .custom-search .search-bar input[name=main-search] {
+    width: 60% !important;
+  }
+}
+@media -sass-debug-info{filename{}line{font-family:\0000340}}
 .listing-contain .custom-search .side-bar {
   background: #FFFFFF;
   border-right: 1px solid #CCC;
   padding: 20px;
+  padding-bottom: 30px;
+  line-height: 40px;
   width: 250px;
   position: fixed !important;
   left: 0px;
   height: 100%;
   top: 150px;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000346}}
+@media -sass-debug-info{filename{}line{font-family:\0000352}}
+.listing-contain .custom-search .side-bar input {
+  border-radius: 0px !important;
+}
+@media screen and (max-width: 768px) {
+@media -sass-debug-info{filename{}line{font-family:\0000340}}
+  .listing-contain .custom-search .side-bar {
+    display: none;
+  }
+}
+@media -sass-debug-info{filename{}line{font-family:\0000360}}
+.listing-contain .custom-search .submit-section button {
+  position: fixed !important;
+  top: 75px;
+  right: 0px;
+  width: 12.5%;
+  border-radius: 0px;
+  margin: 0px;
+  height: 75px;
+  z-index: 500;
+}
+@media screen and (max-width: 768px) {
+@media -sass-debug-info{filename{}line{font-family:\0000360}}
+  .listing-contain .custom-search .submit-section button {
+    right: 0%;
+    width: 20%;
+  }
+}
+@media -sass-debug-info{filename{}line{font-family:\0000374}}
+.listing-contain .custom-search .submit-section .clearbutton {
+  position: fixed !important;
+  top: 75px;
+  right: 12.5%;
+  width: 12.5%;
+  border-radius: 0px;
+  margin: 0px;
+  padding-top: 30px;
+  line-height: 14px;
+  height: 75px;
+  z-index: 500;
+}
+@media screen and (max-width: 768px) {
+@media -sass-debug-info{filename{}line{font-family:\0000374}}
+  .listing-contain .custom-search .submit-section .clearbutton {
+    right: 20%;
+    width: 20%;
+  }
+}
+@media -sass-debug-info{filename{}line{font-family:\0000392}}
 .listing-contain .listings {
   position: absolute !important;
-  left: 250px;
+  left: 300px;
+  font-size: 1.10em !important;
+}
+@media screen and (max-width: 768px) {
+@media -sass-debug-info{filename{}line{font-family:\0000392}}
+  .listing-contain .listings {
+    left: 10px;
+  }
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003102}}
+.pagination-styles {
+  position: relative;
+  bottom: 0;
+  z-index: 10;
 }
 
 @media -sass-debug-info{filename{}line{font-family:\000033}}
