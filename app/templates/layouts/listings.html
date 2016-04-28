@@ -67,6 +67,7 @@
                                     </a>
                                     {% endif %}
                                 </td>
+                                <td {{info_link}}>{{ l.vendor.company_name }} {% for tag in l.vendor.get_tags() %}<a class="ui label green">{{ tag }}</a> {% endfor %}</td>
                             {% endif %}
                             {% if current_user.is_merchant() %}
                                 <td class="center aligned favoriteCell">
