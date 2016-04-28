@@ -1,9 +1,9 @@
-// manage_cart.html
+/********* MANAGE_CART.HTML **********/
 .merchant-listings, .merchant-cart {
     overflow-x: scroll;
 }
 
-// orders.html
+/********* ORDERS.HTML **********/
 .order {
     .segment {
         margin-bottom: 0px;
@@ -16,5 +16,74 @@
 
     .details {
         display: none;
+    }
+}
+
+// Order Cards
+.ui.cards > .card.order {
+    width: 100%;
+}
+
+// Order Card Top Header
+.ui.cards > .ui.card.order > .content.order-card-top {
+    &.grey {
+        background: $dark-gray;
+    }
+
+    &.red {
+        background: $denied-red;
+    }
+
+    &.green {
+        background: $accepted-green;
+    }
+
+    > .header {
+        color: $white;
+    }
+}
+
+// Order Card Content
+.ui.cards > .ui.card.order > .content > .description.order-card-description {
+    > .ui.column > .column {
+        color: $light-gray;
+    }
+
+    > .ui.column > .column > .order-card-user-actions > * {
+        display: inline-block;
+    }
+}
+
+// Order Card Purchase Table
+.ui.order-purchase-table {
+    > thead th {
+        color: $dark-gray;
+    }
+
+    > tbody {
+        color: $light-gray;
+    }
+}
+
+// Order Card Review Functionality
+.reviews > .ui.form > .ui.items > .item > .content {
+    > .ui.header {
+        color: $dark-gray;
+    }
+
+    > .ui.left.pointing.red.basic.label  {
+        &::before {
+            background-color: $white !important;
+            border-left: solid 1px $error-red;
+            border-bottom: solid 1px $error-red;
+        }
+
+        background-color: $white !important;
+        border: solid 1px $error-red;
+        color: $error-red !important;
+    }
+
+    > .description > .field > label {
+        color: $dark-gray;
     }
 }

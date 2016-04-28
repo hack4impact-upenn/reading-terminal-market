@@ -1,0 +1,12 @@
+/********* ORDERS.HTML **********/
+
+// Order Status Tabs
+.ui.menu.order-status-menu .item {
+    text-transform: uppercase;
+    border-color: $medium-gray;
+    color: $medium-gray;
+}
+
+.ui.menu.order-status-menu .item.active {
+    background: $hover-background-gray;
+}
