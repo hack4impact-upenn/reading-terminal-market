@@ -199,11 +199,19 @@
 
         <div class="actions">
 
-            <form action="{{ url_for('.order_items', vendor_id=vendor_id) }}" method="post">
-                <a href="{{ url_for('.manage_cart') }}" class="ui negative button">Do not place {{ order_str }}</a>
-
-                <input type="submit" class="ui positive button" name="submit" value="Place {{ order_str }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <form action="{{ url_for('.order_items', vendor_id=vendor_id) }}" method="post" class="ui form">
+                <div class="fields">
+                    <div class = "five wide field">
+                        <input type="text" name="referral_name" placeholder="Who referred you?">
+                    </div>
+                    <div class = "field">
+                    <a href="{{ url_for('.manage_cart') }}" class="ui negative button">Do not place {{ order_str }}</a>
+                    </div>
+                    <div class = "field">
+                    <input type="submit" class="ui positive button" name="submit" value="Place {{ order_str }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

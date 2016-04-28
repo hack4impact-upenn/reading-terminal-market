@@ -66,6 +66,9 @@
                                         <i class="star icon"></i> {{ rating }}
                                     </a>
                                     {% endif %}
+                                    {% for tag in l.vendor.get_tags() %}
+                                        <a class="ui label green">{{ tag }}</a> 
+                                    {% endfor %}
                                 </td>
                             {% endif %}
                             {% if current_user.is_merchant() %}
