@@ -18,3 +18,34 @@
         display: none;
     }
 }
+
+.listing-contain {
+    .custom-search {
+        .search-bar {
+            input[name=main-search] {
+                position: fixed !important;
+                left: 0px !important;
+                top:75px;
+                height: 75px;
+                padding: 20px;
+                width: 100% !important;
+                border-radius: 0px !important;
+            }
+        }
+        .side-bar {
+            background: #FFFFFF;
+            border-right: 1px solid #CCC;
+            padding: 20px;
+            width: 250px;
+            position: fixed !important;
+            left: 0px;
+            height: 100%;
+            top: 150px;
+        }
+    }
+    .listings {
+        position: absolute !important;
+        left: 250px;
+    }
+}
+

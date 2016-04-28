@@ -8,25 +8,25 @@ body {
   font-family: 'Arial' !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000310}}
+@media -sass-debug-info{filename{}line{font-family:\0000311}}
 nav {
-  margin-bottom: 40px !important;
+  margin-bottom: 65px !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000314}}
+@media -sass-debug-info{filename{}line{font-family:\0000315}}
 .custom-nav-class div.ui {
   background-color: #F4AD18 !important;
   color: #FFFFFF;
   height: 75px;
   font-size: 1em;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000320}}
+@media -sass-debug-info{filename{}line{font-family:\0000321}}
 .custom-nav-class .item {
   font-weight: 300 !important;
   font-size: 1.15em;
   position: relative;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000325}}
+@media -sass-debug-info{filename{}line{font-family:\0000326}}
 .custom-nav-class .item:after {
   background: rgba(255, 255, 255, 0.35);
   content: '';
@@ -36,21 +36,21 @@ nav {
   top: 22.5px;
   right: 0px;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000334}}
+@media -sass-debug-info{filename{}line{font-family:\0000335}}
 .custom-nav-class .item:before {
   display: none;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000337}}
+@media -sass-debug-info{filename{}line{font-family:\0000338}}
 .custom-nav-class .item:last-of-type:after {
   display: none;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000340}}
+@media -sass-debug-info{filename{}line{font-family:\0000341}}
 .custom-nav-class .header.item {
   border-left: none !important;
   text-transform: uppercase;
   position: relative;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000345}}
+@media -sass-debug-info{filename{}line{font-family:\0000346}}
 .custom-nav-class .header.item:after {
   content: '';
   width: 2px;
@@ -61,34 +61,34 @@ nav {
   background: #FFFFFF;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000358}}
+@media -sass-debug-info{filename{}line{font-family:\0000359}}
 nav .mobile.only.row .ui.vertical.menu {
   margin-top: 75px;
   display: none;
   background-color: #000000;
   z-index: 10;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000363}}
+@media -sass-debug-info{filename{}line{font-family:\0000364}}
 nav .mobile.only.row .ui.vertical.menu a.item {
   background-color: #FFFFFF;
   border-bottom: 1px solid #CCC;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000367}}
+@media -sass-debug-info{filename{}line{font-family:\0000368}}
 nav .mobile.only.row .ui.vertical.menu a.item:hover {
   background-color: #CCC;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000374}}
+@media -sass-debug-info{filename{}line{font-family:\0000375}}
 .flashes > .ui.message:last-of-type {
   margin-bottom: 2rem;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000379}}
+@media -sass-debug-info{filename{}line{font-family:\0000380}}
 table.selectable tr:hover {
   cursor: pointer !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000383}}
+@media -sass-debug-info{filename{}line{font-family:\0000384}}
 .custom-flash {
   position: fixed !important;
   top: 50px;
@@ -98,17 +98,17 @@ table.selectable tr:hover {
   border-radius: 0px !important;
   border-color: transparent !important;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000391}}
+@media -sass-debug-info{filename{}line{font-family:\0000392}}
 .custom-flash div {
   color: #000 !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000395}}
+@media -sass-debug-info{filename{}line{font-family:\0000396}}
 .error-custom {
   background-color: red;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003101}}
+@media -sass-debug-info{filename{}line{font-family:\00003102}}
 .custom-login input {
   border-radius: 0px !important;
   margin-top: -10px !important;
@@ -116,11 +116,11 @@ table.selectable tr:hover {
   opacity: 0.85;
   font-weight: 200;
 }
-@media -sass-debug-info{filename{}line{font-family:\00003108}}
+@media -sass-debug-info{filename{}line{font-family:\00003109}}
 .custom-login label {
   display: none !important;
 }
-@media -sass-debug-info{filename{}line{font-family:\00003111}}
+@media -sass-debug-info{filename{}line{font-family:\00003112}}
 .custom-login #submit {
   width: 100%;
   background: #3FC380;
@@ -130,22 +130,22 @@ table.selectable tr:hover {
   margin-bottom: 20px;
   margin-top: 0px !important;
 }
-@media -sass-debug-info{filename{}line{font-family:\00003120}}
+@media -sass-debug-info{filename{}line{font-family:\00003121}}
 .custom-login input:hover {
   opacity: 1;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003124}}
+@media -sass-debug-info{filename{}line{font-family:\00003125}}
 .form-red {
   color: red;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003127}}
+@media -sass-debug-info{filename{}line{font-family:\00003128}}
 .login-contain {
   padding-top: 25vh !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003130}}
+@media -sass-debug-info{filename{}line{font-family:\00003131}}
 .thin-title {
   font-weight: 200;
   font-size: 1.25em;
@@ -153,7 +153,7 @@ table.selectable tr:hover {
   color: #000000;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003136}}
+@media -sass-debug-info{filename{}line{font-family:\00003137}}
 .procure {
   font-weight: 500;
   font-size: 2.0em;
@@ -161,16 +161,16 @@ table.selectable tr:hover {
   color: #000000;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003142}}
+@media -sass-debug-info{filename{}line{font-family:\00003143}}
 .login {
   padding-bottom: 15px !important;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003146}}
+@media -sass-debug-info{filename{}line{font-family:\00003147}}
 .login-extras .login-forgot {
   color: #000000;
 }
-@media -sass-debug-info{filename{}line{font-family:\00003150}}
+@media -sass-debug-info{filename{}line{font-family:\00003151}}
 .login-extras .login-keep label {
   color: #000000 !important;
 }
@@ -230,6 +230,33 @@ table.selectable tr:hover {
 @media -sass-debug-info{filename{}line{font-family:\0000317}}
 .order .details {
   display: none;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000325}}
+.listing-contain .custom-search .search-bar input[name=main-search] {
+  position: fixed !important;
+  left: 0px !important;
+  top: 75px;
+  height: 75px;
+  padding: 20px;
+  width: 100% !important;
+  border-radius: 0px !important;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000335}}
+.listing-contain .custom-search .side-bar {
+  background: #FFFFFF;
+  border-right: 1px solid #CCC;
+  padding: 20px;
+  width: 250px;
+  position: fixed !important;
+  left: 0px;
+  height: 100%;
+  top: 150px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000346}}
+.listing-contain .listings {
+  position: absolute !important;
+  left: 250px;
 }
 
 @media -sass-debug-info{filename{}line{font-family:\000033}}
