@@ -42,9 +42,11 @@
                                     <a class="ui small label">
                                         <i class="star icon"></i> {{ rating }}
                                     </a>
-                                    {% endif %}
-                                </a>
+                                    {% endif %}                                </a>
                                 <a {{info_link}}>{{ l.vendor.company_name }}</a>
+
+                                </td>
+                                <td {{info_link}}>{{ l.vendor.company_name }} {% for tag in l.vendor.get_tags() %}<a class="ui label green">{{ tag }}</a> {% endfor %}</td>
                             {% endif %}
                             {% if current_user.is_merchant() %}
                             <div class="meta">
