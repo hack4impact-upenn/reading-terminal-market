@@ -1,9 +1,10 @@
 from flask.ext.assets import Bundle
 
 app_css = Bundle(
-    '*.scss',
+    'app.scss',
     filters='scss',
-    output='styles/app.css'
+    output='styles/app.css',
+    depends=('*.scss')
 )
 
 app_js = Bundle(

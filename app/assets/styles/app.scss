@@ -1,3 +1,15 @@
+/******* IMPORTS *******/
+// Variables
+@import "_base.scss";
+
+// Template Specific
+@import "admin.scss";
+@import "layouts.scss";
+@import "macros.scss";
+@import "merchant.scss";
+@import "shared.scss";
+@import "vendor.scss";
+
 // Semantic UI breakpoints
 $mobile-breakpoint:        768px;
 $tablet-breakpoint:        992px;
@@ -29,4 +41,9 @@ nav .mobile.only.row {
 // Tables
 table.selectable tr:hover {
     cursor: pointer !important;
+}
+
+// General
+body {
+    font-family: $main-font;
 }
