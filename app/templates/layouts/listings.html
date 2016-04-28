@@ -16,7 +16,7 @@
 
             {% if count > 0 %}
 
-                <div class="listings ui relaxed divided items grid container">
+                <div id="listings-table" class="listings ui relaxed divided items grid container">
 
                  {% if header is defined %}
                 <h2 class="ui header">
@@ -101,7 +101,7 @@
                             {% if current_user.is_vendor() or current_user.is_admin() %}
                                 <span>{% if l.available==True %} Yes {% else %} No {% endif %}</span>
                             {% endif %}
-                            <div class="meta item category"></td>
+                            <div class="meta item category">
                                 {% if current_user.is_merchant() %}
                                     {% if l in cart_listings %}
                                         {% set in_cart = "true" %}
