@@ -5,7 +5,15 @@
     <table class="ui compact definition table">
 
         <tr><td>Product Name</td><td>{{ listing.name }} </td></tr>
-        <tr><td>Company</td><td>{{ listing.vendor.company_name }} </td></tr>
+        <tr><td>
+            Company</td><td>{{ listing.vendor.company_name }}
+            {% set rating = listing.vendor.get_rating_value() %}
+            {% if rating != -1 %}
+            <a class="ui small label">
+                <i class="star icon"></i> {{ rating }}
+            </a>
+            {% endif %}
+        </td></tr>
         <tr><td>Vendor</td><td>{{ listing.vendor.full_name() }} </td></tr>
         <tr><td>Vendor email</td><td>{{ listing.vendor.email }} </td></tr>
         <tr><td>Price</td><td>${{ '%0.2f' | format(listing.price) }}/{{listing.category.unit}}</td></tr>
@@ -55,6 +63,31 @@
 
             </div>
         </div>
+        {% set reviews = listing.vendor.get_all_ratings() %}
+        {% if reviews %}
+        <div class="twelve wide column">
+            <h3 class="ui header"> Reviews
+                <div class="sub header"><a href="{{ url_for('merchant.review_info', listing_id=listing.id) }}">See more reviews</a></div>
+            </h3>
+            <div class="ui divided items">
+                {% for rating in reviews[:3] %}
+                    <div class="item">
+                        <div class="content">
+                            <a class="ui small label">
+                                <i class="star icon"></i> {{ rating.star_rating }}
+                            </a>
+                            <div class="description">
+                                <p>{{ rating.comment }}</p>
+                            </div>
+                            <div class="extra">
+                                Reviewed on {{ rating.get_date() }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <script src="{{ url_for('static', filename='merchant.js') }}"></script>

@@ -1,0 +1,90 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<div class="ui stackable centered grid container">
+    <div class="twelve wide column">
+        <a class="ui basic compact button" href="{{ backto }}">
+            <i class="caret left icon"></i>
+            Back to item
+        </a>
+        <h2 class="ui header">
+            Reviews of {{ listing.vendor.company_name }}
+            {% set rating = listing.vendor.get_rating_value() %}
+            {% if rating != -1 %}
+            <a class="ui small label">
+                <i class="star icon"></i> {{ rating }}
+            </a>
+            {% endif %}
+        </h2>
+
+        <h3>Breakdown of Reviews</h3>
+        <p> {{ total_num_ratings }} reviewers</p>
+        <div class="ui list">
+            <div class="item">
+                <div class="ui star rating" data-rating="5"></div> |
+                {{ (ratings_breakdown.get(5.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+            <div class="item">
+                <div class="ui star rating" data-rating="4"></div> |
+                {{ (ratings_breakdown.get(4.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+            <div class="item">
+                <div class="ui star rating" data-rating="3"></div> |
+                {{ (ratings_breakdown.get(3.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+            <div class="item">
+                <div class="ui star rating" data-rating="2"></div> |
+                {{ (ratings_breakdown.get(2.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+            <div class="item">
+                <div class="ui star rating" data-rating="1"></div> |
+                {{ (ratings_breakdown.get(1.0, 0)/total_num_ratings*100)|round|int }} %
+            </div>
+        </div>
+    </div>
+
+    <div class="twelve wide column">
+        <div class="ui divided items">
+            {% for rating in ratings.items %}
+                <div class="item">
+                    <div class="content">
+                        <a class="ui small label">
+                            <i class="star icon"></i> {{ rating.star_rating }}
+                        </a>
+                        <div class="description">
+                            <p>{{ rating.comment }}</p>
+                        </div>
+                        <div class="extra">
+                            Reviewed on {{ rating.get_date() }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="ui pagination menu">
+            {% for page in ratings.iter_pages() %}
+                {% if page %}
+                    {% if page != ratings.page %}
+                        <a class="item" href="{{ url_for('merchant.review_info', listing_id=listing.id, page=page) }}">{{ page }}</a>
+                    {% else %}
+                        <a class="active item">{{ page }}</a>
+                    {% endif %}
+                {% else %}
+                    <a class="disabled item">...</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('.ui.rating').rating({
+            interactive: false,
+            maxRating: 5
+        });
+    });
+</script>
+{% endblock %}
