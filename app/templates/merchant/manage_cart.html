@@ -135,11 +135,6 @@
 
             </div>
 
-            <form>
-                Referral:<br>
-                <input type="text" name="referral">
-            </form>
-
             <p class="right floated column"><b>The total price of your {{ order_str }} is: {{ format_price(get_total_price(vendor_cart_items)) }}</b></p>
             <p>
                 Once you place the {{ order_str }}, you and each vendor will receive an email with order details. Each vendor
@@ -151,11 +146,19 @@
 
         <div class="actions">
 
-            <form action="{{ url_for('.order_items', vendor_id=vendor_id) }}" method="post">
-                <a href="{{ url_for('.manage_cart') }}" class="ui negative button">Do not place {{ order_str }}</a>
-
-                <input type="submit" class="ui positive button" name="submit" value="Place {{ order_str }}">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <form action="{{ url_for('.order_items', vendor_id=vendor_id) }}" method="post" class="ui form">
+                <div class="fields">
+                    <div class = "five wide field">
+                        <input type="text" name="referral_name" placeholder="Who referred you?">
+                    </div>
+                    <div class = "field">
+                    <a href="{{ url_for('.manage_cart') }}" class="ui negative button">Do not place {{ order_str }}</a>
+                    </div>
+                    <div class = "field">
+                    <input type="submit" class="ui positive button" name="submit" value="Place {{ order_str }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -174,8 +177,6 @@
         <div class="merchant-cart">
             {% if vendor_items_dict %}
                 <form action="{{ url_for('merchant.order_items') }}" method="post">
-                    <input type="submit" class="ui button positive" name="submit" value="Order from all vendors">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 </form>
                 <br>
             {% endif %}
