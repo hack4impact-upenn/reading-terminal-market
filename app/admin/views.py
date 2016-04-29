@@ -9,10 +9,11 @@ from forms import (
     InviteUserForm,
     NewCategoryForm,
     AdminCreateTagForm,
-    AdminAddTagToVendorForm
+    AdminAddTagToVendorForm,
+    AdminCreateItemTagForm
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant, Category, Listing, Tag, TagAssociation
+from ..models import User, Role, Vendor, Merchant, Category, Listing, Tag, TagAssociation, ItemTag
 from .. import db
 from ..email import send_email
 
@@ -378,5 +379,27 @@ def view_tags():
                   'form-success')
         return redirect(url_for('admin.view_tags'))
     return render_template('admin/view_tags.html', form=form, tags=tags)
+
+
+@admin.route('/view-item-tags', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def view_item_tags():
+    form = AdminCreateItemTagForm()
+    tags = ItemTag.query.all()
+    if form.validate_on_submit():
+        tag_name = form.item_tag_name.data
+        tag_color = form.tag_color.data
+        if ItemTag.query.filter_by(item_tag_name=tag_name).first():
+            flash('Tag {} already exists'.format(tag_name),
+                  'form-error')
+        else:
+            tag = ItemTag(item_tag_name=tag_name, tag_color = tag_color)
+            db.session.add(tag)
+            db.session.commit()
+            flash('Tag {} successfully created'.format(tag.item_tag_name),
+                  'form-success')
+        return redirect(url_for('admin.view_item_tags'))
+    return render_template('admin/view_item_tags.html', form=form, tags=tags)
 
 

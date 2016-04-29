@@ -19,3 +19,9 @@ class TagAssociation(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'))
     tag = db.relationship("Tag", back_populates="vendors")
     vendor = db.relationship("Vendor", back_populates="tags")
+
+class ItemTag(db.Model):
+    __tablename__ = "itemtag"
+    id = db.Column(db.Integer, primary_key=True)
+    item_tag_name = db.Column(db.String(64))
+    tag_color = db.Column(db.String(64))

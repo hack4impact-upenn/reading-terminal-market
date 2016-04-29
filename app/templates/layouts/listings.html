@@ -25,7 +25,7 @@
                 {% endif %}
                 {% if count >= 3 %} <div class="ui stackable three column grid listings-grid"> {% endif %}
                     {% for l in listings.items %}
-                        <div class="column">
+                        <div class="column" id="indiv-item">
                             <div class="item">
                                 <div class="content">
                                     {% if current_user.is_vendor() %}
@@ -53,7 +53,7 @@
                                     {% endif %} 
                                     <a style="font-weight: bold; font-size: 1.25em; line-height: 20px" class="header" {{info_link}}>{{ l.name }}</a><br>
                                     <a>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</a>
-                                    
+                                    <div id="label-contain"></div>
                                     {% if current_user.is_merchant() or current_user.is_admin() %}
                                         <div class="extra">
                                             <span class="desc-name">Vendor Name: {{ l.vendor.company_name }}</span>
