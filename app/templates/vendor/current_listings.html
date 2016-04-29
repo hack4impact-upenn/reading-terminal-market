@@ -20,10 +20,12 @@
             <button class="ui button blue searchbutton" type="submit" id="filterer">Search</button>
             <a class="ui button clearbutton" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
         </div>
-        <div class="side-bar"> 
-            <h3>Filtering Settings</h3>
-            <div class="field" id="availability_wrapper">
+        <div id="availability_wrapper" class="side-bar">
+            <h3>Filtering Settings </h3>
+            <div class="field" >
+                <div >
                 <label>Order by</label>
+                </div>
                 <select class="ui selection dropdown"  name="avail">
                     {% if request.args.get('avail') == "avail" %}
                         {% set selected = 'selected' %}
@@ -38,7 +40,7 @@
                 </select>
             </div>
             <div class="field">
-                <select class="ui selection dropdown" name="sort-by">                
+                <select  class="ui selection dropdown" name="sort-by">
                     {% if request.args.get('sort-by') == "low_high" %}
                         {% set checked2 = 'selected' %}
                     {% elif request.args.get('sort-by') == "high_low" %}
@@ -94,7 +96,7 @@
                 onHide: function() {guiders._dehighlightElement("#filter_form");},
                 title: "Too many listings? (good for you)",
                 width: 300,
-                position: 6,
+                position: 5,
             });
                 guiders.createGuider({
                 attachTo: "#search_bar",
@@ -122,28 +124,27 @@
                 id: "fourth",
                 next: "fifth",
                 overlay: true,
-                onHide: function() {guiders._dehighlightElement("#availability_wrapper");},
                 title: "Availability",
                 width: 300,
-                position: 6,
+                position: 3,
                 arrowSize:20,
             });
                 guiders.createGuider({
-                attachTo: "#sort_wrapper",
+                attachTo: "#availability_wrapper",
                 buttons: [{
                   name: "Ok, cool. But how do I add listings?",
                   onclick: function() {
                     window.location.href=
                         "{{ url_for('vendor.new_listing',tut_completed=tut_completed) }}#guider=first" }
-                }],                description: "You can sort your listings alphabetically or by item price by item price!",
+                }],                description: "You can sort your listings alphabetically or even by item price!",
                 highlight: true,
                 id: "fifth",
                 next: "sixth",
                 overlay: true,
-                onHide: function() {guiders._dehighlightElement("#sort_wrapper");},
+                onHide: function() {guiders._dehighlightElement("#availability_wrapper");},
                 title: "Looking for those expensive Aaron's Apples or that cheap Zany Ziti?",
                 width: 300,
-                position: 6,
+                position: 3,
                 arrowSize:20
             });
         </script>
