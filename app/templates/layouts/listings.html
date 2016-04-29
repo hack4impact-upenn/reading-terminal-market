@@ -53,14 +53,7 @@
                                     {% endif %}
                                     <a style="font-weight: bold; font-size: 1.25em; line-height: 20px" class="header" {{info_link}}>{{ l.name }}</a><br>
                                     <a>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</a>
-                                    <div class="extra center aligned cartCell" data-id="{{ l.id }}" data-incart="{{ in_cart }}">
-                                        <div class="ui left action input">
-                                            <a class="toggle-cart ui button" id="button_padding">
-                                                <i class="cart icon {{ cart_color }}"></i>
-                                            </a>
-                                            <input class="cart-quantity" id="input_size" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
-                                        </div>
-                                    </div>
+                                    
                                     {% if current_user.is_merchant() or current_user.is_admin() %}
                                         <div class="extra">
                                             <span class="desc-name">Vendor Name: {{ l.vendor.company_name }}</span>
