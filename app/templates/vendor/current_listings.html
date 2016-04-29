@@ -10,27 +10,21 @@
         'info':    get_flashed_messages(category_filter=['form-info']),
         'success': get_flashed_messages(category_filter=['form-success'])
      } %}
-
-    <a class="ui basic compact button" href="{{ url_for('vendor.index') }}">
-        <i class="caret left icon"></i>
-        Back to dashboard
-    </a>
-    <h2 class="ui header">
-        Your Items
-        <div class="sub header">
-            View and manage all your items.
+</div>
+<div class="listing-contain">
+    <form class="custom-search" id="filter_form">
+        <div class="ui form search-bar">
+            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="Search names and descriptions" id="search_bar">
         </div>
-    </h2>
-
-    <form id="filter_form" class="ui form segment">
-        <div id="search_bar" class="twelve wide field">
-            <label id="label_form">Search names and descriptions</label>
-            <input id ="search" value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
+        <div class="ui submit-section">
+            <button class="ui button blue searchbutton" type="submit" id="filterer">Search</button>
+            <a class="ui button clearbutton" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
         </div>
-
-        <div id="availability" class="inline field">
-            <div id="availability_wrapper">
-                <select   class="ui selection dropdown" name="avail">
+        <div class="side-bar"> 
+            <h3>Filtering Settings</h3>
+            <div class="field">
+                <label>Order by</label>
+                <select class="ui selection dropdown" id="availability" name="avail">
                     {% if request.args.get('avail') == "avail" %}
                         {% set selected = 'selected' %}
                     {% elif request.args.get('avail') == "non_avail" %}
@@ -38,40 +32,35 @@
                     {% elif request.args.get('avail') == "avail" %}
                         {% set selected3 = 'selected' %}
                     {% endif %}
-                    <option id="availability_bar" value="both" {{ selected }}>Show Available and Non Available Items</option>
+                    <option value="both" {{ selected }}>Show Available and Non Available Items</option>
                     <option value="non_avail" {{ selected2 }}>Show Non Available Items</option>
                     <option value="avail" {{ selected3 }}>Show Available Items</option>
                 </select>
             </div>
-            <br>
-            <br>
-            <div id="sort_wrapper">
-                <select class="ui selection dropdown" name="sort-by">
-                {% if request.args.get('sortby') == "low_high" %}
-                    {% set checked2 = 'selected' %}
-                {% elif request.args.get('sortby') == "high_low" %}
-                    {% set checked3 = 'selected' %}
-                {% elif request.args.get('sortby') == "alphaAZ" %}
-                    {% set checked4 = 'selected' %}
-                {% elif request.args.get('sortby') == "alphaZA" %}
-                    {% set checked5 = 'selected' %}
-                {% endif %}
-                <option value="low_high" {{ checked2 }}>Price, low to high</option>
-                <option value="high_low" {{ checked3 }}>Price, high to low</option>
-                <option value="alphaAZ" {{ checked4 }}>Alphabetical names, (A-Z)</option>
-                <option value="alphaZA" {{ checked5 }}>Alphabetical names, (Z-A)</option>
+            <div class="field">
+                <select class="ui selection dropdown" name="sort-by">                
+                    {% if request.args.get('sort-by') == "low_high" %}
+                        {% set checked2 = 'selected' %}
+                    {% elif request.args.get('sort-by') == "high_low" %}
+                        {% set checked3 = 'selected' %}
+                    {% elif request.args.get('sort-by') == "alphaAZ" %}
+                        {% set checked4 = 'selected' %}
+                    {% elif request.args.get('sort-by') == "alphaZA" %}
+                        {% set checked5 = 'selected' %}
+                    {% endif %}
+                    <option value="low_high" {{ checked2 }}>Price, low to high</option>
+                    <option value="high_low" {{ checked3 }}>Price, high to low</option>
+                    <option value="alphaAZ" {{ checked4 }}>Alphabetical names, (A-Z)</option>
+                    <option value="alphaZA" {{ checked5 }}>Alphabetical names, (Z-A)</option>
                 </select>
-
             </div>
-
-        </div>
 
         {% if not name_search_term and not min_price and not max_price%}
             {% set display = 'display:none' %}
         {% endif %}
+        </div>
         <br>
-        <button id="filterer" class="ui button blue" type="submit">Search</button>
-        <a class="ui button" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
+        
     </form>
 {% endblock %}
 

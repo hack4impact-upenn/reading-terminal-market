@@ -13,7 +13,7 @@
     {% for cart_item in cart_items %}
         <tr>
             <td>{{ cart_item.listing.name }}</td>
-            <td>{{ cart_item.quantity| int() }} {{ cart_item.listing.category.unit }}</td>
+            <td>{{ cart_item.quantity| int() }} x {{ cart_item.listing.quantity }} {{ cart_item.listing.unit }}</td>
         </tr>
     {% endfor %}
     </tbody>

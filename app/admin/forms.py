@@ -4,7 +4,7 @@ from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import InputRequired, DataRequired, Length, Email, EqualTo
 from wtforms import ValidationError
-from ..models import User, Role, Tag, Category
+from ..models import User, Role, Tag
 from .. import db
 
 
@@ -53,13 +53,14 @@ class NewUserForm(InviteUserForm):
 
     submit = SubmitField('Create')
 
-
+"""
 class NewCategoryForm(Form):
     category_name = StringField('Category', validators=[InputRequired(),
                                                         Length(1, 64)])
     unit = StringField('Unit', validators=[InputRequired(),
                                            Length(1, 32)])
     submit = SubmitField('Add category')
+"""
 
 
 class AdminCreateTagForm(Form):
@@ -73,3 +74,10 @@ class AdminAddTagToVendorForm(Form):
                                  get_label='tag_name',
                                  query_factory=lambda: db.session.query(Tag).order_by('id'))
      submit = SubmitField('Assign this Tag to Vendor')
+
+class AdminCreateItemTagForm(Form):
+    item_tag_name = StringField('Tag Name',
+                               validators=[InputRequired(), Length(1, 1000)])
+    tag_color = StringField('Tag Color',
+                            validators=[InputRequired(), Length(1,1000)])
+    submit = SubmitField('Create New Item Tag')

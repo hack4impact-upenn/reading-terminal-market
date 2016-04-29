@@ -16,9 +16,8 @@
         </td></tr>
         <tr><td>Vendor</td><td>{{ listing.vendor.full_name() }} </td></tr>
         <tr><td>Vendor email</td><td>{{ listing.vendor.email }} </td></tr>
-        <tr><td>Price</td><td>${{ '%0.2f' | format(listing.price) }}/{{listing.category.unit}}</td></tr>
+        <tr><td>Price</td><td>${{ '%0.2f' | format(listing.price) }}/{{listing.quantity}} {{listing.unit}}</td></tr>
         <tr><td>Description</td><td>{{ listing.description }}</td></tr>
-        <tr><td>Category</td><td>{{ listing.category.name }}</td></tr>
 
     </table>
 {% endmacro %}
@@ -55,7 +54,7 @@
                         </button>
                         <input type="number" id="quantity" min="0" step="1" value={{ quantity }}>
                         <div class="ui basic label">
-                            {{ listing.category.unit }}
+                            x {{ listing.quantity}} {{ listing.unit }}
                             of {{ listing.name }}
                         </div>
                     </div>

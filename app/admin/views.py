@@ -2,19 +2,23 @@ from ..decorators import admin_required
 
 from flask import render_template, abort, redirect, request, flash, url_for
 from flask.ext.login import login_required, current_user
+import pint
 
 from forms import (
     ChangeUserEmailForm,
     NewUserForm,
     InviteUserForm,
-    NewCategoryForm,
     AdminCreateTagForm,
-    AdminAddTagToVendorForm
+    AdminAddTagToVendorForm,
+    AdminCreateItemTagForm
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant, Category, Listing, Tag, TagAssociation
+from ..models import User, Role, Vendor, Merchant, Listing, Tag, TagAssociation, ItemTag
 from .. import db
+from .. vendor.forms import NewCSVForm
 from ..email import send_email
+import csv
+from pint import UnitRegistry, UndefinedUnitError
 
 
 @admin.route('/')
@@ -36,7 +40,6 @@ def listing_view_all(page=1):
     name_search_term = request.args.get('name-search', "", type=str)
     min_price = request.args.get('min-price', "", type=float)
     max_price = request.args.get('max-price', "", type=float)
-    category_search = request.args.get('category-search', "", type=str)
     avail = request.args.get('avail', "", type=str)
     search = request.args.get('search', "", type=str)
     listings_raw = Listing.search(
@@ -46,12 +49,11 @@ def listing_view_all(page=1):
         name_search_term=name_search_term,
         min_price=min_price,
         max_price=max_price,
-        category_search=category_search
     )
     # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
     if search != "False":
         page = 1
-    listings_paginated_new = listings_raw.paginate(page, 20, False)
+    listings_paginated_new = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
@@ -68,54 +70,20 @@ def listing_view_all(page=1):
         name_search_term=name_search_term,
         min_price=min_price,
         max_price=max_price,
-        category_search=category_search,
         header=header,
         count=result_count
     )
 
 
-@admin.route('/view-categories')
-@login_required
-@admin_required
-def view_categories():
-    """Manage categories availabe to vendors"""
-    categories = Category.query.all()
-    return render_template('admin/view_categories.html', categories=categories)
 
 
-@admin.route('/add-category', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def add_category():
-    form = NewCategoryForm()
-    if form.validate_on_submit():
-        category_name = form.category_name.data
-        if Category.query.filter_by(name=category_name).first():
-            flash('Category {} already exists'.format(category_name),
-                  'form-error')
-        else:
-            category = Category(name=category_name, unit=form.unit.data)
-            db.session.add(category)
-            db.session.commit()
-            flash('Category {} successfully created'.format(category.name),
-                  'form-success')
-        return redirect(url_for('admin.add_category'))
-    return render_template('admin/add_category.html', form=form)
+
 
 
 @admin.route('/category/<int:category_id>/delete')
 @login_required
 @admin_required
 def delete_category(category_id):
-    category = Category.query.filter_by(id=category_id).first()
-    if not category:
-        flash('The category you are trying to delete does not exist.', 'error')
-    elif len(category.listings) > 0:
-        flash('You cannot delete a category with that has listings.', 'error')
-    else:
-        db.session.delete(category)
-        db.session.commit()
-        flash('Successfully deleted category {}.'.format(category.name), 'success')
     return redirect(url_for('admin.view_categories'))
 
 
@@ -310,6 +278,71 @@ def change_user_email(user_id):
     return render_template('admin/manage_user.html', user=user, form=form)
 
 
+@admin.route('/user/<int:user_id>/test-csv', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def test_csv(user_id):
+    current_vendor = Vendor.query.filter_by(id=user_id).first()
+    if current_vendor is None:
+        abort(404)
+    form = NewCSVForm()
+    if form.validate_on_submit():
+        columns = [current_vendor.product_id_col,current_vendor.listing_description_col, current_vendor.unit_col,
+                   current_vendor.price_col, current_vendor.name_col, current_vendor.quantity_col]
+        csv_file = form.file_upload
+        buff = csv_file.data.stream
+        csv_data = csv.DictReader(buff, delimiter=',')
+        c = current_vendor.product_id_col
+        row_count = 0
+        for row in csv_data:
+            row_count += 1
+            for c in columns:
+                if c not in row:
+                    flash("Error parsing {}'s CSV file. Couldn't find {} column at row {}"
+                          .format(current_vendor.full_name(),c, row_count),
+                          'form-error')
+                    return render_template('admin/manage_user.html', user=current_vendor, form=form)
+                if row[current_vendor.product_id_col]=="" and row[current_vendor.listing_description_col]=="":
+                    flash("Successfully parsed {}'s CSV file!"
+                    .format(current_vendor.full_name()), 'form-success')
+                    return render_template('admin/manage_user.html', user=current_vendor, form=form)
+            if not(
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                              col=current_vendor.price_col, row_count=row_count) and
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                               col=current_vendor.quantity_col,row_count=row_count) and
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                               col=current_vendor.product_id_col,row_count=row_count)):
+                return render_template('admin/manage_user.html', user=current_vendor, form=form)
+            if not is_proper_unit(current_vendor.full_name(), current_vendor.unit_col,row, row_count):
+                return render_template('admin/manage_user.html', user=current_vendor, form=form)
+        flash("Successfully parsed {}'s CSV file!"
+          .format(current_vendor.full_name()),
+          'form-success')
+    return render_template('admin/manage_user.html', user=current_vendor, form=form)
+
+
+def is_numeric_col(current_vendor, row, col, row_count):
+    if not row[col].isdigit() and row[col]:
+        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {} "
+              .format(current_vendor.full_name(),col, row_count),
+              'form-error')
+        return False
+    return True
+
+
+def is_proper_unit(vendor_name, unit, row, row_count):
+    ureg = UnitRegistry()
+    try:
+        ureg.parse_expression(row[unit])
+    except UndefinedUnitError:
+        flash("Error parsing {}'s CSV file. Bad entry in the {} column, at row {} "
+              .format(vendor_name, unit, row_count),'form-error')
+        return False
+    return True
+
+
+
 @admin.route('/user/<int:user_id>/delete')
 @login_required
 @admin_required
@@ -358,7 +391,6 @@ def listing_info(listing_id):
         backto=backto
     )
 
-
 @admin.route('/view-tags', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -380,3 +412,23 @@ def view_tags():
     return render_template('admin/view_tags.html', form=form, tags=tags)
 
 
+@admin.route('/view-item-tags', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def view_item_tags():
+    form = AdminCreateItemTagForm()
+    tags = ItemTag.query.all()
+    if form.validate_on_submit():
+        tag_name = form.item_tag_name.data
+        tag_color = form.tag_color.data
+        if ItemTag.query.filter_by(item_tag_name=tag_name).first():
+            flash('Tag {} already exists'.format(tag_name),
+                  'form-error')
+        else:
+            tag = ItemTag(item_tag_name=tag_name, tag_color = tag_color)
+            db.session.add(tag)
+            db.session.commit()
+            flash('Tag {} successfully created'.format(tag.item_tag_name),
+                  'form-success')
+        return redirect(url_for('admin.view_item_tags'))
+    return render_template('admin/view_item_tags.html', form=form, tags=tags)

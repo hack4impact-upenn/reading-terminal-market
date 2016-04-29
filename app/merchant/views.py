@@ -2,7 +2,7 @@ from flask import render_template, abort, request, redirect, url_for, jsonify, f
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order, Vendor, Status, Ratings, User
+from ..models import Listing, CartItem, Order, Vendor, Status, ItemTag, Ratings, User
 from .. import db
 from datetime import datetime
 import pytz
@@ -48,8 +48,8 @@ def listing_view_all(page=1):
 
     if search != "False":
         page = 1
-
-    listings_paginated = listings_raw.paginate(page, 20, False)
+    item_tags = ItemTag.query.all()
+    listings_paginated = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
@@ -71,7 +71,8 @@ def listing_view_all(page=1):
         category_search=category_search,
         cart_listings=current_user.get_cart_listings(),
         header=header,
-        count=result_count
+        count=result_count,
+        item_tags=item_tags
     )
 
 

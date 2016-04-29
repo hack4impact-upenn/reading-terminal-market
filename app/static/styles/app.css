@@ -1,32 +1,8 @@
-@media -sass-debug-info{filename{}line{font-family:\000033}}
+
+/******* IMPORTS *******/
+/* line 3, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/admin.scss */
 .admin-listing-info .ui.header .sub.header.listing-info-header {
-  padding-bottom: 8px;
-}
-
-@media -sass-debug-info{filename{}line{font-family:\000037}}
-nav {
-  margin-bottom: 40px !important;
-}
-
-@media -sass-debug-info{filename{}line{font-family:\0000312}}
-.ui.fixed.main.menu .right.menu > .item:last-of-type {
-  border-right: 1px solid rgba(34, 36, 38, 0.09804);
-}
-
-@media -sass-debug-info{filename{}line{font-family:\0000318}}
-nav .mobile.only.row .ui.vertical.menu {
-  margin-top: 40px;
-  display: none;
-}
-
-@media -sass-debug-info{filename{}line{font-family:\0000325}}
-.flashes > .ui.message:last-of-type {
-  margin-bottom: 2rem;
-}
-
-@media -sass-debug-info{filename{}line{font-family:\0000330}}
-table.selectable tr:hover {
-  cursor: pointer !important;
+    padding-bottom: 8px;
 }
 
 @media -sass-debug-info{filename{}line{font-family:\000031}}
@@ -190,77 +166,570 @@ table.selectable tr:hover {
 }
 
 /**** BASE.SCSS ****/
-@media -sass-debug-info{filename{}line{font-family:\000032}}
+/* line 2, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
 #notifier {
-  z-index: 1000000;
-  position: fixed;
-  bottom: 20px;
-  width: 250px;
-  left: 50%;
-  margin-left: -37.5%;
-  height: 70px;
-  font-size: 12px;
+    z-index: 1000000;
+    position: fixed;
+    bottom: 20px;
+    width: 250px;
+    left: 50%;
+    margin-left: -37.5%;
+    height: 70px;
+    font-size: 12px;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000313}}
+/* line 13, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
 .notifications {
-  display: none;
+    display: none;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000317}}
+/* line 17, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
 .csrf-token {
-  visibility: hidden;
-  display: none;
+    visibility: hidden;
+    display: none;
 }
 
 /**** LISTINGS.SCSS ****/
-@media -sass-debug-info{filename{}line{font-family:\0000323}}
+/* line 23, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
 .listings {
-  overflow-x: scroll;
+    overflow-x: scroll;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\0000327}}
+/* line 27, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
 .truncate {
-  max-width: 100px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\000032}}
+/********* ORDERS.HTML **********/
+/* line 4, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/macros.scss */
+.ui.menu.order-status-menu .item {
+    text-transform: uppercase;
+    border-color: #979797;
+    color: #979797;
+}
+
+/* line 10, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/macros.scss */
+.ui.menu.order-status-menu .item.active {
+    background: #EDEDED;
+}
+
+@media (max-width: 768px) {
+  /* line 15, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/macros.scss */
+    .ui.menu.order-status-menu {
+        max-width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+/********* MANAGE_CART.HTML **********/
+/* line 2, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
 .merchant-listings, .merchant-cart {
-  overflow-x: scroll;
+    overflow-x: scroll;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\000038}}
+/********* ORDERS.HTML **********/
+/* line 8, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
 .order .segment {
-  margin-bottom: 0px;
+    margin-bottom: 0px;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000311}}
+/* line 11, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
 .order .segment .order-segment-details {
-  margin-top: 5px;
-  margin-bottom: 0px;
+    margin-top: 5px;
+    margin-bottom: 0px;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000317}}
+/* line 17, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
 .order .details {
-  display: none;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    display: none;
+}
+/* line 23, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.order .reviews {
+    padding: 0 1rem 1rem 1rem;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\000033}}
+@media (max-width: 768px) {
+  /* line 29, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .order {
+        font-size: 14px !important;
+        line-height: 1.5em;
+    }
+}
+/* line 36, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .card.order {
+    width: 100%;
+}
+
+/* line 41, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .no-order-text {
+    color: #A3A3A3;
+    padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  /* line 47, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .ui.cards > .no-order-text {
+        margin: 0 auto;
+    }
+}
+/* line 54, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content.order-card-top.grey {
+    background: #929292;
+}
+/* line 58, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content.order-card-top.red {
+    background: #FC8B8B;
+}
+/* line 62, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content.order-card-top.green {
+    background: #3FC380;
+}
+/* line 66, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content.order-card-top > .header {
+    color: #FFFFFF;
+}
+/* line 69, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content.order-card-top > .header .order-number {
+    float: left;
+}
+/* line 73, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content.order-card-top > .header .order-status {
+    float: right;
+}
+
+@media (max-width: 768px) {
+  /* line 81, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .ui.cards > .ui.card.order > .content.order-card-top > .header > .order-number, .ui.cards > .ui.card.order > .content.order-card-top > .header > .order-status {
+        float: initial;
+        text-align: center;
+    }
+}
+/* line 90, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content > .description.order-card-description > .ui.column > .column {
+    color: #A3A3A3;
+}
+/* line 94, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content > .description.order-card-description > .order-card-user-actions > * {
+    display: inline-block;
+}
+/* line 98, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.cards > .ui.card.order > .content > .description.order-card-description .comments {
+    overflow-y: scroll;
+    max-height: 80px;
+}
+
+@media (max-width: 768px) {
+  /* line 106, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .ui.cards > .ui.card.order > .content > .description.order-card-description > .ui.column > .column {
+        width: 100% !important;
+    }
+  /* line 109, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .ui.cards > .ui.card.order > .content > .description.order-card-description > .ui.column > .column:first-child {
+        padding-bottom: 0;
+    }
+  /* line 114, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .ui.cards > .ui.card.order > .content > .description.order-card-description > .order-card-user-actions {
+        text-align: center;
+    }
+}
+/* line 123, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.listing-contain .custom-search .search-bar input[name=main-search] {
+    position: fixed !important;
+    left: 0px !important;
+    top: 75px;
+    height: 75px;
+    padding: 20px;
+    width: 75% !important;
+    border-radius: 0px !important;
+    background: #FFFFFF !important;
+    z-index: 500;
+}
+
+@media screen and (max-width: 768px) {
+  /* line 123, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .listing-contain .custom-search .search-bar input[name=main-search] {
+        width: 60% !important;
+    }
+}
+/* line 138, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.listing-contain .custom-search .side-bar {
+    background: #FFFFFF;
+    border-right: 1px solid #CCC;
+    padding: 20px;
+    padding-bottom: 30px;
+    line-height: 40px;
+    width: 250px;
+    position: fixed !important;
+    left: 0px;
+    height: 100%;
+    top: 150px;
+}
+/* line 150, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.listing-contain .custom-search .side-bar input {
+    border-radius: 0px !important;
+}
+
+@media (max-width: 600px) {
+  /* line 138, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .listing-contain .custom-search .side-bar {
+        display: none;
+    }
+}
+/* line 158, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.listing-contain .custom-search .submit-section button {
+    position: fixed !important;
+    top: 75px;
+    right: 0px;
+    width: 12.5%;
+    border-radius: 0px;
+    margin: 0px;
+    height: 75px;
+    z-index: 500;
+}
+
+@media screen and (max-width: 768px) {
+  /* line 158, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .listing-contain .custom-search .submit-section button {
+        right: 0%;
+        width: 20%;
+    }
+}
+/* line 172, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.listing-contain .custom-search .submit-section .clearbutton {
+    position: fixed !important;
+    top: 75px;
+    right: 12.5%;
+    width: 12.5%;
+    border-radius: 0px;
+    margin: 0px;
+    padding-top: 30px;
+    line-height: 14px;
+    height: 75px;
+    z-index: 500;
+}
+
+@media screen and (max-width: 768px) {
+  /* line 172, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .listing-contain .custom-search .submit-section .clearbutton {
+        right: 20%;
+        width: 20%;
+    }
+}
+/* line 190, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.listing-contain .listings {
+    position: absolute !important;
+    left: 300px;
+}
+
+@media (max-width: 600px) {
+  /* line 190, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+    .listing-contain .listings {
+        left: 10px;
+    }
+}
+
+/* line 201, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.order-purchase-table > thead th {
+    color: #929292;
+}
+/* line 205, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.ui.order-purchase-table > tbody {
+    color: #A3A3A3;
+}
+
+/* line 212, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .ui.header {
+    color: #929292;
+    margin-bottom: 0.5rem;
+}
+/* line 217, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .ui.star.rating {
+    margin-right: 0.5rem;
+}
+/* line 221, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .ui.left.pointing.red.basic.label {
+    background-color: #FFFFFF !important;
+    border: solid 1px #929292 !important;
+    color: #929292 !important;
+    margin-left: 0;
+}
+/* line 222, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .ui.left.pointing.red.basic.label::before {
+    visibility: hidden;
+}
+/* line 233, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .description > .field > label {
+    color: #929292;
+}
+/* line 237, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .description > .field > textarea {
+    color: #979797;
+}
+/* line 242, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .description > .prev-comment {
+    color: #979797;
+}
+/* line 246, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .description > .ui.button.submit-rating {
+    border: solid 1px #979797;
+    color: #979797;
+    background-color: #FFFFFF;
+}
+/* line 251, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.reviews > .ui.form > .ui.items > .item > .content > .description > .ui.button.submit-rating:hover {
+    background-color: #EDEDED;
+    color: #5E5E5E;
+}
+
+/* line 257, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.pagination-styles {
+    position: relative;
+    bottom: 0;
+    z-index: 10;
+}
+
+/* line 263, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+#listings-table {
+    overflow-x: hidden;
+}
+/* line 265, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+#listings-table .listings-grid {
+    width: 90%;
+}
+/* line 267, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+#listings-table .listings-grid .column {
+    border-bottom: 1px solid #CCC;
+    min-height: 250px;
+    line-height: 2em;
+}
+/* line 274, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+#listings-table .cartCell input {
+    width: 50% !important;
+}
+
+/* line 279, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.desc-name {
+    font-weight: bold;
+}
+
+/* line 283, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+.desc-desc {
+    width: 80% !important;
+}
+
+/* line 3, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/shared.scss */
 .listing-info .ui.header .sub.header.listing-info-header {
-  padding-bottom: 8px;
+    padding-bottom: 8px;
 }
 
-@media -sass-debug-info{filename{}line{font-family:\000032}}
+/* line 2, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/vendor.scss */
 .order .segment {
-  margin-bottom: 0px;
+    margin-bottom: 0px;
 }
-@media -sass-debug-info{filename{}line{font-family:\000035}}
+/* line 5, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/vendor.scss */
 .order .segment .order-segment-details {
-  margin-top: 5px;
-  margin-bottom: 0px;
+    margin-top: 5px;
+    margin-bottom: 0px;
 }
-@media -sass-debug-info{filename{}line{font-family:\0000311}}
+/* line 11, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/vendor.scss */
 .order .details {
-  display: none;
+    display: none;
 }
+
+/* line 19 */
+body {
+    font-family: 'Arial' !important;
+}
+
+/* line 24 */
+nav {
+    margin-bottom: 55px !important;
+}
+
+/* line 28 */
+.custom-nav-class div.ui {
+    background-color: #F4AD18 !important;
+    color: #FFFFFF;
+    height: 76px;
+    font-size: 1em;
+}
+/* line 34 */
+.custom-nav-class .item {
+    font-weight: 300 !important;
+    font-size: 1.15em;
+    position: relative;
+}
+/* line 39 */
+.custom-nav-class .item:after {
+    background: rgba(255, 255, 255, 0.35);
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 30px;
+    top: 22.5px;
+    right: 0px;
+}
+/* line 48 */
+.custom-nav-class .item:before {
+    display: none;
+}
+/* line 51 */
+.custom-nav-class .item:last-of-type:after {
+    display: none;
+}
+/* line 54 */
+.custom-nav-class .header.item {
+    border-left: none !important;
+    text-transform: uppercase;
+    position: relative;
+}
+/* line 59 */
+.custom-nav-class .header.item:after {
+    content: '';
+    width: 2px;
+    height: 50px;
+    top: 12.5px;
+    right: 0px;
+    position: absolute;
+    background: #FFFFFF;
+}
+
+/* line 72 */
+nav .mobile.only.row .ui.vertical.menu {
+    margin-top: 75px;
+    display: none;
+    background-color: #FFFFFF;
+    z-index: 100000;
+}
+/* line 77 */
+nav .mobile.only.row .ui.vertical.menu a.item {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #CCC;
+}
+/* line 81 */
+nav .mobile.only.row .ui.vertical.menu a.item:hover {
+    background-color: #CCC;
+}
+
+/* line 88 */
+.flashes > .ui.message:last-of-type {
+    margin-bottom: 2rem;
+}
+
+/* line 93 */
+table.selectable tr:hover {
+    cursor: pointer !important;
+}
+
+/* line 98 */
+body {
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+/* line 105 */
+.ui.header.page-header .title {
+    color: #5E5E5E;
+    font-size: 24px;
+}
+/* line 110 */
+.ui.header.page-header .sub.header {
+    color: #979797;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  /* line 117 */
+    .ui.header.page-header {
+        text-align: center;
+    }
+}
+/* line 122 */
+.custom-flash {
+    position: fixed !important;
+    top: 50px;
+    right: 10px;
+    font-size: 1.5em;
+    z-index: 1000;
+    border-radius: 0px !important;
+    border-color: transparent !important;
+}
+/* line 130 */
+.custom-flash div {
+    color: #000 !important;
+}
+
+/* line 134 */
+.error-custom {
+    background-color: red;
+}
+
+/* line 140 */
+.custom-login input {
+    border-radius: 0px !important;
+    margin-top: -10px !important;
+    height: 60px;
+    opacity: 0.85;
+    font-weight: 200;
+}
+/* line 147 */
+.custom-login label {
+    display: none !important;
+}
+/* line 150 */
+.custom-login #submit {
+    width: 100%;
+    background: #3FC380;
+    color: #FFF;
+    font-weight: 500;
+    font-size: 1.25em;
+    margin-bottom: 20px;
+    margin-top: 0px !important;
+}
+/* line 159 */
+.custom-login input:hover {
+    opacity: 1;
+}
+
+/* line 163 */
+.form-red {
+    color: red;
+}
+
+/* line 166 */
+.login-contain {
+    padding-top: 25vh !important;
+}
+
+/* line 169 */
+.thin-title {
+    font-weight: 200;
+    font-size: 1.25em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+/* line 175 */
+.procure {
+    font-weight: 500;
+    font-size: 2.0em;
+    line-height: 1.0em;
+    color: #FFFFFF;
+}
+
+/* line 181 */
+.login {
+    padding-bottom: 15px !important;
+}
+
+/* line 185 */
+.login-extras .login-forgot {
+    color: #FFFFFF;
+}
+/* line 189 */
+.login-extras .login-keep label {
+    color: #FFFFFF !important;
+}
+ 

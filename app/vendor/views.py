@@ -17,8 +17,10 @@ from ..models.listing import Updated
 from ..models.user import Vendor
 import csv
 import re
+import copy
 from .. import db
 from ..email import send_email
+from pint import UnitRegistry, UndefinedUnitError
 
 
 @vendor.route('/')
@@ -48,14 +50,15 @@ def new_listing():
     """Create a new item."""
     form = NewItemForm()
     if form.validate_on_submit():
-        category_id = form.category_id.data.id
         listing = Listing(
             name=form.listing_name.data,
             description=form.listing_description.data,
             available=True,
+            unit= form.listing_unit.data,
+            quantity= form.listing_quantity.data,
             price=form.listing_price.data,
-            category_id=category_id,
-            vendor_id=current_user.id
+            vendor_id=current_user.id,
+            product_id=form.listing_productID.data
         )
         db.session.add(listing)
         db.session.commit()
@@ -73,43 +76,102 @@ def csv_upload():
     """Create a new item."""
     form = NewCSVForm()
     listings = []
+    current_row = 0
     if form.validate_on_submit():
-        csv_field = form.file_upload
-        buff = csv_field.data.stream
-        csv_data = csv.DictReader(buff, delimiter=',')
-        # for each row in csv, create a listing
-        current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
-        for row in csv_data:
-            # cheap way to skip weird 'categorical' lines
-            if (row[current_vendor.product_id_col]).strip().isdigit():
-                safe_price = stripPriceHelper(row[current_vendor.price_col])
-                proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
-                queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
-                if queried_listing:
-                    # case: listing exists and price has not changed
-                    if queried_listing.price == float(safe_price):
-                        proposed_listing.updated = Updated.NO_CHANGE
-                        listings.append(proposed_listing)
-                    # case: listing exists and price has changed
+        if test_csv(form):
+            csv_field = form.file_upload
+            buff = csv_field.data.stream
+            buff.seek(0)
+            csv_data = csv.DictReader(buff, delimiter=',')
+            #for each row in csv, create a listing
+            current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
+            for row in csv_data:
+                print 'in here!'
+                #cheap way to skip weird 'categorical' lines
+                if (row[current_vendor.product_id_col]).strip().isdigit():
+                    safe_price = row[current_vendor.price_col]
+                    proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
+                    queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
+                    if queried_listing:
+                        # case: listing exists and price has not changed
+                        if queried_listing.price == float(safe_price):
+                            proposed_listing.updated = Updated.NO_CHANGE
+                            listings.append(proposed_listing)
+                        # case: listing exists and price has changed
+                        else:
+                            queried_listing.price = float(safe_price)
+                            proposed_listing.price = float(safe_price)
+                            proposed_listing.updated = Updated.PRICE_CHANGE
+                            listings.append(proposed_listing)
+                            db.session.commit()
+                        #case: listing does not yet exist
                     else:
-                        print 'in here', queried_listing
-                        queried_listing.price = float(safe_price)
-                        proposed_listing.price = float(safe_price)
-                        proposed_listing.updated = Updated.PRICE_CHANGE
+                        proposed_listing.updated = Updated.NEW_ITEM
                         listings.append(proposed_listing)
-                        db.session.commit()
-                    # case: listing does not yet exist
-                else:
-                    proposed_listing.updated = Updated.NEW_ITEM
-                    listings.append(proposed_listing)
-                    Listing.add_listing(new_listing=proposed_listing)
-    return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings)
+                        Listing.add_listing(new_listing=proposed_listing)
+    return render_template('vendor/new_csv.html', form=form, listings=listings)
 
 #get rid of those pesky dollar signs that mess up parsing
 def stripPriceHelper(price):
     r = re.compile("\$(\d+.\d+)")
     return r.search(price.replace(',','')).group(1)
 
+
+def is_numeric_col(current_vendor, row, col, row_count):
+    if not row[col].isdigit() and row[col]:
+        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {} "
+              .format(current_vendor.full_name(),col, row_count),
+              'form-error')
+        return False
+    return True
+
+
+def is_proper_unit(vendor_name, unit, row, row_count):
+    ureg = UnitRegistry()
+    try:
+        ureg.parse_expression(row[unit])
+    except UndefinedUnitError:
+        flash("Error parsing {}'s CSV file. Bad entry in the {} column, at row {} "
+              .format(vendor_name, unit, row_count),'form-error')
+        return False
+    return True
+
+@vendor_required
+def test_csv(form):
+    current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
+    if current_vendor is None:
+        abort(404)
+    columns = [current_vendor.product_id_col,current_vendor.listing_description_col, current_vendor.unit_col,
+               current_vendor.price_col, current_vendor.name_col, current_vendor.quantity_col]
+    csv_file = form.file_upload
+    buff = csv_file.data.stream
+    csv_data = csv.DictReader(buff, delimiter=',')
+    c = current_vendor.product_id_col
+    row_count = 0
+    for row in csv_data:
+        if len(row.keys()) > 1:
+            row_count += 1
+            for c in columns:
+                    if c not in row:
+                        flash("Error parsing {}'s CSV file. Couldn't find {} column at row {}"
+                              .format(current_vendor.full_name(),c, row_count),
+                              'form-error')
+                        return False
+                    if row[current_vendor.product_id_col]=="" and row[current_vendor.listing_description_col]=="":
+                        flash("Successfully parsed {}'s CSV file!"
+                        .format(current_vendor.full_name()), 'form-success')
+                        return True
+            if not(
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                              col=current_vendor.price_col, row_count=row_count) and
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                               col=current_vendor.quantity_col,row_count=row_count) and
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                               col=current_vendor.product_id_col,row_count=row_count)):
+                return False
+            if not is_proper_unit(current_vendor.full_name(), current_vendor.unit_col,row, row_count):
+                return False
+    return True
 
 
 @vendor.route('/itemslist/')
@@ -118,6 +180,7 @@ def stripPriceHelper(price):
 @vendor_required
 def current_listings(page=1):
     """View all current listings."""
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
     main_search_term = request.args.get('main-search', "", type=str)
     sort_by = request.args.get('sort-by', "", type=str)
     avail = request.args.get('avail', "", type=str)
@@ -132,7 +195,7 @@ def current_listings(page=1):
     if search != "False":
         page = 1
 
-    listings_paginated = listings_raw.paginate(page, 20, False)
+    listings_paginated = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
@@ -146,7 +209,8 @@ def current_listings(page=1):
         main_search_term=main_search_term,
         sort_by=sort_by,
         count=result_count,
-        header=header
+        header=header,
+        tut_completed=tut_completed
     )
 
 
@@ -183,9 +247,10 @@ def change_listing_info(listing_id):
     form.listing_id = listing_id
 
     if form.validate_on_submit():
-        listing.category_id = form.category_id.data.id
         listing.name = form.listing_name.data
         listing.description = form.listing_description.data
+        listing.unit = form.listing_unit.data
+        listing.quantity = form.listing_quantity.data
         if form.listing_available.data:
             listing.available = True
         else:
@@ -198,7 +263,8 @@ def change_listing_info(listing_id):
     form.listing_name.default = listing.name
     form.listing_description.default = listing.description
     form.listing_price.default = listing.price
-    form.category_id.default = listing.category
+    form.listing_unit.default = listing.unit
+    form.listing_quantity.default = listing.quantity
     form.listing_available.default = listing.available
 
     form.process()
@@ -208,6 +274,9 @@ def change_listing_info(listing_id):
         listing=listing,
         form=form
     )
+
+
+
 
 
 @vendor.route('/item/<int:listing_id>/delete')

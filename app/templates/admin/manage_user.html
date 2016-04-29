@@ -10,6 +10,14 @@
         (deletion_endpoint, 'Delete user')
     ] %}
 
+{% elif user.is_vendor() %}
+    {% set endpoints = [
+        ('admin.user_info', 'User information'),
+        ('admin.change_user_email', 'Change email address'),
+        ('admin.test_csv', 'Test Vendor CSV'),
+        (deletion_endpoint, 'Delete user')
+    ] %}
+
 {% else %}
     {% set endpoints = [
         ('admin.user_info', 'User information'),
@@ -17,6 +25,7 @@
         (deletion_endpoint, 'Delete user')
     ] %}
 {% endif %}
+
 
 {% macro navigation(items) %}
     <div class="ui vertical fluid secondary menu">
@@ -31,7 +40,7 @@
 
 {% macro user_info(user) %}
     <table class="ui compact definition table">
-        <tr><td>Full name</td><td>{{ '%s %s' % (user.first_name, user.last_name) }}</td></tr>
+        <tr><td>Full <na></na>me</td><td>{{ '%s %s' % (user.first_name, user.last_name) }}</td></tr>
         <tr><td>Email address</td><td>{{ user.email }}</td></tr>
         <tr><td>Account type</td><td>{{ user.role.name }}</td></tr>
         <tr><td>Company name</td><td>{{ user.company_name }}</td></tr>
