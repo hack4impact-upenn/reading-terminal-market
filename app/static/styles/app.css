@@ -17,7 +17,7 @@ nav {
 .custom-nav-class div.ui {
   background-color: #F4AD18 !important;
   color: #FFFFFF;
-  height: 75px;
+  height: 76px;
   font-size: 1em;
 }
 @media -sass-debug-info{filename{}line{font-family:\0000321}}
@@ -315,7 +315,6 @@ table.selectable tr:hover {
 .listing-contain .listings {
   position: absolute !important;
   left: 300px;
-  font-size: 1.10em !important;
 }
 @media screen and (max-width: 768px) {
 @media -sass-debug-info{filename{}line{font-family:\0000392}}
@@ -324,11 +323,40 @@ table.selectable tr:hover {
   }
 }
 
-@media -sass-debug-info{filename{}line{font-family:\00003102}}
+@media -sass-debug-info{filename{}line{font-family:\00003101}}
 .pagination-styles {
   position: relative;
   bottom: 0;
   z-index: 10;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003107}}
+#listings-table {
+  overflow-x: hidden;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003109}}
+#listings-table .listings-grid {
+  width: 90%;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003111}}
+#listings-table .listings-grid .column {
+  border-bottom: 1px solid #CCC;
+  min-height: 250px;
+  line-height: 2em;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003118}}
+#listings-table .cartCell input {
+  width: 50% !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003123}}
+.desc-name {
+  font-weight: bold;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003127}}
+.desc-desc {
+  width: 80% !important;
 }
 
 @media -sass-debug-info{filename{}line{font-family:\000033}}

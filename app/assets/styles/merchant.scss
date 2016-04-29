@@ -92,7 +92,6 @@
     .listings {
         position: absolute !important;
         left: 300px;
-        font-size: 1.10em !important;
         @media screen and (max-width: 768px) {
             left: 10px;
         }
@@ -105,3 +104,26 @@
     z-index: 10;
 }
 
+#listings-table {
+    overflow-x: hidden;
+    .listings-grid {
+        width: 90%;
+        .column {
+            border-bottom: 1px solid #CCC;
+            min-height: 250px;
+            line-height: 2.0em
+        }
+    }
+    .cartCell {
+        input {
+            width: 50% !important;
+        }
+    }
+}
+.desc-name {
+    font-weight: bold;
+}
+
+.desc-desc {
+    width: 80% !important;
+}

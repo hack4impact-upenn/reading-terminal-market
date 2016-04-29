@@ -9,7 +9,8 @@ gulp.task('trigger', function() {
 
 gulp.task('watch', function() {
   livereload.listen();
-  gulp.watch('app/static/styles/app.css', ['trigger']);
+  console.log('eyyy');
+  gulp.watch('app/assets/styles/*.scss', ['trigger']);
   gulp.watch('app/templates/**/*.html', ['trigger']);
 })
 
