@@ -156,12 +156,12 @@
                 title: "Submit the test listings and end the tour!",
                 width: 300,
                 onHide: function() {
-                            guiders._dehighlightElement("#submit");
                             $.ajax({
                                 url: '/vendor/tutorial_completed',
                                 data: 'turnOff',
                                 type: 'POST',
                             });
+                            guiders._dehighlightElement("#submit");
                             $('#notifier').hide();
                             },
                 position: 3,
