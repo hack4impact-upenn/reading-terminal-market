@@ -22,7 +22,7 @@ body {
 // General nav
 
 nav {
-    margin-bottom: 55px !important;
+    margin-bottom: 75px !important;
 }
 .custom-nav-class {
   div.ui {
@@ -119,16 +119,19 @@ body {
     }
 }
 // Custom flashing
-.custom-flash {
+.custom-flash, .notifications {
   position: fixed !important;
   top: 50px;
   right: 10px;
   font-size: 1.5em;
   z-index: 1000;
+  width: 250px !important;
+  height: 100px !important;
   border-radius: 0px !important;
   border-color: transparent !important;
   div {
     color: #000 !important;
+    border-radius: 0px !important
   }
 }
 .error-custom {
@@ -256,7 +259,21 @@ body {
   background-position: 0px -84px;
   left: -42px;
 }
-
+.ui.padded.segment {
+  border-radius: 0px;
+  box-shadow: none;
+  .ui.header {
+    text-align: center;
+    i {
+      font-size: 100px;
+      display: inline-block;
+      padding-top: 40px;
+    }
+  }
+  div.content {
+    display: block
+  }
+}
 .guiders_button {
   background: -moz-linear-gradient(top, #5CA9FF 0%, #3D79C3 100%);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5CA9FF), color-stop(100%, #3D79C3));
