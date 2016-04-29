@@ -7,6 +7,12 @@ app_css = Bundle(
     depends=('*.scss')
 )
 
+images_png = Bundle(
+    'clock.gif',
+    'images/guiders_x_button.jpg',
+    output='guiders_arrows.png'
+)
+
 app_js = Bundle(
     'app.js',
     filters='jsmin',
@@ -26,4 +32,9 @@ vendor_js = Bundle(
 
     filters='jsmin',
     output='scripts/vendor.js'
+)
+
+guiders_js = Bundle(
+    'guiders.js',
+    output='scripts/guiders.js'
 )

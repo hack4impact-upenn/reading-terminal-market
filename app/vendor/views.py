@@ -27,13 +27,26 @@ from pint import UnitRegistry, UndefinedUnitError
 @login_required
 @vendor_required
 def index():
-    return render_template('vendor/index.html')
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
+    return render_template('vendor/index.html', tut_completed=tut_completed)
+
+
+@vendor.route('/tutorial_completed', methods=['POST'])
+@login_required
+@vendor_required
+def tutorial_completed():
+    current_tutorial_status = User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    User.query.filter_by(id=current_user.id).first().tutorial_completed = \
+        not User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    db.session.commit();
+    return '', 204
 
 
 @vendor.route('/new-item', methods=['GET', 'POST'])
 @login_required
 @vendor_required
 def new_listing():
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
     """Create a new item."""
     form = NewItemForm()
     if form.validate_on_submit():
@@ -51,14 +64,15 @@ def new_listing():
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
               'form-success')
-        return redirect(url_for('.new_listing'))
-    return render_template('vendor/new_listing.html', form=form)
+        return redirect(url_for('.new_listing', tut_completed=tut_completed))
+    return render_template('vendor/new_listing.html', form=form, tut_completed=tut_completed)
 
 
 @vendor.route('/csv-upload', methods=['GET', 'POST'])
 @login_required
 @vendor_required
 def csv_upload():
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
     """Create a new item."""
     form = NewCSVForm()
     listings = []
@@ -72,29 +86,29 @@ def csv_upload():
             #for each row in csv, create a listing
             current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
             for row in csv_data:
-                    print 'in here!'
-                    #cheap way to skip weird 'categorical' lines
-                    if (row[current_vendor.product_id_col]).strip().isdigit():
-                        safe_price = row[current_vendor.price_col]
-                        proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
-                        queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
-                        if queried_listing:
-                            # case: listing exists and price has not changed
-                            if queried_listing.price == float(safe_price):
-                                proposed_listing.updated = Updated.NO_CHANGE
-                                listings.append(proposed_listing)
-                            # case: listing exists and price has changed
-                            else:
-                                queried_listing.price = float(safe_price)
-                                proposed_listing.price = float(safe_price)
-                                proposed_listing.updated = Updated.PRICE_CHANGE
-                                listings.append(proposed_listing)
-                                db.session.commit()
-                            #case: listing does not yet exist
-                        else:
-                            proposed_listing.updated = Updated.NEW_ITEM
+                print 'in here!'
+                #cheap way to skip weird 'categorical' lines
+                if (row[current_vendor.product_id_col]).strip().isdigit():
+                    safe_price = row[current_vendor.price_col]
+                    proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
+                    queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
+                    if queried_listing:
+                        # case: listing exists and price has not changed
+                        if queried_listing.price == float(safe_price):
+                            proposed_listing.updated = Updated.NO_CHANGE
                             listings.append(proposed_listing)
-                            Listing.add_listing(new_listing=proposed_listing)
+                        # case: listing exists and price has changed
+                        else:
+                            queried_listing.price = float(safe_price)
+                            proposed_listing.price = float(safe_price)
+                            proposed_listing.updated = Updated.PRICE_CHANGE
+                            listings.append(proposed_listing)
+                            db.session.commit()
+                        #case: listing does not yet exist
+                    else:
+                        proposed_listing.updated = Updated.NEW_ITEM
+                        listings.append(proposed_listing)
+                        Listing.add_listing(new_listing=proposed_listing)
     return render_template('vendor/new_csv.html', form=form, listings=listings)
 
 #get rid of those pesky dollar signs that mess up parsing
@@ -166,6 +180,7 @@ def test_csv(form):
 @vendor_required
 def current_listings(page=1):
     """View all current listings."""
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
     main_search_term = request.args.get('main-search', "", type=str)
     sort_by = request.args.get('sort-by', "", type=str)
     avail = request.args.get('avail', "", type=str)
@@ -194,7 +209,8 @@ def current_listings(page=1):
         main_search_term=main_search_term,
         sort_by=sort_by,
         count=result_count,
-        header=header
+        header=header,
+        tut_completed=tut_completed
     )
 
 

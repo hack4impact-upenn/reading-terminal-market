@@ -1,7 +1,10 @@
 {% extends 'layouts/base.html' %}
 
-{% macro dashboard_option(title, endpoint, description=None, icon=None) %}
-    <a class="column" href="{{ url_for(endpoint) }}">
+
+
+{% macro dashboard_option(id, title, endpoint, description=None, icon=None) %}
+
+    <a id= "{{ id }}" class="column" href="{{ url_for(endpoint) }}">
         <div class="ui padded segment">
             <h3 class="ui header">
                 {% if icon is not none %}
@@ -27,14 +30,96 @@
                 Vendor Dashboard
             </h2>
             <div class="ui three column stackable grid">
-                {{ dashboard_option('Current Items', 'vendor.current_listings',
-                                    description='View and manage your items', icon='list icon') }}
-                {{ dashboard_option('Add New Item', 'vendor.new_listing',
-                                    description='Add a new item to sell', icon='add square icon') }}
-                {{ dashboard_option('Upload CSV', 'vendor.csv_upload',
-                                    description='Upload CSV of new items', icon='add square icon') }}
 
+                {{ dashboard_option('curr', 'Current Items', 'vendor.current_listings',
+                                    description='View and manage your items', icon='list icon') }}
+                {{ dashboard_option('add','Add New Item', 'vendor.new_listing',
+                                    description='Add a new item to sell', icon='add square icon') }}
+                {{ dashboard_option('csv','Upload CSV', 'vendor.csv_upload',
+                                    description='Upload CSV of new items', icon='add square icon') }}
             </div>
         </div>
     </div>
+    {% if not tut_completed %}
+        <script type="text/javascript">
+            guiders.createGuider({
+                buttons: [{
+                            name: "Skip Tutorial",
+                            onclick: function() {
+                                guiders.hideAll();
+                                $.ajax({
+                                    url: '/vendor/tutorial_completed',
+                                    data: 'turnOff',
+                                    type: 'POST',
+                            });
+                            $('#notifier').hide();
+                           }},
+                          {name: "Next"}],
+              description: "This is a quick tutorial to help you get acquainted with the website. \
+              The app starts at your homepage.",
+              highlight: true,
+              id: "first",
+              next: "second",
+              overlay: true,
+              onHide: function() {guiders._dehighlightElement("#first_curr");},
+              title: "Welcome to the RTM Online Platform!",
+              width: 300,
+              position: 6,
+              arrowSize:20
+            }).show();
+
+            guiders.createGuider({
+                attachTo: "#curr",
+                buttons: [
+                        {name: "Next"}],
+                description: "Here you can view all of your listings that are available to the Reading Terminal Market",
+                highlight: true,
+                overlay: true,
+                id: "second",
+                next: "third",
+                title: "This is the main listings page.",
+                width: 300,
+                onHide: function() {guiders._dehighlightElement("#curr");},
+                position: 6,
+                arrowSize:20
+            });
+                guiders.createGuider({
+                    attachTo: "#add",
+                buttons: [{
+                          name: "Next"
+                          }],
+                description: "You can add a new listing instance here!.",
+                highlight: true,
+                id: "third",
+                next: "fourth",
+                overlay: true,
+                onHide: function() {guiders._dehighlightElement("#add");},
+                title: "Have a new Listing?",
+                width: 300,
+                position: 6,
+                arrowSize:20
+            });
+                guiders.createGuider({
+                attachTo: "#csv",
+                buttons: [{
+                  name: "Continue to My Current Listings",
+                  onclick: function() {
+                    window.location.href=
+                        "{{ url_for('vendor.current_listings') }}#guider=first" }
+                }],
+                description: "Just make sure that you provide us with the proper CSV format (but we'll get to that later)",
+                highlight: true,
+                id: "fourth",
+                next: "fifth",
+                overlay: true,
+                description: "No worries! We provide CSV syncing functionality.",
+                onHide: function() {guiders._dehighlightElement("#csv");},
+                title: "But what if I have 1000's of listings?!",
+                width: 300,
+                position: 6,
+                arrowSize:20
+            });
+
+        </script>
+    {% endif %}
 {% endblock %}

@@ -2,7 +2,7 @@ from flask import render_template, abort, request, redirect, url_for, jsonify, f
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order, Vendor, Status, ItemTag, Ratings
+from ..models import Listing, CartItem, Order, Vendor, Status, ItemTag, Ratings, User
 from .. import db
 from datetime import datetime
 import pytz
@@ -21,6 +21,8 @@ def index():
 @merchant_required
 def listing_view_all(page=1):
     """Search for listings"""
+    tut_completed =  User.query.filter_by(id=current_user.id).first().tutorial_completed
+    print 'tut completed is:', tut_completed
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
     fav_vendor = True if request.args.get('fav_vendor') == "on" else False
@@ -57,6 +59,7 @@ def listing_view_all(page=1):
 
     return render_template(
         'merchant/view_listings.html',
+        tut_completed=tut_completed,
         listings=listings_paginated,
         main_search_term=main_search_term,
         min_price=min_price,
@@ -90,6 +93,7 @@ def order_items(vendor_id=None):
 @login_required
 @merchant_required
 def manage_cart():
+    tut_completed =  User.query.filter_by(id=current_user.id).first().tutorial_completed
     # used to show/hide the order modal
     confirm_order = request.args.get('confirm_order', default=False, type=bool)
     # vendor_id to order from. if None, order from all
@@ -102,6 +106,7 @@ def manage_cart():
     vendor_items_dict = CartItem.get_vendor_cart_items_dict()
     return render_template(
         'merchant/manage_cart.html',
+        tut_completed=tut_completed,
         vendor_items_dict=vendor_items_dict,
         confirm_order=confirm_order,
         vendor=vendor,
@@ -266,6 +271,7 @@ def change_fav_vendor(vendor_id):
 @login_required
 @merchant_required
 def view_orders():
+    tut_completed =  User.query.filter_by(id=current_user.id).first().tutorial_completed
     orders = (Order.query.filter_by(merchant_id=current_user.id)
               .order_by(Order.id.desc()))
 
@@ -285,10 +291,22 @@ def view_orders():
 
     return render_template(
         'merchant/orders.html',
+        tut_completed=tut_completed,
         orders=orders.all(),
         status_filter=status_filter,
         ratings=rating_dict
     )
+
+
+@merchant.route('/tutorial_completed', methods=['POST'])
+@login_required
+@merchant_required
+def tutorial_completed():
+    current_tutorial_status = User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    User.query.filter_by(id=current_user.id).first().tutorial_completed = \
+        not User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    db.session.commit();
+    return '', 204
 
 
 @merchant.route('/orders/<int:order_id>', methods=['POST'])

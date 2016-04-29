@@ -3,6 +3,69 @@
 
 {% set page_size = 10 %}
 
+{% macro make_guider() %}
+
+<script type="text/javascript">
+
+    guiders.createGuider({
+      buttons: [
+                {name: "Next"}],
+      description: "At this point, you are waiting for the vendor to see your order.",
+      highlight: true,
+      id: "first_order",
+      next: "second_menu",
+      overlay: true,
+      title: "This is your orders page.",
+      width: 300,
+      position: 6,
+      arrowSize:20
+    }).show();
+
+    guiders.createGuider({
+        attachTo: "#menu",
+        buttons: [
+                {name: "Next"}],
+        description: "Orders are either Pending, Approved, or Declined by the vendor. You can filter your orders by these attributes by clicking here.",
+        highlight: true,
+        id: "second_menu",
+        next: "third",
+        overlay: true,
+        title: "Orders are filtered by the vendor's actions.",
+        onHide: function() {guiders._dehighlightElement("#menu");},
+        width: 300,
+        position: 6,
+        arrowSize:20
+    });
+        guiders.createGuider({
+        buttons: [
+                {name: "Ok. Take my back to the homepage",
+                    onclick: function() {
+                                $.ajax({
+                                url: '/merchant/tutorial_completed',
+                                data: 'turnOff',
+                                type: 'POST',
+                                success: function() {
+                                    $('#notifier').hide();
+                                    window.location.href= "{{ url_for('merchant.index') }}"
+                                }
+                    });
+                } }
+                ],
+        description: "Orders are either Pending, Approved, or Declined by the vendor. You can filter your orders by these attributes by clicking here.",
+        highlight: true,
+        id: "third",
+        overlay: true,
+        title: "And that's it.",
+        onHide: function() {guiders._dehighlightElement("#menu");},
+        width: 300,
+        position: 6,
+        arrowSize:20
+    });
+</script>
+{% endmacro %}
+
+
+
 {% macro order_table(order) %}
     {% set purchase_info = order.get_purchase_info() %}
     <table class="ui celled table order-purchase-table">
@@ -154,6 +217,10 @@
                 </div>
             </div>
         {% endif %}
+    {% if not tut_completed %}
+
+    {{make_guider()}}
+    {% endif %}
 
     </div>
 
@@ -274,4 +341,5 @@
          });
 
     </script>
+
 {% endblock %}

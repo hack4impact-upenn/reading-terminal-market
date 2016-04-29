@@ -44,7 +44,7 @@
 {% endmacro %}
 
 {% macro vendor_cart(vendor, cart_items) %}
-    <div>
+    <div id="cart">
         <h3 class="ui header">
             Cart for {{ vendor.company_name }}
 
@@ -59,7 +59,7 @@
                 <tr>
                     <th class="four wide">Item name</th>
                     <th class="two wide">Unit price</th>
-                    <th class="two wide">Quantity</th>
+                    <th id="quantity" class="two wide">Quantity</th>
                     <th class="one wide">Total price</th>
                     <th class="one wide">Remove</th>
                 </tr>
@@ -178,6 +178,8 @@
         <div class="merchant-cart">
             {% if vendor_items_dict %}
                 <form action="{{ url_for('merchant.order_items') }}" method="post">
+                    <input id="order" type="submit" class="ui button positive" name="submit" value="Order from all vendors">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 </form>
                 <br>
             {% endif %}
@@ -195,7 +197,7 @@
             {% endif %}
         </div>
     </div>
-
+</div>
     <script src="{{ url_for('static', filename='merchant.js') }}"></script>
 
     <script>
@@ -240,4 +242,58 @@
         })();
 
     </script>
+    {% if not tut_completed %}
+        <script type="text/javascript">
+            guiders.createGuider({
+              buttons: [
+                        {name: "Next"}],
+              description: "You can add items here to purchase eventually.",
+              highlight: true,
+              id: "first_cart",
+              next: "second_cart",
+              overlay: true,
+              title: "This is your cart!",
+              width: 300,
+              position: 6,
+              arrowSize:20
+            }).show();
+
+            guiders.createGuider({
+                attachTo: "#cart",
+                buttons: [
+                        {name: "Next"}],
+                description: ".",
+                highlight: true,
+                id: "second_cart",
+                next: "third_order",
+                overlay: true,
+                title: "These are the items you put into your cart!.",
+                onHide: function() {guiders._dehighlightElement("#cart");},
+                width: 300,
+                position: 6,
+                arrowSize:20
+            });
+
+                guiders.createGuider({
+                attachTo: "#order",
+                buttons: [{
+                            name: "Go to My Orders",
+                            onclick: function() {
+                                window.location.href=
+                                    "{{ url_for('merchant.view_orders',tut_completed=tut_completed) }}#guider=first_order" }
+                          }],
+                description: "Press here and submit your order. The vendor will receive an email notification soon!",
+                highlight: true,
+                id: "third_order",
+                next: "fourth_delete",
+                onHide: function() {guiders._dehighlightElement("#order");},
+                overlay: true,
+                title: "Ready to order?",
+                width: 300,
+                position: 3,
+                arrowSize:20
+            });
+
+        </script>
+        {% endif %}
 {% endblock %}

@@ -111,5 +111,63 @@
     {% endif %}
 });
 </script>
+    {% if not tut_completed  %}
+        <script type="text/javascript">
+            guiders.createGuider({
+                buttons: [{name: "Next"}],
+              description: "Say business has been good. Now you have 1000's of listings you want to add to the market.\
+              Instead of adding them one by one, we can upload a csv of all the listings.",
+              highlight: true,
+              id: "first",
+              next: "second",
+              overlay: true,
+              onHide: function() {guiders._dehighlightElement("#first_curr");},
+              title: "Our Last Stop: The CSV Upload Page",
+              width: 300,
+              position: 6,
+              arrowSize:20
+            }).show();
+
+            guiders.createGuider({
+                attachTo: "#file_upload",
+                buttons: [
+                        { name: "next"}
+                        ],
+                description: "Go ahead and upload the correct csv file provided in the documentation {insert link here}.",
+                highlight: true,
+                overlay: true,
+                id: "second",
+                next: "third",
+                title: "Let's give it a try.",
+                width: 300,
+                onHide: function() {guiders._dehighlightElement("#file_upload");},
+                position: 3,
+                arrowSize:20
+            });
+            guiders.createGuider({
+                attachTo: "#submit",
+                description: "Now go ahead and submit it. If the listing already exists, \
+                it will show up red. If the listing's price was updated, it will show up\
+                blue. Finally, if the listing is brand new, it will show up green. Try it out to end the tour!",
+                highlight: true,
+                overlay: true,
+                id: "third",
+                next: "fourth",
+                title: "Submit the test listings and end the tour!",
+                width: 300,
+                onHide: function() {
+                            guiders._dehighlightElement("#submit");
+                            $.ajax({
+                                url: '/vendor/tutorial_completed',
+                                data: 'turnOff',
+                                type: 'POST',
+                            });
+                            $('#notifier').hide();
+                            },
+                position: 3,
+                arrowSize:20
+            });
+        </script>
+    {% endif %}
 
 {% endblock %}

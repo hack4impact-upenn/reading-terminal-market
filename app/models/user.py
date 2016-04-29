@@ -23,7 +23,6 @@ class Role(db.Model):
     default = db.Column(db.Boolean, default=False, index=True)
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
-
     @staticmethod
     def insert_roles():
         roles = {
@@ -60,7 +59,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-
+    tutorial_completed = db.Column(db.Boolean, default=False)
     # polymorphism
     user_type = db.Column(db.String(32), nullable=False, default='user')
     __mapper_args__ = {

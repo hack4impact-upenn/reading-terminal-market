@@ -76,4 +76,27 @@
             {{ f.end_form() }}
         </div>
     </div>
+    {% if not tut_completed %}
+        <script type="text/javascript">
+            guiders.createGuider({
+             buttons: [{
+                  name: "Onwards to the CSV Page!",
+                  onclick: function() {
+                    window.location.href=
+                        "{{ url_for('vendor.csv_upload',tut_completed=tut_completed) }}#guider=first" }
+                }],
+             description: "Here you can add one listing at a time. It's pretty straightforward, so we'll go \
+             move on ahead to the CSV page.",
+             highlight: true,
+             id: "first",
+             next: "second",
+             overlay: true,
+             onHide: function() {guiders._dehighlightElement("#first_curr");},
+             title: "This is your Add Listing Page",
+             width: 300,
+             position: 6,
+             arrowSize:20
+            }).show();
+        </script>
+    {% endif %}
 {% endblock %}

@@ -9,7 +9,7 @@ from flask.ext.assets import Environment
 from flask.ext.wtf import CsrfProtect
 from flask.ext.compress import Compress
 from config import config
-from assets import app_css, app_js, vendor_css, vendor_js
+from assets import app_css, app_js, vendor_css, vendor_js, guiders_js, images_png
 from utils import format_price
 
 mail = Mail()
@@ -51,9 +51,10 @@ def create_app(config_name):
 
     assets_env.register('vendor_css', vendor_css)
     assets_env.register('vendor_js', vendor_js)
+    assets_env.register('guiders_js', guiders_js)
+    assets_env.register('images_png', images_png)
     assets_env.register('app_css', app_css)
     assets_env.register('app_js', app_js)
-
 
     # Configure SSL if platform supports it
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
