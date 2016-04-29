@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from flask.ext.login import current_user
-from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField
+from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length
 from wtforms import ValidationError,  widgets,SelectMultipleField
@@ -49,3 +49,6 @@ class NewItemForm(Form):
             raise ValidationError('You already have an item with this name.')
 
 
+class NewCSVForm(Form):
+    file_upload = FileField(validators=[DataRequired()])
+    submit = SubmitField('Submit Upload')

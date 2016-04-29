@@ -49,12 +49,10 @@ def listing_view_all(page=1):
         max_price=max_price,
         category_search=category_search
     )
-    print sort_by
-    print main_search_term
     # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
     if search != "False":
         page = 1
-    listings_paginated_new = listings_raw.paginate(page, 20, False)
+    listings_paginated_new = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
@@ -217,7 +215,6 @@ def registered_users(page=1):
         page = 1
     users_paginated = users_raw.paginate(page, 20, False)
     result_count = users_raw.count()
-    print result_count
 
     if result_count > 0:
         header = "Search Results: {} results in total".format(result_count)
@@ -258,7 +255,6 @@ def manage_tags(user_id):
     if not user.is_vendor():
         abort(404)
     if form.validate_on_submit():
-        print "############## HERE", user.id
         if TagAssociation.query.filter_by(vendor=user, tag=form.tag_name.data).count() == 0:
             a = TagAssociation()
             a.tag = form.tag_name.data
@@ -286,9 +282,7 @@ def delete_tag(user_id, tag_id):
     if not user.is_vendor():
         abort(404)
     if TagAssociation.query.filter_by(vendor=user, tag=tag).count() == 1:
-        print "############## HERE", user.id
         tag_to_remove = TagAssociation.query.filter_by(vendor=user, tag=tag).delete()
-        print tag_to_remove
         db.session.commit()
         message = 'Successfully removed tag'
         type = 'success'

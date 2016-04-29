@@ -5,8 +5,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, \
     BadSignature, SignatureExpired
 from .. import db, login_manager
 from sqlalchemy import or_, desc, func
-
-
+from ..models import Ratings
+import operator
 
 class Permission:
     GENERAL = 0x01
@@ -301,6 +301,11 @@ class Vendor(User):
     listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
     company_name = db.Column(db.String(64), default="")
     tags = db.relationship("TagAssociation", back_populates="vendor")
+    product_id_col = db.Column(db.String(64), default="ProductID")
+    category_id_col = db.Column(db.String(64), default="CategoryID")
+    listing_description_col = db.Column(db.String(64), default="Description")
+    price_col = db.Column(db.String(64), default="Price")
+    name_col = db.Column(db.String(64), default="Vendor")
 
     def get_tags(self):
         return [str(tag.tag.tag_name) for tag in self.tags]
@@ -312,6 +317,36 @@ class Vendor(User):
 
     def __repr__(self):
         return '<Vendor %s>' % self.full_name()
+
+    def get_rating_value(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id).all()
+        if not ratings:
+            return -1.0
+        total_rating = 0.0
+        for rating in ratings:
+            total_rating += rating.star_rating
+        return '%.1f' % (total_rating / len(ratings))
+
+    def get_all_ratings(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id).all()
+        ratings.sort(key=lambda r: r.date_reviewed, reverse=True)
+        return ratings
+
+    def get_ratings_query(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id)
+        sorted_ratings = ratings.order_by(desc(Ratings.date_reviewed))
+        return sorted_ratings
+
+    def get_ratings_breakdown(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id)
+        ratings_breakdown = {"1.0": 0, "2.0": 0, "3.0": 0, "4.0": 0, "5.0": 0}
+        for rating in ratings:
+            ratings_breakdown[rating.star_rating] = ratings_breakdown.get(rating.star_rating, 0) + 1
+        return ratings_breakdown
+
+    @staticmethod
+    def get_vendor_by_user_id(user_id):
+            return Vendor.query.filter_by(id=user_id).first()
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
@@ -354,6 +389,8 @@ class Merchant(User):
 
     def __repr__(self):
         return '<Merchant %s>' % self.full_name()
+
+
 
 
 login_manager.anonymous_user = AnonymousUser

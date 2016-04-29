@@ -1,3 +1,4 @@
+from flask import request
 from .. import db
 from ..models import User
 from datetime import datetime
@@ -80,21 +81,25 @@ class Order(db.Model):
 
     vendor_id = db.Column(db.Integer)
     company_name = db.Column(db.String(64))
+    referral_name = db.Column(db.String(64))
+    comment = db.Column(db.Text)
 
-    def __init__(self, date, vendor_id):
+    def __init__(self, date, vendor_id, referral_name):
         self.status = Status.PENDING
         self.date = date
         self.vendor_id = vendor_id
         self.merchant_id = current_user.id
         vendor = User.query.get(vendor_id)
         self.company_name = vendor.company_name
+        self.comment = None
         self.merchant_company_name = current_user.company_name
+        self.referral_name=referral_name
 
     def __repr__(self):
         return "<Order: {}>".format(self.id)
 
     @staticmethod
-    def order_cart_items_from_vendor(vendor_id, date=None):
+    def order_cart_items_from_vendor(vendor_id, referral_name, date=None):
         """Orders all the items in the cart from a given vendor"""
 
         if date is None:
@@ -102,27 +107,23 @@ class Order(db.Model):
 
         cart_items = filter(lambda item: item.listing.vendor_id == vendor_id,
                             current_user.cart_items)
-
-        order = Order(date, vendor_id)
-
+        order = Order(date, vendor_id, referral_name)
+        referral_name = referral_name
         vendor = User.query.get(vendor_id)
         merchant_id = current_user.id
         merchant = User.query.get(merchant_id)
-
         send_email(vendor.email,
                    'New merchant order request',
                    'merchant/email/order_item',
                    merchant=merchant,
-                   cart_items=cart_items)
-
+                   cart_items=cart_items,
+                   referral_name=referral_name)
         # send confirmation to the merchant
         send_email(merchant.email,
                    'Confirmation of order request',
                    'merchant/email/confirm_order',
                    vendor=vendor,
                    cart_items=cart_items)
-
-
         for item in cart_items:
             p = Purchase(
                 order=order,
@@ -130,7 +131,7 @@ class Order(db.Model):
                 quantity=item.quantity,
                 item_name=item.listing.name,
                 item_price=item.listing.price,
-                unit=item.listing.category.unit
+                unit=item.listing.category.unit,
             )
             db.session.add(p)
 
@@ -187,7 +188,7 @@ class Order(db.Model):
                 'quantity': purchase.quantity,
                 'name': purchase.item_name,
                 'price': purchase.item_price,
-                'unit': purchase.unit
+                'unit': purchase.unit,
             })
         return purchase_info
 
@@ -198,9 +199,9 @@ class Order(db.Model):
 
         date = datetime.now(pytz.timezone('US/Eastern'))
         vendor_ids = set([item.listing.vendor_id for item in current_user.cart_items])
-
+        referral_name=set([item.listing.referral_name for item in current_user.cart_items])
         for vendor_id in vendor_ids:
-            Order.order_cart_items_from_vendor(vendor_id, date)
+            Order.order_cart_items_from_vendor(vendor_id, date, referral_name)
 
     def get_all_purchases(self):
         return Purchase.query.filter_by(order_id=self.id).all()

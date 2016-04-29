@@ -1,0 +1,32 @@
+/**** BASE.SCSS ****/
+#notifier {
+    z-index: 1000000;
+    position: fixed;
+    bottom: 20px;
+    width: 250px;
+    left: 50%;
+    margin-left: -37.5%;
+    height: 70px;
+    font-size: 12px;
+}
+
+.notifications {
+    display: none;
+}
+
+.csrf-token {
+    visibility: hidden;
+    display: none;
+}
+
+/**** LISTINGS.SCSS ****/
+.listings {
+    overflow-x: scroll;
+}
+
+.truncate {
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
