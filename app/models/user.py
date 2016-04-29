@@ -302,10 +302,11 @@ class Vendor(User):
     company_name = db.Column(db.String(64), default="")
     tags = db.relationship("TagAssociation", back_populates="vendor")
     product_id_col = db.Column(db.String(64), default="ProductID")
-    category_id_col = db.Column(db.String(64), default="CategoryID")
     listing_description_col = db.Column(db.String(64), default="Description")
     price_col = db.Column(db.String(64), default="Price")
     name_col = db.Column(db.String(64), default="Vendor")
+    unit_col = db.Column(db.String(64), default="Unit")
+    quantity_col = db.Column(db.String(64), default="Quantity")
 
     def get_tags(self):
         return [str(tag.tag.tag_name) for tag in self.tags]

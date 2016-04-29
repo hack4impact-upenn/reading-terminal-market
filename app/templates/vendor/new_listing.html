@@ -25,7 +25,6 @@
 
             {{ f.begin_form(form, flashes) }}
 
-                {{ f.render_form_field(form.category_id) }}
 
                 {% if form.listing_name %}
                 <div class="one field">
@@ -44,7 +43,21 @@
                         {{ f.render_form_field(form.listing_price) }}
 
                 {% endif %}
+                {% if form.listing_unit %}
 
+                        {{ f.render_form_field(form.listing_unit) }}
+
+                {% endif %}
+                {% if form.listing_productID %}
+
+                        {{ f.render_form_field(form.listing_productID) }}
+
+                {% endif %}
+                {% if form.listing_quantity %}
+
+                        {{ f.render_form_field(form.listing_quantity) }}
+
+                {% endif %}
                  {% if form.listing_available %}
 
                         {{ f.render_form_field(form.listing_available) }}

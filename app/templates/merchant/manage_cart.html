@@ -23,8 +23,8 @@
         {% for cart_item in cart_items %}
             <tr>
                 <td>{{ cart_item.listing.name }}</td>
-                <td>{{ cart_item.quantity| int() }} {{ cart_item.listing.category.unit }}</td>
-                <td>{{ format_price(cart_item.listing.price) }} / {{ cart_item.listing.category.unit }}</td>
+                <td>{{ cart_item.quantity| int() }} x</td>
+                <td>{{ format_price(cart_item.listing.price) }} / {{ cart_item.listing.quantity }} {{ cart_item.listing.unit }}</td>
                 <td>{{ format_price(cart_item.listing.price * cart_item.quantity) }}</td>
             </tr>
         {% endfor %}
@@ -75,7 +75,7 @@
 
                     <tr data-id="{{ item.listing.id }}">
                         <td {{info_link}}>{{ item.listing.name }}</td>
-                        <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}</td>
+                        <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}/{{ item.listing.quantity}} {{ item.listing.unit }}</td>
                         <td>
                             <div class="ui input fluid">
                                 <input class="cart-quantity" data-id="{{ item.listing.id }}" type="number" min="1" step="1" value={{ item.quantity }}>

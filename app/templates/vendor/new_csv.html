@@ -44,9 +44,10 @@
             <thead>
             <tr>
                 <th>Item Name</th>
-                <th>Price</th>
                 <th>Description</th>
-                <th>Category</th>
+                <th>Price</th>
+                <th>Unit</th>
+                <th>Quanitity</th>
                 <th>Status</th>
             </tr>
             </thead>
@@ -55,26 +56,29 @@
                 {% if listing.updated == 0 %}
                     <tr class="ui inverted blue table">
                         <td>{{listing.name}}</td>
-                        <td>{{listing.price}}</td>
                         <td>{{listing.description}}</td>
-                        <td>{{listing.Category}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.unit}}</td>
+                        <td>{{listing.quantity}}</td>
                         <td><i class="icon refresh "></i> Updated Listing</td>
                     </tr>
 
                 {% elif listing.updated == 1 %}
                     <tr class="ui inverted green table">
                         <td>{{listing.name}}</td>
-                        <td>{{listing.price}}</td>
                         <td>{{listing.description}}</td>
-                        <td>{{listing.Category}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.unit}}</td>
+                        <td>{{listing.quantity}}</td>
                         <td><i class="icon checkmark "></i> Submitted New Listing</td>
                     </tr>
                 {% elif listing.updated == 2 %}
                     <tr class="ui inverted red table">
                         <td>{{listing.name}}</td>
-                        <td>{{listing.price}}</td>
                         <td>{{listing.description}}</td>
-                        <td>{{listing.Category}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.unit}}</td>
+                        <td>{{listing.quantity}}</td>
                         <td><i class="icon minus "></i> No Change in Listing</td>
                     </tr>
                 {% endif %}

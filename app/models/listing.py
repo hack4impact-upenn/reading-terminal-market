@@ -1,7 +1,7 @@
 from .. import db
 from purchase import CartItem
 from sqlalchemy import or_, desc, func
-from ..models import Category, Vendor
+from ..models import Vendor
 from flask.ext.login import current_user
 from sqlalchemy import UniqueConstraint
 
@@ -18,11 +18,10 @@ class Listing(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-
     # model relationships
     vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-
+    unit = db.Column(db.String(32))
+    quantity = db.Column(db.String(32))
     # listing properties
     name = db.Column(db.String(64))
     description = db.Column(db.Text)
@@ -31,11 +30,12 @@ class Listing(db.Model):
     product_id=db.Column(db.Integer, default=1)
     updated=db.Column(db.Integer, default=0)
 
-    def __init__(self, product_id, vendor_id, name, available, category_id, price,
-                 description="", updated=Updated.NO_CHANGE):
+    def __init__(self, product_id, vendor_id, unit, name, available, price,
+                 description="", updated=Updated.NO_CHANGE, quantity=0):
         self.product_id = product_id
         self.vendor_id = vendor_id
-        self.category_id = category_id
+        self.unit = unit
+        self.quantity = quantity
         self.name = name
         self.description = description
         self.price = price
@@ -81,7 +81,8 @@ class Listing(db.Model):
                     description=csv_row[current_user.listing_description_col],
                     available=True,
                     price=price,
-                    category_id=str(-1),
+                    unit=csv_row[current_user.unit_col],
+                    quantity= csv_row[current_user.quantity_col],
                     vendor_id=current_user.id,
                     product_id=csv_row[current_user.product_id_col],
                     updated=Updated.PRICE_CHANGE)
@@ -115,11 +116,11 @@ class Listing(db.Model):
             vendor_ids = [vendor.id for vendor in vendors]
             filter_list.append(Listing.vendor_id.in_(vendor_ids))
 
-        if 'category_search' in kwargs and kwargs['category_search']:
-            term = kwargs['category_search']
-            categories = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
-            category_ids = [category.id for category in categories]
-            filter_list.append(Listing.category_id.in_(category_ids))
+        # if 'category_search' in kwargs and kwargs['category_search']:
+        #     term = kwargs['category_search']
+        #     categories = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
+        #     category_ids = [category.id for category in categories]
+        #     filter_list.append(Listing.category_id.in_(category_ids))
 
         # used by vendors to filter by availability
         if 'avail' in kwargs:
@@ -172,6 +173,6 @@ class Listing(db.Model):
         return sorted_query
 
     def __repr__(self):
-        return "<Listing: {} Vendor: {} Category: {}>".format(self.name,
+        return "<Listing: {} Vendor: {} Unit: {}>".format(self.name,
                                                               self.vendor_id,
-                                                              self.category_id)
+                                                              self.unt)

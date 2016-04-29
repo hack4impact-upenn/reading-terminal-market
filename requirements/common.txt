@@ -23,3 +23,4 @@ itsdangerous==0.24
 webassets==0.10.1
 wsgiref==0.1.2
 fake-factory==0.5.3
+pint==0.7.2

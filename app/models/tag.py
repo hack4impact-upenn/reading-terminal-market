@@ -1,7 +1,7 @@
 from .. import db
 from purchase import CartItem
 from sqlalchemy import or_, desc, func
-from ..models import Category, Vendor, User
+from ..models import Vendor, User
 from sqlalchemy import UniqueConstraint
 
 
