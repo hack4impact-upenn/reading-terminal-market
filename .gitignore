@@ -11,4 +11,3 @@ dist
 *.egg-info
 *.sqlite
 .idea
-app/static/styles/app.css
