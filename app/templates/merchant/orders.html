@@ -37,10 +37,10 @@
     <div class="ui card clearing order" style="{{ display }}" id="order-{{ order.id }}">
       <div class="content order-card-top {{ order_macros.status_color(order.status) }}">
         <div class="header">
-            <div class="left floated">
+            <div class="order-number">
             ORDER #{{ order.id }} - {{ vendor_info['company_name'] }}
             </div>
-            <div class="right floated">
+            <div class="order-status">
                 {{ order_macros.status_label(order.status) }}
             </div>
         </div>
@@ -48,7 +48,7 @@
       <div class="content">
           <div class="description order-card-description">
               <div class="ui two column grid">
-              <div class="six wide column">
+              <div class="seven wide column">
                   Placed on {{ order.get_date() }} at {{ order.get_time() }}
                   <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
                   {% if vendor_info['full_name'] %}
@@ -57,20 +57,20 @@
                   {% if vendor_info['email'] %}
                      <div class="item"><b>Email: </b> <a href="mailto: {{ vendor_info['email'] }}">{{  vendor_info['email'] }}</a></div>
                   {% endif %}
-                  <div class="ui divider"></div>
-                  <div class="order-card-user-actions">
-                      <div class="order-segment-details"><a href='#' class="toggle-details">Show purchases</a></div>
-                      {% if order.status == 1 %}
-                          | <a href='#' class="toggle-rating">Rate vendor</a>
-                      {% endif %}
-                  </div>
               </div>
-              <div class="ten wide column">
+              <div class="nine wide column">
                   <div><b>Total:</b> {{ order.get_total() }}</div>
                   <div class="comments">
                       <b>Comments:</b> {{ order.comment }}
                   </div>
               </div>
+            </div>
+            <div class="ui divider seven wide"></div>
+            <div class="order-card-user-actions">
+                <div class="order-segment-details"><a href='#' class="toggle-details">Show purchases</a></div>
+                {% if order.status == 1 %}
+                    | <a href='#' class="toggle-rating">Rate vendor</a>
+                {% endif %}
             </div>
           </div>
       </div>
@@ -126,7 +126,7 @@
 {% block content %}
     <div class="ui stackable grid container">
     <div class="sixteen wide tablet twelve wide computer centered column">
-        <h2 class="ui header">
+        <h2 class="ui header page-header">
             <span class="title">Manage orders</span>
             <div class="sub header">
                 View and manage your orders.

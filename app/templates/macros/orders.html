@@ -1,5 +1,5 @@
 {% macro status_filter_menu(status_filter) %}
-    <div class="ui three item menu order-status-menu">
+    <div class="ui three item stackable menu order-status-menu">
         <a class="item {% if status_filter is none %}active{% endif %}" href="{{ url_for('.view_orders') }}">All</a>
         <a class="item {% if status_filter == 'pending' %}active{% endif %}" href="{{ url_for('.view_orders', status='pending') }}">Pending</a>
         <a class="item {% if status_filter == 'approved' %}active{% endif %}" href="{{ url_for('.view_orders', status='approved') }}">Approved</a>

@@ -1,3 +1,8 @@
+// Semantic UI breakpoints
+$mobile-breakpoint:        768px;
+$tablet-breakpoint:        992px;
+$small-monitor-breakpoint: 1200px;
+
 /******* IMPORTS *******/
 // Variables
 @import "_base.scss";
@@ -9,11 +14,6 @@
 @import "merchant.scss";
 @import "shared.scss";
 @import "vendor.scss";
-
-// Semantic UI breakpoints
-$mobile-breakpoint:        768px;
-$tablet-breakpoint:        992px;
-$small-monitor-breakpoint: 1200px;
 
 // General nav
 nav {
@@ -50,12 +50,32 @@ body {
 
 // Common
 // Title and Sub-title heading
-.ui.header {
+.ui.header.page-header {
     .title {
         color: $darkest-gray;
+        font-size: 24px;
     }
 
     .sub.header {
         color: $medium-gray;
+        font-size: 16px;
+    }
+}
+
+@media (max-width : $mobile-breakpoint) {
+    .ui.header.page-header {
+        text-align: center;
+    }
+}
+
+@media (min-width: $mobile-breakpoint) and (max-width : $tablet-breakpoint) {
+    .ui.header.page-header {
+        .title {
+            font-size: 30px;
+        }
+
+        .sub.header {
+            font-size: 20px;
+        }
     }
 }

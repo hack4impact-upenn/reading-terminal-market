@@ -25,6 +25,20 @@
     }
 }
 
+@media (min-width: $mobile-breakpoint) and (max-width : $tablet-breakpoint) {
+    .order {
+        font-size: 18px !important;
+        line-height: 1.5em;
+    }
+}
+
+@media (max-width: $mobile-breakpoint) {
+    .order {
+        font-size: 14px !important;
+        line-height: 1.5em;
+    }
+}
+
 // Order Cards
 .ui.cards > .card.order {
     width: 100%;
@@ -34,6 +48,12 @@
 .ui.cards > .no-order-text {
     color: $light-gray;
     padding: 1rem;
+}
+
+@media (max-width : $mobile-breakpoint) {
+    .ui.cards > .no-order-text {
+        margin: 0 auto;
+    }
 }
 
 // Order Card Top Header
@@ -52,6 +72,23 @@
 
     > .header {
         color: $white;
+
+        .order-number {
+            float: left;
+        }
+
+        .order-status {
+            float: right;
+        }
+    }
+}
+
+@media (max-width : $mobile-breakpoint) {
+    .ui.cards > .ui.card.order > .content.order-card-top {
+        > .header > .order-number, > .header > .order-status {
+            float: initial;
+            text-align: center;
+        }
     }
 }
 
@@ -61,13 +98,29 @@
         color: $light-gray;
     }
 
-    > .ui.column > .column > .order-card-user-actions > * {
+    > .order-card-user-actions > * {
         display: inline-block;
     }
 
     .comments {
         overflow-y: scroll;
-        height: 80px;
+        max-height: 80px;
+    }
+}
+
+@media (max-width : $mobile-breakpoint) {
+    .ui.cards > .ui.card.order > .content > .description.order-card-description {
+        > .ui.column > .column {
+            width: 100% !important;
+
+            &:first-child {
+                padding-bottom: 0;
+            }
+        }
+
+        > .order-card-user-actions {
+            text-align: center;
+        }
     }
 }
 
@@ -86,18 +139,22 @@
 .reviews > .ui.form > .ui.items > .item > .content {
     > .ui.header {
         color: $dark-gray;
+        margin-bottom: 0.5rem;
+    }
+
+    > .ui.star.rating {
+        margin-right: 0.5rem;
     }
 
     > .ui.left.pointing.red.basic.label  {
         &::before {
-            background-color: $white !important;
-            border-left: solid 1px $error-red;
-            border-bottom: solid 1px $error-red;
+            visibility: hidden;
         }
 
         background-color: $white !important;
-        border: solid 1px $error-red;
-        color: $error-red !important;
+        border: solid 1px $dark-gray !important;
+        color: $dark-gray !important;
+        margin-left: 0;
     }
 
     > .description > .field {
@@ -106,8 +163,12 @@
         }
 
         > textarea {
-            color: $light-gray;
+            color: $medium-gray;
         }
+    }
+
+    > .description > .prev-comment {
+        color: $medium-gray;
     }
 
     > .description > .ui.button.submit-rating {
@@ -120,8 +181,17 @@
             color: $darkest-gray;
         }
     }
+}
 
-    > .description > .ui.button.submit-rating::hover {
+@media (min-width: $mobile-breakpoint) and (max-width : $tablet-breakpoint) {
+    .reviews > .ui.form > .ui.items > .item > .content {
+        font-size: 18px !important;
+        line-height: 1.5em;
 
+        // specificity to override
+        > .ui.header {
+            font-size: 18px !important;
+            line-height: 1.5em;
+        }
     }
 }
