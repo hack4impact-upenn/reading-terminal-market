@@ -47,7 +47,7 @@ def listing_view_all(page=1):
     if search != "False":
         page = 1
 
-    listings_paginated = listings_raw.paginate(page, 20, False)
+    listings_paginated = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
@@ -78,7 +78,8 @@ def listing_view_all(page=1):
 @merchant_required
 def order_items(vendor_id=None):
     if vendor_id:
-        Order.order_cart_items_from_vendor(vendor_id)
+        referral_name = request.form['referral_name']
+        Order.order_cart_items_from_vendor(vendor_id,referral_name)
     else:
         Order.order_cart_items()
     return redirect(url_for('.manage_cart'))

@@ -2,9 +2,9 @@ from flask.ext.wtf import Form
 from wtforms.fields import StringField, PasswordField, SubmitField
 from wtforms.fields.html5 import EmailField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.validators import InputRequired, Length, Email, EqualTo
+from wtforms.validators import InputRequired, DataRequired, Length, Email, EqualTo
 from wtforms import ValidationError
-from ..models import User, Role, Category
+from ..models import User, Role, Tag, Category
 from .. import db
 
 
@@ -60,3 +60,16 @@ class NewCategoryForm(Form):
     unit = StringField('Unit', validators=[InputRequired(),
                                            Length(1, 32)])
     submit = SubmitField('Add category')
+
+
+class AdminCreateTagForm(Form):
+    tag_name = StringField('Tag Name',
+                               validators=[InputRequired(), Length(1, 1000)])
+    submit = SubmitField('Create New Tag')
+
+class AdminAddTagToVendorForm(Form):
+     tag_name = QuerySelectField('Tag',
+                                 validators=[DataRequired()],
+                                 get_label='tag_name',
+                                 query_factory=lambda: db.session.query(Tag).order_by('id'))
+     submit = SubmitField('Assign this Tag to Vendor')

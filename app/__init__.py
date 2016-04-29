@@ -49,10 +49,11 @@ def create_app(config_name):
     assets_env.config['sass_line_comments'] = False
     assets_env.config['sass_debug_info'] = False
 
-    assets_env.register('app_css', app_css)
-    assets_env.register('app_js', app_js)
     assets_env.register('vendor_css', vendor_css)
     assets_env.register('vendor_js', vendor_js)
+    assets_env.register('app_css', app_css)
+    assets_env.register('app_js', app_js)
+
 
     # Configure SSL if platform supports it
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:

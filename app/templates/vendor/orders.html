@@ -23,13 +23,13 @@
                 <td>{{ format_price(purchase['price'] * purchase['quantity']) }}</td>
             </tr>
         {% endfor %}
-
         </tbody>
     </table>
 {% endmacro %}
 
 {% macro order_segment(order, hide=False) %}
     {% set merchant_info = order.get_merchant_info() %}
+    {% set purchase_info = order.get_purchase_info() %}
     {% if hide %}
         {% set display = "display:none" %}
     {% endif %}
@@ -51,6 +51,7 @@
         <div class="ui right floated basic segment">
             <div class="ui list right">
                 <div class="item"><b>Company name: </b> {{  merchant_info['company_name'] }}</div>
+                <div class="item"><b>Referral name: </b> {{ order.referral_name }}</div>
                 {% if merchant_info['full_name'] %}
                     <div class="item"><b>Merchant name: </b> {{  merchant_info['full_name'] }}</div>
                 {% endif %}

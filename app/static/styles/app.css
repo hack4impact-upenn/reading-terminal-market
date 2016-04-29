@@ -1,0 +1,379 @@
+@media -sass-debug-info{filename{}line{font-family:\000033}}
+.admin-listing-info .ui.header .sub.header.listing-info-header {
+  padding-bottom: 8px;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\000036}}
+body {
+  font-family: 'Arial' !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000311}}
+nav {
+  margin-bottom: 55px !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000315}}
+.custom-nav-class div.ui {
+  background-color: #F4AD18 !important;
+  color: #FFFFFF;
+  height: 76px;
+  font-size: 1em;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000321}}
+.custom-nav-class .item {
+  font-weight: 300 !important;
+  font-size: 1.15em;
+  position: relative;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000326}}
+.custom-nav-class .item:after {
+  background: rgba(255, 255, 255, 0.35);
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 30px;
+  top: 22.5px;
+  right: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000335}}
+.custom-nav-class .item:before {
+  display: none;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000338}}
+.custom-nav-class .item:last-of-type:after {
+  display: none;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000341}}
+.custom-nav-class .header.item {
+  border-left: none !important;
+  text-transform: uppercase;
+  position: relative;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000346}}
+.custom-nav-class .header.item:after {
+  content: '';
+  width: 2px;
+  height: 50px;
+  top: 12.5px;
+  right: 0px;
+  position: absolute;
+  background: #FFFFFF;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000359}}
+nav .mobile.only.row .ui.vertical.menu {
+  margin-top: 75px;
+  display: none;
+  background-color: #FFFFFF;
+  z-index: 100000;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000364}}
+nav .mobile.only.row .ui.vertical.menu a.item {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #CCC;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000368}}
+nav .mobile.only.row .ui.vertical.menu a.item:hover {
+  background-color: #CCC;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000375}}
+.flashes > .ui.message:last-of-type {
+  margin-bottom: 2rem;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000380}}
+table.selectable tr:hover {
+  cursor: pointer !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000384}}
+.custom-flash {
+  position: fixed !important;
+  top: 50px;
+  right: 10px;
+  font-size: 1.5em;
+  z-index: 1000;
+  border-radius: 0px !important;
+  border-color: transparent !important;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000392}}
+.custom-flash div {
+  color: #000 !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000396}}
+.error-custom {
+  background-color: red;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003102}}
+.custom-login input {
+  border-radius: 0px !important;
+  margin-top: -10px !important;
+  height: 60px;
+  opacity: 0.85;
+  font-weight: 200;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003109}}
+.custom-login label {
+  display: none !important;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003112}}
+.custom-login #submit {
+  width: 100%;
+  background: #3FC380;
+  color: #FFF;
+  font-weight: 500;
+  font-size: 1.25em;
+  margin-bottom: 20px;
+  margin-top: 0px !important;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003121}}
+.custom-login input:hover {
+  opacity: 1;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003125}}
+.form-red {
+  color: red;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003128}}
+.login-contain {
+  padding-top: 25vh !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003131}}
+.thin-title {
+  font-weight: 200;
+  font-size: 1.25em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003137}}
+.procure {
+  font-weight: 500;
+  font-size: 2.0em;
+  line-height: 1.0em;
+  color: #FFFFFF;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003143}}
+.login {
+  padding-bottom: 15px !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003147}}
+.login-extras .login-forgot {
+  color: #FFFFFF;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003151}}
+.login-extras .login-keep label {
+  color: #FFFFFF !important;
+}
+
+/**** BASE.SCSS ****/
+@media -sass-debug-info{filename{}line{font-family:\000032}}
+#notifier {
+  z-index: 1000000;
+  position: fixed;
+  bottom: 20px;
+  width: 250px;
+  left: 50%;
+  margin-left: -37.5%;
+  height: 70px;
+  font-size: 12px;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000313}}
+.notifications {
+  display: none;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000317}}
+.csrf-token {
+  visibility: hidden;
+  display: none;
+}
+
+/**** LISTINGS.SCSS ****/
+@media -sass-debug-info{filename{}line{font-family:\0000323}}
+.listings {
+  overflow-x: scroll;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000327}}
+.truncate {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\000032}}
+.merchant-listings, .merchant-cart {
+  overflow-x: scroll;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\000038}}
+.order .segment {
+  margin-bottom: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000311}}
+.order .segment .order-segment-details {
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000317}}
+.order .details {
+  display: none;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\0000325}}
+.listing-contain .custom-search .search-bar input[name=main-search] {
+  position: fixed !important;
+  left: 0px !important;
+  top: 75px;
+  height: 75px;
+  padding: 20px;
+  width: 75% !important;
+  border-radius: 0px !important;
+  background: #FFFFFF !important;
+  z-index: 500;
+}
+@media screen and (max-width: 768px) {
+@media -sass-debug-info{filename{}line{font-family:\0000325}}
+  .listing-contain .custom-search .search-bar input[name=main-search] {
+    width: 60% !important;
+  }
+}
+@media -sass-debug-info{filename{}line{font-family:\0000340}}
+.listing-contain .custom-search .side-bar {
+  background: #FFFFFF;
+  border-right: 1px solid #CCC;
+  padding: 20px;
+  padding-bottom: 30px;
+  line-height: 40px;
+  width: 250px;
+  position: fixed !important;
+  left: 0px;
+  height: 100%;
+  top: 150px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000352}}
+.listing-contain .custom-search .side-bar input {
+  border-radius: 0px !important;
+}
+@media (max-width: 600px) {
+@media -sass-debug-info{filename{}line{font-family:\0000340}}
+  .listing-contain .custom-search .side-bar {
+    display: none;
+  }
+}
+@media -sass-debug-info{filename{}line{font-family:\0000360}}
+.listing-contain .custom-search .submit-section button {
+  position: fixed !important;
+  top: 75px;
+  right: 0px;
+  width: 12.5%;
+  border-radius: 0px;
+  margin: 0px;
+  height: 75px;
+  z-index: 500;
+}
+@media screen and (max-width: 768px) {
+@media -sass-debug-info{filename{}line{font-family:\0000360}}
+  .listing-contain .custom-search .submit-section button {
+    right: 0%;
+    width: 20%;
+  }
+}
+@media -sass-debug-info{filename{}line{font-family:\0000374}}
+.listing-contain .custom-search .submit-section .clearbutton {
+  position: fixed !important;
+  top: 75px;
+  right: 12.5%;
+  width: 12.5%;
+  border-radius: 0px;
+  margin: 0px;
+  padding-top: 30px;
+  line-height: 14px;
+  height: 75px;
+  z-index: 500;
+}
+@media screen and (max-width: 768px) {
+@media -sass-debug-info{filename{}line{font-family:\0000374}}
+  .listing-contain .custom-search .submit-section .clearbutton {
+    right: 20%;
+    width: 20%;
+  }
+}
+@media -sass-debug-info{filename{}line{font-family:\0000392}}
+.listing-contain .listings {
+  position: absolute !important;
+  left: 300px;
+}
+@media (max-width: 600px) {
+@media -sass-debug-info{filename{}line{font-family:\0000392}}
+  .listing-contain .listings {
+    left: 10px;
+  }
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003101}}
+.pagination-styles {
+  position: relative;
+  bottom: 0;
+  z-index: 10;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003107}}
+#listings-table {
+  overflow-x: hidden;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003109}}
+#listings-table .listings-grid {
+  width: 90%;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003111}}
+#listings-table .listings-grid .column {
+  border-bottom: 1px solid #CCC;
+  min-height: 250px;
+  line-height: 2em;
+}
+@media -sass-debug-info{filename{}line{font-family:\00003118}}
+#listings-table .cartCell input {
+  width: 50% !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003123}}
+.desc-name {
+  font-weight: bold;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\00003127}}
+.desc-desc {
+  width: 80% !important;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\000033}}
+.listing-info .ui.header .sub.header.listing-info-header {
+  padding-bottom: 8px;
+}
+
+@media -sass-debug-info{filename{}line{font-family:\000032}}
+.order .segment {
+  margin-bottom: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\000035}}
+.order .segment .order-segment-details {
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
+@media -sass-debug-info{filename{}line{font-family:\0000311}}
+.order .details {
+  display: none;
+}

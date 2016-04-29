@@ -59,7 +59,7 @@
 {# Render a message for the form #}
 {% macro form_message(messages, header=none, class='') %}
     {% if messages %}
-        <div class="ui {{ class }} message">
+        <div class="ui {{ class }}-custom message custom-flash">
             {% if header is not none %}
                 <div class="header">{{ header }}</div>
             {% endif %}
@@ -82,7 +82,7 @@
     <div class="field {% if field.errors %}error{% endif %} {{ extra_classes }}">
         {{ render_form_input(field) }}
         {% if field.errors %}
-            <div class="ui red pointing label">
+            <div class="ui red form-red">
                 {{ field.errors[0] | safe }}
             </div>
         {% endif %}
