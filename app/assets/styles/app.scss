@@ -9,7 +9,7 @@ body {
 // General nav
 
 nav {
-    margin-bottom: 65px !important;
+    margin-bottom: 55px !important;
 }
 .custom-nav-class {
   div.ui {
@@ -59,7 +59,7 @@ nav .mobile.only.row {
   .ui.vertical.menu {
     margin-top: 75px;
     display: none;
-    background-color: #000000;
+    background-color: #FFFFFF;
     z-index: 100000;
     a.item {
       background-color: #FFFFFF;
@@ -132,24 +132,24 @@ table.selectable tr:hover {
   font-weight: 200;
   font-size: 1.25em; 
   text-transform: uppercase;
-  color: #000000;
+  color: #FFFFFF;
 }
 .procure {
   font-weight: 500;
   font-size: 2.0em;
   line-height: 1.0em;
-  color: #000000;
+  color: #FFFFFF;
 }
 .login { 
   padding-bottom: 15px !important;
 }
 .login-extras {
   .login-forgot {
-    color: #000000;
+    color: #FFFFFF;
   }
   .login-keep {
     label {
-      color: #000000 !important;
+      color: #FFFFFF !important;
     }
   }
 }

@@ -10,7 +10,7 @@ body {
 
 @media -sass-debug-info{filename{}line{font-family:\0000311}}
 nav {
-  margin-bottom: 65px !important;
+  margin-bottom: 55px !important;
 }
 
 @media -sass-debug-info{filename{}line{font-family:\0000315}}
@@ -65,7 +65,7 @@ nav {
 nav .mobile.only.row .ui.vertical.menu {
   margin-top: 75px;
   display: none;
-  background-color: #000000;
+  background-color: #FFFFFF;
   z-index: 100000;
 }
 @media -sass-debug-info{filename{}line{font-family:\0000364}}
@@ -150,7 +150,7 @@ table.selectable tr:hover {
   font-weight: 200;
   font-size: 1.25em;
   text-transform: uppercase;
-  color: #000000;
+  color: #FFFFFF;
 }
 
 @media -sass-debug-info{filename{}line{font-family:\00003137}}
@@ -158,7 +158,7 @@ table.selectable tr:hover {
   font-weight: 500;
   font-size: 2.0em;
   line-height: 1.0em;
-  color: #000000;
+  color: #FFFFFF;
 }
 
 @media -sass-debug-info{filename{}line{font-family:\00003143}}
@@ -168,11 +168,11 @@ table.selectable tr:hover {
 
 @media -sass-debug-info{filename{}line{font-family:\00003147}}
 .login-extras .login-forgot {
-  color: #000000;
+  color: #FFFFFF;
 }
 @media -sass-debug-info{filename{}line{font-family:\00003151}}
 .login-extras .login-keep label {
-  color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 /**** BASE.SCSS ****/
