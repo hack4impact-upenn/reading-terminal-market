@@ -41,7 +41,6 @@
                                       backto=request.path + '?' + request.query_string,
                                       listing_id=l.id) + '\';' %}
                                     {% endif %}
-<<<<<<< HEAD
                                     <br>
                                     {% if current_user.is_merchant() %}
                                             {% if l in cart_listings %}
@@ -50,7 +49,8 @@
                                             {% else %}
                                                 {% set in_cart = "false" %}
                                                 {% set cart_color = "grey" %}
-                                            {% endif %}   
+                                            {% endif %}  
+                                    {% endif %} 
                                     <a style="font-weight: bold; font-size: 1.25em; line-height: 20px" class="header" {{info_link}}>{{ l.name }}</a><br>
                                     <a>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</a>
                                     

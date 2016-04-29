@@ -5,7 +5,7 @@
 
 {% macro order_table(order) %}
     {% set purchase_info = order.get_purchase_info() %}
-    <table class="ui celled table">
+    <table class="ui celled table order-purchase-table">
         <thead>
         <tr>
             <th>Item name</th>
@@ -33,34 +33,47 @@
     {% if hide %}
         {% set display = "display:none" %}
     {% endif %}
-    <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
-        <div class="ui left floated basic segment">
-            <h3 class="ui header">
-                Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ order_macros.status_label(order.status) }}
-                <div class="sub header">
-                    Placed on {{ order.get_date() }} at {{ order.get_time() }}
-                </div>
-            </h3>
-            <div><b>Comments:</b> {{ order.comment }} </div>
-            <div><b>Total:</b> {{ order.get_total() }}</div>
-            <div class="order-segment-details"><a href='#' class="toggle-details">Show purchases</a></div>
 
-        </div>
-        <div class="ui right floated basic segment">
-            <div class="ui list right">
-                <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
-                {% if vendor_info['full_name'] %}
-                    <div class="item"><b>Vendor name: </b> {{  vendor_info['full_name'] }}</div>
-                {% endif %}
-                {% if vendor_info['email'] %}
-                    <div class="item"><b>Email: </b> <a href="mailto: {{ vendor_info['email'] }}">{{  vendor_info['email'] }}</a></div>
-                {% endif %}
-                {% if order.status == 1 %}
-                    <a href='#' class="toggle-rating">Rate vendor</a>
-                {% endif %}
+    <div class="ui card clearing order" style="{{ display }}" id="order-{{ order.id }}">
+      <div class="content order-card-top {{ order_macros.status_color(order.status) }}">
+        <div class="header">
+            <div class="order-number">
+            ORDER #{{ order.id }} - {{ vendor_info['company_name'] }}
+            </div>
+            <div class="order-status">
+                {{ order_macros.status_label(order.status) }}
             </div>
         </div>
-
+      </div>
+      <div class="content">
+          <div class="description order-card-description">
+              <div class="ui two column grid">
+              <div class="seven wide column">
+                  Placed on {{ order.get_date() }} at {{ order.get_time() }}
+                  <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
+                  {% if vendor_info['full_name'] %}
+                     <div class="item"><b>Vendor name: </b> {{  vendor_info['full_name'] }}</div>
+                  {% endif %}
+                  {% if vendor_info['email'] %}
+                     <div class="item"><b>Email: </b> <a href="mailto: {{ vendor_info['email'] }}">{{  vendor_info['email'] }}</a></div>
+                  {% endif %}
+              </div>
+              <div class="nine wide column">
+                  <div><b>Total:</b> {{ order.get_total() }}</div>
+                  <div class="comments">
+                      <b>Comments:</b> {{ order.comment }}
+                  </div>
+              </div>
+            </div>
+            <div class="ui divider seven wide"></div>
+            <div class="order-card-user-actions">
+                <div class="order-segment-details"><a href='#' class="toggle-details">Show purchases</a></div>
+                {% if order.status == 1 %}
+                    | <a href='#' class="toggle-rating">Rate vendor</a>
+                {% endif %}
+            </div>
+          </div>
+      </div>
 
         <div class="details">
             {{ order_table(order) }}
@@ -92,7 +105,7 @@
                         <div class="content">
                             <h4 class="ui header">New Review</h4>
                             <div class="ui star rating"></div>
-                            <div class="ui left pointing label">Minimum 1 star rating</div>
+                            <div class="ui left pointing red basic label">Minimum 1 star rating</div>
                             <div class="description">
                                 <div class="field">
                                     <label>Please write a review to accompany your rating (mandatory):</label>
@@ -113,8 +126,8 @@
 {% block content %}
     <div class="ui stackable grid container">
     <div class="sixteen wide tablet twelve wide computer centered column">
-        <h2 class="ui header">
-            Manage orders
+        <h2 class="ui header page-header">
+            <span class="title">Manage orders</span>
             <div class="sub header">
                 View and manage your orders.
             </div>
@@ -122,11 +135,13 @@
 
         {{ order_macros.status_filter_menu(status_filter) }}
 
-        {% for order in orders[:page_size] %}
-            {{ order_segment(order) }}
-        {% else %}
-            <h3>You have not made any orders.</h3>
-        {% endfor %}
+        <div class="ui cards">
+            {% for order in orders[:page_size] %}
+                {{ order_segment(order) }}
+            {% else %}
+                <h3 class="no-order-text">You have not made any orders.</h3>
+            {% endfor %}
+        </div>
 
         {% for order in orders[page_size:] %}
             {{ order_segment(order, hide=True) }}

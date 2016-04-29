@@ -2,6 +2,19 @@
 $mobile-breakpoint:        768px;
 $tablet-breakpoint:        992px;
 $small-monitor-breakpoint: 1200px;
+
+/******* IMPORTS *******/
+// Variables
+@import "_base.scss";
+
+// Template Specific
+@import "admin.scss";
+@import "layouts.scss";
+@import "macros.scss";
+@import "merchant.scss";
+@import "shared.scss";
+@import "vendor.scss";
+
 //Fonts
 body {
   font-family: 'Arial' !important;
@@ -79,6 +92,31 @@ nav .mobile.only.row {
 // Tables
 table.selectable tr:hover {
     cursor: pointer !important;
+}
+
+// General
+body {
+    font-family: $main-font;
+}
+
+// Common
+// Title and Sub-title heading
+.ui.header.page-header {
+    .title {
+        color: $darkest-gray;
+        font-size: 24px;
+    }
+
+    .sub.header {
+        color: $medium-gray;
+        font-size: 16px;
+    }
+}
+
+@media (max-width : $mobile-breakpoint) {
+    .ui.header.page-header {
+        text-align: center;
+    }
 }
 // Custom flashing
 .custom-flash {

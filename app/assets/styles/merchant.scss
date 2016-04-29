@@ -1,9 +1,9 @@
-// manage_cart.html
+/********* MANAGE_CART.HTML **********/
 .merchant-listings, .merchant-cart {
     overflow-x: scroll;
 }
 
-// orders.html
+/********* ORDERS.HTML **********/
 .order {
     .segment {
         margin-bottom: 0px;
@@ -15,7 +15,105 @@
     }
 
     .details {
+        padding-left: 1rem;
+        padding-right: 1rem;
         display: none;
+    }
+
+    .reviews {
+        padding: 0 1rem 1rem 1rem;
+    }
+}
+
+@media (max-width: $mobile-breakpoint) {
+    .order {
+        font-size: 14px !important;
+        line-height: 1.5em;
+    }
+}
+
+// Order Cards
+.ui.cards > .card.order {
+    width: 100%;
+}
+
+// No Orders
+.ui.cards > .no-order-text {
+    color: $light-gray;
+    padding: 1rem;
+}
+
+@media (max-width : $mobile-breakpoint) {
+    .ui.cards > .no-order-text {
+        margin: 0 auto;
+    }
+}
+
+// Order Card Top Header
+.ui.cards > .ui.card.order > .content.order-card-top {
+    &.grey {
+        background: $dark-gray;
+    }
+
+    &.red {
+        background: $denied-red;
+    }
+
+    &.green {
+        background: $accepted-green;
+    }
+
+    > .header {
+        color: $white;
+
+        .order-number {
+            float: left;
+        }
+
+        .order-status {
+            float: right;
+        }
+    }
+}
+
+@media (max-width : $mobile-breakpoint) {
+    .ui.cards > .ui.card.order > .content.order-card-top {
+        > .header > .order-number, > .header > .order-status {
+            float: initial;
+            text-align: center;
+        }
+    }
+}
+
+// Order Card Content
+.ui.cards > .ui.card.order > .content > .description.order-card-description {
+    > .ui.column > .column {
+        color: $light-gray;
+    }
+
+    > .order-card-user-actions > * {
+        display: inline-block;
+    }
+
+    .comments {
+        overflow-y: scroll;
+        max-height: 80px;
+    }
+}
+
+@media (max-width : $mobile-breakpoint) {
+    .ui.cards > .ui.card.order > .content > .description.order-card-description {
+        > .ui.column > .column {
+            width: 100% !important;
+
+            &:first-child {
+                padding-bottom: 0;
+            }
+        }
+
+        > .order-card-user-actions {
+            text-align: center;
+        }
     }
 }
 
@@ -98,6 +196,64 @@
     }
 }
 
+// Order Card Purchase Table
+.ui.order-purchase-table {
+    > thead th {
+        color: $dark-gray;
+    }
+
+    > tbody {
+        color: $light-gray;
+    }
+}
+
+// Order Card Review Functionality
+.reviews > .ui.form > .ui.items > .item > .content {
+    > .ui.header {
+        color: $dark-gray;
+        margin-bottom: 0.5rem;
+    }
+
+    > .ui.star.rating {
+        margin-right: 0.5rem;
+    }
+
+    > .ui.left.pointing.red.basic.label  {
+        &::before {
+            visibility: hidden;
+        }
+
+        background-color: $white !important;
+        border: solid 1px $dark-gray !important;
+        color: $dark-gray !important;
+        margin-left: 0;
+    }
+
+    > .description > .field {
+        > label {
+            color: $dark-gray;
+        }
+
+        > textarea {
+            color: $medium-gray;
+        }
+    }
+
+    > .description > .prev-comment {
+        color: $medium-gray;
+    }
+
+    > .description > .ui.button.submit-rating {
+        border: solid 1px $medium-gray;
+        color: $medium-gray;
+        background-color: $white;
+
+        &:hover {
+            background-color: $hover-background-gray;
+            color: $darkest-gray;
+        }
+    }
+}
 .pagination-styles {
     position: relative;
     bottom: 0;

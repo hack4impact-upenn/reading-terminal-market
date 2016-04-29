@@ -46,6 +46,8 @@ def create_app(config_name):
     for path in dirs:
         assets_env.append_path(os.path.join(basedir, path))
     assets_env.url_expire = True
+    assets_env.config['sass_line_comments'] = False
+    assets_env.config['sass_debug_info'] = False
 
     assets_env.register('vendor_css', vendor_css)
     assets_env.register('vendor_js', vendor_js)
