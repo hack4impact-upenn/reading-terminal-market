@@ -25,13 +25,26 @@ from ..email import send_email
 @login_required
 @vendor_required
 def index():
-    return render_template('vendor/index.html')
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
+    return render_template('vendor/index.html', tut_completed=tut_completed)
+
+
+@vendor.route('/tutorial_completed', methods=['POST'])
+@login_required
+@vendor_required
+def tutorial_completed():
+    current_tutorial_status = User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    User.query.filter_by(id=current_user.id).first().tutorial_completed = \
+        not User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    db.session.commit();
+    return '', 204
 
 
 @vendor.route('/new-item', methods=['GET', 'POST'])
 @login_required
 @vendor_required
 def new_listing():
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
     """Create a new item."""
     form = NewItemForm()
     if form.validate_on_submit():
@@ -48,14 +61,15 @@ def new_listing():
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
               'form-success')
-        return redirect(url_for('.new_listing'))
-    return render_template('vendor/new_listing.html', form=form)
+        return redirect(url_for('.new_listing', tut_completed=tut_completed))
+    return render_template('vendor/new_listing.html', form=form, tut_completed=tut_completed)
 
 
 @vendor.route('/csv-upload', methods=['GET', 'POST'])
 @login_required
 @vendor_required
 def csv_upload():
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
     """Create a new item."""
     form = NewCSVForm()
     listings = []
@@ -89,7 +103,7 @@ def csv_upload():
                     proposed_listing.updated = Updated.NEW_ITEM
                     listings.append(proposed_listing)
                     Listing.add_listing(new_listing=proposed_listing)
-    return render_template('vendor/new_csv.html', form=form, listings=listings)
+    return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings)
 
 #get rid of those pesky dollar signs that mess up parsing
 def stripPriceHelper(price):

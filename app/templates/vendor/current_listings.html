@@ -23,28 +23,30 @@
     </h2>
 
     <form id="filter_form" class="ui form segment">
-        <div class="twelve wide field">
+        <div id="search_bar" class="twelve wide field">
             <label id="label_form">Search names and descriptions</label>
             <input id ="search" value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
         </div>
 
         <div id="availability" class="inline field">
-            <select  class="ui selection dropdown" name="avail">
-                {% if request.args.get('avail') == "avail" %}
-                    {% set selected = 'selected' %}
-                {% elif request.args.get('avail') == "non_avail" %}
-                    {% set selected2 = 'selected' %}
-                {% elif request.args.get('avail') == "avail" %}
-                    {% set selected3 = 'selected' %}
-                {% endif %}
-                <option value="both" {{ selected }}>Show Available and Non Available Items</option>
-                <option value="non_avail" {{ selected2 }}>Show Non Available Items</option>
-                <option value="avail" {{ selected3 }}>Show Available Items</option>
-
-            </select>
+            <div id="availability_wrapper">
+                <select   class="ui selection dropdown" name="avail">
+                    {% if request.args.get('avail') == "avail" %}
+                        {% set selected = 'selected' %}
+                    {% elif request.args.get('avail') == "non_avail" %}
+                        {% set selected2 = 'selected' %}
+                    {% elif request.args.get('avail') == "avail" %}
+                        {% set selected3 = 'selected' %}
+                    {% endif %}
+                    <option id="availability_bar" value="both" {{ selected }}>Show Available and Non Available Items</option>
+                    <option value="non_avail" {{ selected2 }}>Show Non Available Items</option>
+                    <option value="avail" {{ selected3 }}>Show Available Items</option>
+                </select>
+            </div>
             <br>
             <br>
-            <select class="ui selection dropdown" name="sort-by">
+            <div id="sort_wrapper">
+                <select class="ui selection dropdown" name="sort-by">
                 {% if request.args.get('sortby') == "low_high" %}
                     {% set checked2 = 'selected' %}
                 {% elif request.args.get('sortby') == "high_low" %}
@@ -58,8 +60,9 @@
                 <option value="high_low" {{ checked3 }}>Price, high to low</option>
                 <option value="alphaAZ" {{ checked4 }}>Alphabetical names, (A-Z)</option>
                 <option value="alphaZA" {{ checked5 }}>Alphabetical names, (Z-A)</option>
+                </select>
 
-            </select>
+            </div>
 
         </div>
 
@@ -73,4 +76,87 @@
 {% endblock %}
 
 {% block after %}
+    {% if not tut_completed %}
+        <script type="text/javascript">
+            guiders.createGuider({
+                buttons: [
+                        {name: "Next"}],
+                description: "Here you can view all of your listings that are available to the Reading Terminal Market",
+                highlight: true,
+                overlay: true,
+                id: "first",
+                next: "second",
+                title: "This is the main listings page.",
+                width: 300,
+                onHide: function() {guiders._dehighlightElement("#curr");},
+                position: 6,
+                arrowSize:20
+            }).show();
+                guiders.createGuider({
+                    attachTo: "#filter_form",
+                buttons: [{
+                          name: "Next"
+                          }],
+                description: "Here you can filter it.",
+                highlight: true,
+                id: "second",
+                next: "third",
+                overlay: true,
+                onHide: function() {guiders._dehighlightElement("#filter_form");},
+                title: "Too many listings? (good for you)",
+                width: 300,
+                position: 6,
+            });
+                guiders.createGuider({
+                attachTo: "#search_bar",
+                buttons: [{
+                          name: "Next"
+                          }],
+                description: "You can search by any word (even part of a word!) in your description or title",
+                highlight: true,
+                id: "third",
+                next: "fourth",
+                overlay: true,
+                onHide: function() {guiders._dehighlightElement("#search_bar");},
+                title: "Search!",
+                width: 300,
+                position: 6,
+                arrowSize:20
+            });
+                guiders.createGuider({
+                attachTo: "#availability_wrapper",
+                buttons: [{
+                          name: "Next"
+                          }],
+                description: "You can also choose to only view available/unavailable items",
+                highlight: true,
+                id: "fourth",
+                next: "fifth",
+                overlay: true,
+                onHide: function() {guiders._dehighlightElement("#availability_wrapper");},
+                title: "Availability",
+                width: 300,
+                position: 6,
+                arrowSize:20
+            });
+                guiders.createGuider({
+                attachTo: "#sort_wrapper",
+                buttons: [{
+                  name: "Ok, cool. But how do I add listings?",
+                  onclick: function() {
+                    window.location.href=
+                        "{{ url_for('vendor.new_listing',tut_completed=tut_completed) }}#guider=first" }
+                }],                description: "You can sort your listings alphabetically or by item price by item price!",
+                highlight: true,
+                id: "fifth",
+                next: "sixth",
+                overlay: true,
+                onHide: function() {guiders._dehighlightElement("#sort_wrapper");},
+                title: "Looking for those expensive Aaron's Apples or that cheap Zany Ziti?",
+                width: 300,
+                position: 6,
+                arrowSize:20
+            });
+        </script>
+    {% endif %}
 {% endblock %}

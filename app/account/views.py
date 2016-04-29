@@ -138,28 +138,6 @@ def change_email_request():
     return render_template('account/manage.html', form=form)
 
 
-@account.route('/manage/replay-tutorial', methods=['GET', 'POST'])
-@login_required
-def replay_tutorial():
-    """Respond to existing user's request to change their email."""
-    form = ChangeEmailForm()
-    if form.validate_on_submit():
-        if current_user.verify_password(form.password.data):
-            new_email = form.email.data
-            token = current_user.generate_email_change_token(new_email)
-            send_email(new_email,
-                       'Confirm Your New Email',
-                       'account/email/change_email',
-                       user=current_user,
-                       token=token)
-            flash('A confirmation link has been sent to {}.'.format(new_email),
-                  'warning')
-            return redirect(url_for('main.index'))
-        else:
-            flash('Invalid email or password.', 'form-error')
-    return render_template('account/replay_tutorial.html', form=form)
-
-
 @account.route('/manage/change-email/<token>', methods=['GET', 'POST'])
 @login_required
 def change_email(token):

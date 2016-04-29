@@ -40,7 +40,7 @@
             <tr><td>Company name</td><td>{{ user.company_name }}</td></tr>
         {% endif %}
     </table>
-        {% if user.is_merchant_or_vendor() and user.tutorial_completed %}
+        {% if user.is_merchant() and user.tutorial_completed %}
             <a  href="{{ url_for('merchant.index') }}"id="replay_tutorial" class="ui animated fade button small" tabindex="0">
               <div class="hidden content">Click Here!</div>
               <div class="visible content">
@@ -48,7 +48,14 @@
               </div>
                 </a>
         {% endif %}
-
+        {% if user.is_vendor() and user.tutorial_completed %}
+            <a  href="{{ url_for('vendor.index') }}"id="replay_tutorial" class="ui animated fade button small" tabindex="0">
+              <div class="hidden content">Click Here!</div>
+              <div class="visible content">
+                Want to replay the tutorial?
+              </div>
+                </a>
+        {% endif %}
 {% endmacro %}
 
 {% block content %}
@@ -72,7 +79,9 @@
             </div>
         </div>
     </div>
+        {% if current_user.is_merchant() %}
     <script type="text/javascript">
+
         $(document).ready(function() {
             $("#replay_tutorial").click( function()
                {
@@ -83,7 +92,21 @@
                     $('#notifier').hide();
                });
         });
-
+        {% endif %}
     </script>
+        {% if current_user.is_vendor() %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#replay_tutorial").click( function()
+               {
+                    $.ajax({
+                            url: '/vendor/tutorial_completed',
+                            type: 'POST',
+                    });
+                    $('#notifier').hide();
+               });
+        });
+    </script>
+        {% endif %}
 {% endblock %}
 

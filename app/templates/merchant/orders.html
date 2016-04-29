@@ -39,14 +39,17 @@
         guiders.createGuider({
         buttons: [
                 {name: "Ok. Take my back to the homepage",
-                onclick: function() {
-                            $.ajax({
-                            url: '/merchant/tutorial_completed',
-                            data: 'turnOff',
-                            type: 'POST',
-                         });
-                        $('#notifier').hide();
-                        window.location.href= "{{ url_for('merchant.index') }}" } }
+                    onclick: function() {
+                                $.ajax({
+                                url: '/merchant/tutorial_completed',
+                                data: 'turnOff',
+                                type: 'POST',
+                                success: function() {
+                                    $('#notifier').hide();
+                                    window.location.href= "{{ url_for('merchant.index') }}"
+                                }
+                    });
+                } }
                 ],
         description: "Orders are either Pending, Approved, or Declined by the vendor. You can filter your orders by these attributes by clicking here.",
         highlight: true,
