@@ -109,7 +109,7 @@ def csv_upload():
                         proposed_listing.updated = Updated.NEW_ITEM
                         listings.append(proposed_listing)
                         Listing.add_listing(new_listing=proposed_listing)
-    return render_template('vendor/new_csv.html', form=form, listings=listings)
+    return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings)
 
 #get rid of those pesky dollar signs that mess up parsing
 def stripPriceHelper(price):

@@ -68,7 +68,7 @@
 
 {% macro order_table(order) %}
     {% set purchase_info = order.get_purchase_info() %}
-    <table class="ui celled table order-purchase-table">
+        <table  class="ui celled table order-purchase-table">
         <thead>
         <tr>
             <th>Item name</th>
@@ -89,6 +89,7 @@
 
         </tbody>
     </table>
+
 {% endmacro %}
 
 {% macro order_segment(order, hide=False) %}
@@ -188,7 +189,7 @@
 
 {% block content %}
     <div class="ui stackable grid container">
-    <div class="sixteen wide tablet twelve wide computer centered column">
+    <div id="menu" class="sixteen wide tablet twelve wide computer centered column">
         <h2 class="ui header page-header">
             <span class="title">Manage orders</span>
             <div class="sub header">
