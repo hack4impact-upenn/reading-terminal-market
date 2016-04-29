@@ -177,10 +177,6 @@
 
         <div class="merchant-cart">
             {% if vendor_items_dict %}
-                <form action="{{ url_for('merchant.order_items') }}" method="post">
-                    <input id="order" type="submit" class="ui button positive" name="submit" value="Order from all vendors">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                </form>
                 <br>
             {% endif %}
 
