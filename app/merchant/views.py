@@ -47,7 +47,7 @@ def listing_view_all(page=1):
     if search != "False":
         page = 1
 
-    listings_paginated = listings_raw.paginate(page, 20, False)
+    listings_paginated = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:

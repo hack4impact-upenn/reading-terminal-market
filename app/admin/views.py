@@ -51,7 +51,7 @@ def listing_view_all(page=1):
     # used to reset page count to pg.1 when new search is performed from a page that isn't the first one
     if search != "False":
         page = 1
-    listings_paginated_new = listings_raw.paginate(page, 20, False)
+    listings_paginated_new = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
