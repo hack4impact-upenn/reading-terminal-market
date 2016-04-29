@@ -116,11 +116,11 @@ class Listing(db.Model):
             vendor_ids = [vendor.id for vendor in vendors]
             filter_list.append(Listing.vendor_id.in_(vendor_ids))
 
-        if 'category_search' in kwargs and kwargs['category_search']:
-            term = kwargs['category_search']
-            categories = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
-            category_ids = [category.id for category in categories]
-            filter_list.append(Listing.category_id.in_(category_ids))
+        # if 'category_search' in kwargs and kwargs['category_search']:
+        #     term = kwargs['category_search']
+        #     categories = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
+        #     category_ids = [category.id for category in categories]
+        #     filter_list.append(Listing.category_id.in_(category_ids))
 
         # used by vendors to filter by availability
         if 'avail' in kwargs:
@@ -173,6 +173,6 @@ class Listing(db.Model):
         return sorted_query
 
     def __repr__(self):
-        return "<Listing: {} Vendor: {} Category: {}>".format(self.name,
+        return "<Listing: {} Vendor: {} Unit: {}>".format(self.name,
                                                               self.vendor_id,
-                                                              self.category_id)
+                                                              self.unt)

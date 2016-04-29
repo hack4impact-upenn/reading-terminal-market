@@ -8,13 +8,12 @@ from forms import (
     ChangeUserEmailForm,
     NewUserForm,
     InviteUserForm,
-    NewCategoryForm,
     AdminCreateTagForm,
     AdminAddTagToVendorForm,
     AdminCreateItemTagForm
 )
 from . import admin
-from ..models import User, Role, Vendor, Merchant, Category, Listing, Tag, TagAssociation, ItemTag
+from ..models import User, Role, Vendor, Merchant, Listing, Tag, TagAssociation, ItemTag
 from .. import db
 from .. vendor.forms import NewCSVForm
 from ..email import send_email
@@ -392,9 +391,6 @@ def listing_info(listing_id):
         backto=backto
     )
 
-<<<<<<< HEAD
-=======
-
 @admin.route('/view-tags', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -436,6 +432,3 @@ def view_item_tags():
                   'form-success')
         return redirect(url_for('admin.view_item_tags'))
     return render_template('admin/view_item_tags.html', form=form, tags=tags)
-
-
->>>>>>> 0ca25734f8622fc4b802d004d1cb2ac2c42a056f

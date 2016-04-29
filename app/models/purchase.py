@@ -131,7 +131,8 @@ class Order(db.Model):
                 quantity=item.quantity,
                 item_name=item.listing.name,
                 item_price=item.listing.price,
-                unit=item.listing.category.unit,
+                unit=item.listing.unit,
+                item_quantity=item.listing.quantity
             )
             db.session.add(p)
 

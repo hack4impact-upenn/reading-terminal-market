@@ -4,7 +4,7 @@ from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField,
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length
 from wtforms import ValidationError, widgets, SelectMultipleField
-from ..models import Category, Listing, User
+from ..models import Listing, User
 from .. import db
 
 
