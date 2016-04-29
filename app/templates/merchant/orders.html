@@ -18,8 +18,8 @@
         {% for purchase in purchase_info %}
             <tr>
                 <td>{{ purchase['name'] }}</td>
-                <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
-                <td>{{ format_price(purchase['price']) }} / {{ purchase['unit'] }}</td>
+                <td>{{ purchase['quantity']| int() }}</td>
+                <td>{{ format_price(purchase['price']) }} / {{ purchase['item_quantity']}} {{ purchase['unit'] }}</td>
                 <td>{{ format_price(purchase['price'] * purchase['quantity']) }}</td>
             </tr>
         {% endfor %}

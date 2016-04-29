@@ -10,7 +10,7 @@
         (deletion_endpoint, 'Delete user')
     ] %}
 
-{% if user.is_vendor() %}
+{% elif user.is_vendor() %}
     {% set endpoints = [
         ('admin.user_info', 'User information'),
         ('admin.change_user_email', 'Change email address'),

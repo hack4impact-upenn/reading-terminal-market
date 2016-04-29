@@ -190,6 +190,7 @@ class Order(db.Model):
                 'name': purchase.item_name,
                 'price': purchase.item_price,
                 'unit': purchase.unit,
+                'item_quantity': purchase.item_quantity
             })
         return purchase_info
 
@@ -222,14 +223,16 @@ class Purchase(db.Model):
     item_name = db.Column(db.String(64))
     item_price = db.Column(db.Float)
     unit = db.Column(db.String(32))
+    item_quantity = db.Column(db.Integer)
 
-    def __init__(self, order, listing_id, quantity, item_name, item_price, unit):
+    def __init__(self, order, listing_id, quantity, item_name, item_price, unit, item_quantity):
         self.order = order
         self.listing_id = listing_id
         self.quantity = quantity
         self.item_name = item_name
         self.item_price = item_price
         self.unit = unit
+        self.item_quantity = item_quantity
 
     def __repr__(self):
         return "<Purchase: {} Listing: {}>".format(self.id, self.listing_id)

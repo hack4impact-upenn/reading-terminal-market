@@ -1,6 +1,6 @@
 from flask.ext.wtf import Form
 from flask.ext.login import current_user
-from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField
+from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField, IntegerField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length
 from wtforms import ValidationError, widgets, SelectMultipleField
@@ -17,14 +17,12 @@ class ChangeListingInformation(Form):
                                         validators=[DataRequired(), Length(1, 2500)])
     listing_price = DecimalField('Item Price', places=2,
                                  validators=[DataRequired(message=PRICE_MESSAGE)])
+    listing_unit = StringField('Item Unit', validators=[DataRequired(), Length(1, 1000)])
+    listing_quantity = IntegerField('Item Quantity (per unit)',
+                                 validators=[DataRequired(message=PRICE_MESSAGE)])
     listing_available = BooleanField('Available?')
     submit = SubmitField('Update Item Information')
 
-    def validate_listing_name(self, field):
-        is_same_name = Listing.name == field.data
-        is_diff_id = Listing.id != self.listing_id
-        if current_user.listings.filter(is_same_name, is_diff_id).first():
-            raise ValidationError('You already have an item with name {}.'.format(field.data))
 
 
 class NewItemForm(Form):
@@ -34,6 +32,11 @@ class NewItemForm(Form):
                                         validators=[DataRequired(), Length(1, 2500)])
     listing_price = DecimalField('Item Price', places=2,
                                  validators=[DataRequired(message=PRICE_MESSAGE)])
+    listing_unit = StringField('Item Unit', validators=[DataRequired(), Length(1, 1000)])
+    listing_quantity = IntegerField('Item Quantity (per unit)',
+                                 validators=[DataRequired(message=PRICE_MESSAGE)])
+    listing_productID = IntegerField('Item Product ID',
+                                 validators=[DataRequired(message='Provide a valid numerical Product Identification')])
     submit = SubmitField('Create New Item')
 
     def validate_listing_name(self, field):

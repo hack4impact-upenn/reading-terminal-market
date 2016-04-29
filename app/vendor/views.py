@@ -41,10 +41,11 @@ def new_listing():
             name=form.listing_name.data,
             description=form.listing_description.data,
             available=True,
-            unit= "lbs",
-            quantity="0",
+            unit= form.listing_unit.data,
+            quantity= form.listing_quantity.data,
             price=form.listing_price.data,
-            vendor_id=current_user.id
+            vendor_id=current_user.id,
+            product_id=form.listing_productID.data
         )
         db.session.add(listing)
         db.session.commit()
@@ -232,6 +233,8 @@ def change_listing_info(listing_id):
     if form.validate_on_submit():
         listing.name = form.listing_name.data
         listing.description = form.listing_description.data
+        listing.unit = form.listing_unit.data
+        listing.quantity = form.listing_quantity.data
         if form.listing_available.data:
             listing.available = True
         else:
@@ -244,6 +247,8 @@ def change_listing_info(listing_id):
     form.listing_name.default = listing.name
     form.listing_description.default = listing.description
     form.listing_price.default = listing.price
+    form.listing_unit.default = listing.unit
+    form.listing_quantity.default = listing.quantity
     form.listing_available.default = listing.available
 
     form.process()
