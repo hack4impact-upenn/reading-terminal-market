@@ -22,9 +22,9 @@
         </div>
         <div class="side-bar"> 
             <h3>Filtering Settings</h3>
-            <div class="field">
+            <div class="field" id="availability_wrapper">
                 <label>Order by</label>
-                <select class="ui selection dropdown" id="availability" name="avail">
+                <select class="ui selection dropdown"  name="avail">
                     {% if request.args.get('avail') == "avail" %}
                         {% set selected = 'selected' %}
                     {% elif request.args.get('avail') == "non_avail" %}
@@ -126,7 +126,7 @@
                 title: "Availability",
                 width: 300,
                 position: 6,
-                arrowSize:20
+                arrowSize:20,
             });
                 guiders.createGuider({
                 attachTo: "#sort_wrapper",
