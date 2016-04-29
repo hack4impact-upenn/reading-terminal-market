@@ -20,7 +20,9 @@ body {
   font-family: 'Arial' !important;
 }
 // General nav
-
+a {
+  cursor: pointer;
+}
 nav {
     margin-bottom: 75px !important;
 }
