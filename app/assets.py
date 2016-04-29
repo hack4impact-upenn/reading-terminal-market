@@ -3,7 +3,8 @@ from flask.ext.assets import Bundle
 app_css = Bundle(
     'app.scss',
     filters='scss',
-    output='styles/app.css'
+    output='styles/app.css',
+    depends=('*.scss')
 )
 
 app_js = Bundle(
@@ -14,6 +15,7 @@ app_js = Bundle(
 
 vendor_css = Bundle(
     'vendor/semantic.min.css',
+    'vendor/animate.min.css',
     output='styles/vendor.css'
 )
 
@@ -21,6 +23,7 @@ vendor_js = Bundle(
     'vendor/jquery.min.js',
     'vendor/semantic.min.js',
     'vendor/tablesort.min.js',
+
     filters='jsmin',
     output='scripts/vendor.js'
 )

@@ -3,13 +3,13 @@
 Procurement for the Reading Terminal Market
 
 Team members:
+- Alex Piatski
 - Jonathan Dubin
 - Hunter Lightman
 - Krishna Bharathala
 - Natasha Narang
 - Abhinav Suri
 - Cathy Chen
-- Alex Piatski
 - Rani Iyer
 - Annie Meng
 - Maya Ebsworth

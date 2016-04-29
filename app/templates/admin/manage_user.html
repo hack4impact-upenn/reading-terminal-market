@@ -2,7 +2,13 @@
 {% import 'macros/form_macros.html' as f %}
 
 {% set deletion_endpoint = 'admin.delete_user_request' %}
-
+{% if user.is_vendor() %}
+    {% set endpoints = [
+        ('admin.user_info', 'User information'),
+        ('admin.change_user_email', 'Change email address'),
+        ('admin.manage_tags', 'Manage tags'),
+        (deletion_endpoint, 'Delete user')
+    ] %}
 
 {% if user.is_vendor() %}
     {% set endpoints = [
@@ -11,6 +17,7 @@
         ('admin.test_csv', 'Test Vendor CSV'),
         (deletion_endpoint, 'Delete user')
     ] %}
+
 {% else %}
     {% set endpoints = [
         ('admin.user_info', 'User information'),
@@ -40,6 +47,17 @@
     </table>
 {% endmacro %}
 
+{% macro manage_tags(user) %}
+
+    <table class="ui compact definition table">
+        {% for t in tags | sort(attribute='tag_name') %}
+            <tr>
+                <td>{{ t.tag_name }} <a style="color: red; float: right" href="{{ url_for('admin.delete_tag',user_id = user.id, tag_id = t.id) }}">Delete Tag from Vendor</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    {{ f.render_form(form) }}
+{% endmacro %}
 
 {% block content %}
     <div class="ui stackable centered grid container">
@@ -82,6 +100,8 @@
                         </a>
                     </div>
                     </div>
+                {% elif flag %}
+                    {{ manage_tags(user) }}
                 {% elif form %}
                     {{ f.render_form(form) }}
                 {% else %}

@@ -23,18 +23,18 @@
                 <td>{{ format_price(purchase['price'] * purchase['quantity']) }}</td>
             </tr>
         {% endfor %}
-
         </tbody>
     </table>
 {% endmacro %}
 
 {% macro order_segment(order, hide=False) %}
     {% set merchant_info = order.get_merchant_info() %}
+    {% set purchase_info = order.get_purchase_info() %}
     {% if hide %}
         {% set display = "display:none" %}
     {% endif %}
     <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
-        <div class="ui left floated basic segment" style="margin-bottom: 0px">
+        <div class="ui left floated basic segment">
             <h3 class="ui header item-title">
                 Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ order_macros.status_label(order.status) }}
                 <div class="sub header">
@@ -45,12 +45,13 @@
             <div class="order-comments"></div>
             {% endif %}
             <div><b>Total:</b> {{ order.get_total() }}</div>
-            <div style="margin-top: 5px; margin-bottom: 0px"><a class="toggle-details" href="#">Show purchases</a></div>
+            <div class="order-segment-details"><a class="toggle-details" href="#">Show purchases</a></div>
 
         </div>
         <div class="ui right floated basic segment">
             <div class="ui list right">
                 <div class="item"><b>Company name: </b> {{  merchant_info['company_name'] }}</div>
+                <div class="item"><b>Referral name: </b> {{ order.referral_name }}</div>
                 {% if merchant_info['full_name'] %}
                     <div class="item"><b>Merchant name: </b> {{  merchant_info['full_name'] }}</div>
                 {% endif %}
@@ -70,7 +71,7 @@
         </div>
 
 
-        <div class="details" style="display: none;">
+        <div class="details">
             {{ order_table(order) }}
         </div>
     </div>

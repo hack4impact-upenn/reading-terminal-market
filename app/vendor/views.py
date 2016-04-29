@@ -179,7 +179,7 @@ def current_listings(page=1):
     if search != "False":
         page = 1
 
-    listings_paginated = listings_raw.paginate(page, 20, False)
+    listings_paginated = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
@@ -340,6 +340,19 @@ def approve_order(order_id):
     return jsonify({'order_id': order_id, 'status': 'approved', 'comment': comment})
 
 
+'''@vendor.route('/request-tag', methods=['PUT'])
+@login_required
+@vendor_required
+def request_tag():
+    form = RequestTagForm()
+    if form.validate():
+        for tag in form.tags_chosen:
+            User.vendor_tags_table.append(current_user, tag, False)
+        for tag in User.tags_list:
+            if tag not in form.tags_chosen:
+                User.vendor_tags_table.delete(current_user, tag)'''
+
+
 @vendor.route('/decline/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
@@ -355,7 +368,6 @@ def decline_order(order_id):
 
     merchant_id = order.merchant_id
     merchant = User.query.get(merchant_id)
-
     vendor_name = order.company_name
     vendor_email = current_user.email
     purchases = order.purchases
@@ -368,5 +380,4 @@ def decline_order(order_id):
                order=order,
                purchases=purchases,
                comment=comment)
-
     return jsonify({'order_id': order_id, 'status': 'declined', 'comment': comment})

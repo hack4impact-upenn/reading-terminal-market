@@ -1,0 +1,47 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% block content %}
+     <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                        <tr>
+                            <th class="sorted ascending two wide">Item Tag Name</th>
+                            <th class="sorted two wide">Item Tag Color</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for t in tags | sort(attribute='item_tag_name') %}
+                        <tr>
+                            <td>{{ t.item_tag_name }}</td>
+                            <td>{{ t.tag_color }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% set flashes = {
+                'error':   get_flashed_messages(category_filter=['form-error']),
+                'success': get_flashed_messages(category_filter=['form-success'])
+            } %}
+
+            {{ f.begin_form(form, flashes) }}
+
+                <div class="two fields">
+                    {{ f.render_form_field(form.item_tag_name) }}
+                    {{ f.render_form_field(form.tag_color) }}
+                </div>
+
+                {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
+                {{ f.form_message(flashes['success'], header='Success!', class='success') }}
+
+                {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
+                    {{ f.render_form_field(field) }}
+                {% endfor %}
+            {{ f.end_form() }}
+    </div>
+    </div>
+
+{% endblock %}
+
+</html>

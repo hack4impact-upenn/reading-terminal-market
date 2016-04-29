@@ -3,8 +3,8 @@ from flask.ext.login import current_user
 from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, Length
-from wtforms import ValidationError
-from ..models import Listing
+from wtforms import ValidationError, widgets, SelectMultipleField
+from ..models import Category, Listing, User
 from .. import db
 
 
@@ -44,5 +44,3 @@ class NewItemForm(Form):
 class NewCSVForm(Form):
     file_upload = FileField(validators=[DataRequired()])
     submit = SubmitField('Submit Upload')
-
-
