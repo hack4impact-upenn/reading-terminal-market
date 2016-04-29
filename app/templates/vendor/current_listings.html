@@ -16,7 +16,7 @@
         </div>
         <div class="ui submit-section">
             <button class="ui button blue searchbutton" type="submit">Search</button>
-            <a class="ui button clearbutton" href="{{ url_for('merchant.listing_view_all', page=1) }}">Clear Criteria</a>
+            <a class="ui button clearbutton" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
         </div>
         <div class="side-bar"> 
             <h3>Filtering Settings</h3>
@@ -38,7 +38,8 @@
             </select>
             <div class="field">
 
-                <select class="ui selection dropdown" name="sort-by">                {% if request.args.get('sort-by') == "low_high" %}
+                <select class="ui selection dropdown" name="sort-by">                
+                {% if request.args.get('sort-by') == "low_high" %}
                     {% set checked2 = 'selected' %}
                 {% elif request.args.get('sort-by') == "high_low" %}
                     {% set checked3 = 'selected' %}
