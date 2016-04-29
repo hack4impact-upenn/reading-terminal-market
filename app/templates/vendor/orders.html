@@ -33,7 +33,59 @@
     {% if hide %}
         {% set display = "display:none" %}
     {% endif %}
-    <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
+
+    <div class="ui card clearing order" style="{{ display }}" id="order-{{ order.id }}">
+      <div class="content order-card-top {{ order_macros.status_color(order.status) }}">
+        <div class="header">
+            <div class="order-number">
+            ORDER #{{ order.id }} - {{ merchant_info['company_name'] }}
+            </div>
+            <div class="order-status">
+                {{ order_macros.status_label(order.status) }}
+            </div>
+        </div>
+      </div>
+      <div class="content">
+          <div class="description order-card-description">
+              <div class="ui two column grid">
+              <div class="seven wide column">
+                  Placed on {{ order.get_date() }} at {{ order.get_time() }}
+                  <div class="item"><b>Company name: </b> {{  merchant_info['company_name'] }}</div>
+                    <div class="item"><b>Referral name: </b> {{ order.referral_name }}</div>
+                    {% if merchant_info['full_name'] %}
+                        <div class="item"><b>Merchant name: </b> {{  merchant_info['full_name'] }}</div>
+                    {% endif %}
+                    {% if merchant_info['email'] %}
+                        <div class="item"><b>Email: </b> <a href="mailto: {{ merchant_info['email'] }}">{{  merchant_info['email'] }}</a></div>
+                    {% endif %}
+              </div>
+              <div class="nine wide column">
+                  <div><b>Total:</b> {{ order.get_total() }}</div>
+                  <div class="comments">
+                      <b>Comments:</b> {{ order.comment }}
+                  </div>
+              </div>
+            </div>
+            {% if order.status == 0 %}
+            <div class="ui divider seven wide"></div>
+            <div class="order-card-user-actions">
+                <div class="approve-decline-container">
+                    <button class="positive ui button tiny compact approve" id="order-{{ order.id }}">Approve order</button>
+                    <button class="negative ui button tiny compact decline">Decline order</button>
+                </div>           
+            </div>
+            {% endif %} 
+          </div>
+      </div>
+
+        <div class="details">
+            {{ order_table(order) }}
+        </div>
+    </div>
+
+
+
+   <!--  <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
         <div class="ui left floated basic segment">
             <h3 class="ui header item-title">
                 Order #{{ order.id }} - {{ merchant_info['company_name'] }} {{ order_macros.status_label(order.status) }}
@@ -73,8 +125,8 @@
 
         <div class="details">
             {{ order_table(order) }}
-        </div>
-    </div>
+        </div> 
+    </div> -->
 
 {% endmacro %}
 
@@ -90,11 +142,13 @@
 
         {{ order_macros.status_filter_menu(status_filter) }}
 
-        {% for order in orders[:page_size] %}
-            {{ order_segment(order) }}
-        {% else %}
-            <h3>No orders found.</h3>
-        {% endfor %}
+        <div class="ui cards">
+            {% for order in orders[:page_size] %}
+                {{ order_segment(order) }}
+            {% else %}
+                <h3 class="no-order-text">No orders found.</h3>
+            {% endfor %}
+        </div>
 
         {% for order in orders[page_size:] %}
             {{ order_segment(order, hide=True) }}
