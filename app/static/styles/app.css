@@ -267,7 +267,7 @@ table.selectable tr:hover {
 .listing-contain .custom-search .side-bar input {
   border-radius: 0px !important;
 }
-@media screen and (max-width: 768px) {
+@media (max-width: 600px) {
 @media -sass-debug-info{filename{}line{font-family:\0000340}}
   .listing-contain .custom-search .side-bar {
     display: none;
@@ -316,7 +316,7 @@ table.selectable tr:hover {
   position: absolute !important;
   left: 300px;
 }
-@media screen and (max-width: 768px) {
+@media (max-width: 600px) {
 @media -sass-debug-info{filename{}line{font-family:\0000392}}
   .listing-contain .listings {
     left: 10px;

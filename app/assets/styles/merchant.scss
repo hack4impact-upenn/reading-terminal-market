@@ -52,7 +52,7 @@
             input {
                 border-radius: 0px !important
             }
-            @media screen and (max-width: 768px) {
+            @media (max-width: 600px) {
                 display:none;
             }
         }
@@ -92,7 +92,7 @@
     .listings {
         position: absolute !important;
         left: 300px;
-        @media screen and (max-width: 768px) {
+        @media (max-width: 600px) {
             left: 10px;
         }
     }
@@ -127,3 +127,4 @@
 .desc-desc {
     width: 80% !important;
 }
+
