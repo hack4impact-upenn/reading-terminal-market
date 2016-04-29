@@ -25,13 +25,6 @@
     }
 }
 
-@media (min-width: $mobile-breakpoint) and (max-width : $tablet-breakpoint) {
-    .order {
-        font-size: 18px !important;
-        line-height: 1.5em;
-    }
-}
-
 @media (max-width: $mobile-breakpoint) {
     .order {
         font-size: 14px !important;
@@ -179,19 +172,6 @@
         &:hover {
             background-color: $hover-background-gray;
             color: $darkest-gray;
-        }
-    }
-}
-
-@media (min-width: $mobile-breakpoint) and (max-width : $tablet-breakpoint) {
-    .reviews > .ui.form > .ui.items > .item > .content {
-        font-size: 18px !important;
-        line-height: 1.5em;
-
-        // specificity to override
-        > .ui.header {
-            font-size: 18px !important;
-            line-height: 1.5em;
         }
     }
 }

@@ -67,15 +67,3 @@ body {
         text-align: center;
     }
 }
-
-@media (min-width: $mobile-breakpoint) and (max-width : $tablet-breakpoint) {
-    .ui.header.page-header {
-        .title {
-            font-size: 30px;
-        }
-
-        .sub.header {
-            font-size: 20px;
-        }
-    }
-}
