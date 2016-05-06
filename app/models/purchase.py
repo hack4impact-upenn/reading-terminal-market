@@ -15,9 +15,9 @@ class CartItem(db.Model):
     __table_args__ = (
         CheckConstraint('quantity > 0'),
     )
-    merchant_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+    merchant_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'),
                             primary_key=True)
-    listing_id = db.Column(db.Integer, db.ForeignKey('listings.id'),
+    listing_id = db.Column(db.Integer, db.ForeignKey('listings.id', ondelete='CASCADE'),
                            primary_key=True)
     quantity = db.Column(db.Integer)
 

@@ -57,6 +57,7 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(64), index=True)
     last_name = db.Column(db.String(64), index=True)
     email = db.Column(db.String(64), unique=True, index=True)
+    ratings = db.relationship("Ratings", backref="users", lazy="dynamic", cascade='all, delete-orphan')
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     tutorial_completed = db.Column(db.Boolean, default=False)
@@ -297,10 +298,11 @@ class Vendor(User):
 
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
-    listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
+    listings = db.relationship("Listing", backref="vendor", lazy="dynamic", cascade='all, delete-orphan')
     company_name = db.Column(db.String(64), default="")
-    tags = db.relationship("TagAssociation", back_populates="vendor")
+    tags = db.relationship("TagAssociation", back_populates="vendor", cascade='all, delete-orphan')
     product_id_col = db.Column(db.String(64), default="ProductID")
+    ratings_vendor = db.relationship("Ratings", backref="vendor", cascade='all, delete-orphan')
     listing_description_col = db.Column(db.String(64), default="Description")
     price_col = db.Column(db.String(64), default="Price")
     name_col = db.Column(db.String(64), default="Vendor")
@@ -370,7 +372,7 @@ class Merchant(User):
     bookmarks = db.relationship("Listing",
                                 secondary=bookmarks_table,
                                 backref="bookmarked_by")
-    cart_items = db.relationship("CartItem")
+    cart_items = db.relationship("CartItem", backref="users", lazy="dynamic", cascade='all, delete-orphan')
     company_name = db.Column(db.String(64), default="")
 
     def get_cart_listings(self):

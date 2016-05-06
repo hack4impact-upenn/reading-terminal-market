@@ -59,7 +59,8 @@
                                             <span class="desc-name">Vendor Name: {{ l.vendor.company_name }}</span>
                                             {% set rating = l.vendor.get_rating_value() %}
                                             {% if rating != -1 %}
-                                                Rating:
+                                            <br>
+                                                <b>Rating:</b>
                                                 <a class="ui small label">
                                                     <i class="star icon"></i> {{ rating }}
                                                 </a>
