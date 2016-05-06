@@ -1,12 +1,11 @@
 from .. import db
 
-
 class Ratings(db.Model):
     __tablename__ = 'ratings'
 
     id = db.Column(db.Integer, primary_key=True)
-    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    merchant_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendor.id', ondelete='CASCADE'))
+    merchant_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
     star_rating = db.Column(db.Float)
     comment = db.Column(db.Text)
     date_reviewed = db.Column(db.DateTime)

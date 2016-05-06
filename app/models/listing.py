@@ -19,9 +19,10 @@ class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # model relationships
-    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
     unit = db.Column(db.String(32))
     quantity = db.Column(db.String(32))
+    cartitems = db.relationship('CartItem', backref='listings', cascade='all,delete-orphan', lazy='dynamic')
     # listing properties
     name = db.Column(db.String(64))
     description = db.Column(db.Text)
@@ -115,12 +116,6 @@ class Listing(db.Model):
             vendors = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
             vendor_ids = [vendor.id for vendor in vendors]
             filter_list.append(Listing.vendor_id.in_(vendor_ids))
-
-        # if 'category_search' in kwargs and kwargs['category_search']:
-        #     term = kwargs['category_search']
-        #     categories = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
-        #     category_ids = [category.id for category in categories]
-        #     filter_list.append(Listing.category_id.in_(category_ids))
 
         # used by vendors to filter by availability
         if 'avail' in kwargs:

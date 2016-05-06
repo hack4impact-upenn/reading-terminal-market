@@ -74,12 +74,6 @@ def listing_view_all(page=1):
         count=result_count
     )
 
-
-
-
-
-
-
 @admin.route('/category/<int:category_id>/delete')
 @login_required
 @admin_required

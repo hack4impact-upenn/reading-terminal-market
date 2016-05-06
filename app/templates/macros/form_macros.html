@@ -59,7 +59,7 @@
 {# Render a message for the form #}
 {% macro form_message(messages, header=none, class='') %}
     {% if messages %}
-        <div class="ui {{ class }}-custom message">
+        <div class="ui {{ class }} custom-form message">
             {% if header is not none %}
                 <div class="header">{{ header }}</div>
             {% endif %}

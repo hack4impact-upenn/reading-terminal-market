@@ -136,11 +136,14 @@ body {
     border-radius: 0px !important
   }
 }
-.error-custom {
-  background-color: red;
+
+.custom-form {
+  border-radius: 0px !important;
 }
 // Login
-
+.ui.secondary.vertical.menu>.item {
+  border-radius: 0px !important;
+}
 .custom-login {
   input {
     border-radius: 0px !important;
