@@ -117,11 +117,11 @@ def setup_test_listings():
 
     seed()
     count = 0
-    for i in range(100):
+    for i in range(1000000):
         u = Listing(
             vendor_id=3,
             unit= "lbs",
-            quantity="200",
+            quantity=randint(1,200),
             name=fake.word(),
             description=fake.sentence(nb_words=10, variable_nb_words=True),
             price=randint(1,100),
