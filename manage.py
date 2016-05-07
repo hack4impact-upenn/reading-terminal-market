@@ -117,7 +117,7 @@ def setup_test_listings():
 
     seed()
     count = 0
-    for i in range(1000000):
+    for i in range(100):
         u = Listing(
             vendor_id=3,
             unit= "lbs",
