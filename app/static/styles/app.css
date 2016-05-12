@@ -1,11 +1,11 @@
 /******* IMPORTS *******/
-/* line 3, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/admin.scss */
+/* line 3, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/admin.scss */
 .admin-listing-info .ui.header .sub.header.listing-info-header {
   padding-bottom: 8px;
 }
 
 /**** BASE.SCSS ****/
-/* line 2, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
+/* line 2, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/layouts.scss */
 #notifier {
   z-index: 1000000;
   position: fixed;
@@ -17,24 +17,24 @@
   font-size: 12px;
 }
 
-/* line 13, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
+/* line 13, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/layouts.scss */
 .notifications {
   display: none;
 }
 
-/* line 17, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
+/* line 17, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/layouts.scss */
 .csrf-token {
   visibility: hidden;
   display: none;
 }
 
 /**** LISTINGS.SCSS ****/
-/* line 23, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
+/* line 23, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/layouts.scss */
 .listings {
   overflow-x: scroll;
 }
 
-/* line 27, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/layouts.scss */
+/* line 27, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/layouts.scss */
 .truncate {
   max-width: 100px;
   white-space: nowrap;
@@ -43,20 +43,20 @@
 }
 
 /********* ORDERS.HTML **********/
-/* line 4, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/macros.scss */
+/* line 4, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/macros.scss */
 .ui.menu.order-status-menu .item {
   text-transform: uppercase;
   border-color: #979797;
   color: #979797;
 }
 
-/* line 10, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/macros.scss */
+/* line 10, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/macros.scss */
 .ui.menu.order-status-menu .item.active {
   background: #EDEDED;
 }
 
 @media (max-width: 768px) {
-  /* line 15, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/macros.scss */
+  /* line 15, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/macros.scss */
   .ui.menu.order-status-menu {
     max-width: 50%;
     margin-left: auto;
@@ -64,117 +64,117 @@
   }
 }
 /********* MANAGE_CART.HTML **********/
-/* line 2, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 2, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .merchant-listings, .merchant-cart {
   overflow-x: scroll;
 }
 
 /********* ORDERS.HTML **********/
-/* line 8, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 8, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .order .segment {
   margin-bottom: 0px;
 }
-/* line 11, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 11, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .order .segment .order-segment-details {
   margin-top: 5px;
   margin-bottom: 0px;
 }
-/* line 17, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 17, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .order .details {
   padding-left: 1rem;
   padding-right: 1rem;
   display: none;
 }
-/* line 23, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 23, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .order .reviews {
   padding: 0 1rem 1rem 1rem;
 }
 
 @media (max-width: 768px) {
-  /* line 29, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 29, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .order {
     font-size: 14px !important;
     line-height: 1.5em;
   }
 }
-/* line 36, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 36, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .card.order {
   width: 100%;
 }
 
-/* line 41, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 41, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .no-order-text {
   color: #A3A3A3;
   padding: 1rem;
 }
 
 @media (max-width: 768px) {
-  /* line 47, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 47, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .ui.cards > .no-order-text {
     margin: 0 auto;
   }
 }
-/* line 54, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 54, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content.order-card-top.grey {
   background: #929292;
 }
-/* line 58, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 58, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content.order-card-top.red {
   background: #FC8B8B;
 }
-/* line 62, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 62, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content.order-card-top.green {
   background: #3FC380;
 }
-/* line 66, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 66, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content.order-card-top > .header {
   color: #FFFFFF;
 }
-/* line 69, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 69, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content.order-card-top > .header .order-number {
   float: left;
 }
-/* line 73, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 73, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content.order-card-top > .header .order-status {
   float: right;
 }
 
 @media (max-width: 768px) {
-  /* line 81, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 81, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .ui.cards > .ui.card.order > .content.order-card-top > .header > .order-number, .ui.cards > .ui.card.order > .content.order-card-top > .header > .order-status {
     float: initial;
     text-align: center;
   }
 }
-/* line 90, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 90, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content > .description.order-card-description > .ui.column > .column {
   color: #A3A3A3;
 }
-/* line 94, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 94, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content > .description.order-card-description > .order-card-user-actions > * {
   display: inline-block;
 }
-/* line 98, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 98, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.cards > .ui.card.order > .content > .description.order-card-description .comments {
   overflow-y: scroll;
   max-height: 80px;
 }
 
 @media (max-width: 768px) {
-  /* line 106, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 106, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .ui.cards > .ui.card.order > .content > .description.order-card-description > .ui.column > .column {
     width: 100% !important;
   }
-  /* line 109, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 109, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .ui.cards > .ui.card.order > .content > .description.order-card-description > .ui.column > .column:first-child {
     padding-bottom: 0;
   }
-  /* line 114, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 114, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .ui.cards > .ui.card.order > .content > .description.order-card-description > .order-card-user-actions {
     text-align: center;
   }
 }
-/* line 123, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 123, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .listing-contain .custom-search .search-bar input[name=main-search] {
   position: fixed !important;
   left: 0px !important;
@@ -187,12 +187,12 @@
   z-index: 500;
 }
 @media screen and (max-width: 768px) {
-  /* line 123, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 123, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .listing-contain .custom-search .search-bar input[name=main-search] {
     width: 60% !important;
   }
 }
-/* line 138, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 138, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .listing-contain .custom-search .side-bar {
   background: #FFFFFF;
   border-right: 1px solid #CCC;
@@ -205,17 +205,17 @@
   height: 100%;
   top: 150px;
 }
-/* line 150, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 150, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .listing-contain .custom-search .side-bar input {
   border-radius: 0px !important;
 }
 @media (max-width: 600px) {
-  /* line 138, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 138, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .listing-contain .custom-search .side-bar {
     display: none;
   }
 }
-/* line 158, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 158, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .listing-contain .custom-search .submit-section button {
   position: fixed !important;
   top: 75px;
@@ -227,13 +227,13 @@
   z-index: 500;
 }
 @media screen and (max-width: 768px) {
-  /* line 158, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 158, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .listing-contain .custom-search .submit-section button {
     right: 0%;
     width: 20%;
   }
 }
-/* line 172, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 172, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .listing-contain .custom-search .submit-section .clearbutton {
   position: fixed !important;
   top: 75px;
@@ -247,128 +247,134 @@
   z-index: 500;
 }
 @media screen and (max-width: 768px) {
-  /* line 172, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 172, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .listing-contain .custom-search .submit-section .clearbutton {
     right: 20%;
     width: 20%;
   }
 }
-/* line 190, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 190, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .listing-contain .listings {
   position: absolute !important;
   left: 300px;
 }
 @media (max-width: 600px) {
-  /* line 190, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+  /* line 190, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
   .listing-contain .listings {
     left: 10px;
   }
 }
 
-/* line 201, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 201, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.order-purchase-table > thead th {
   color: #929292;
 }
-/* line 205, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 205, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .ui.order-purchase-table > tbody {
   color: #A3A3A3;
 }
 
-/* line 212, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 212, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .ui.header {
   color: #929292;
   margin-bottom: 0.5rem;
 }
-/* line 217, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 217, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .ui.star.rating {
   margin-right: 0.5rem;
 }
-/* line 221, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 221, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .ui.left.pointing.red.basic.label {
   background-color: #FFFFFF !important;
   border: solid 1px #929292 !important;
   color: #929292 !important;
   margin-left: 0;
 }
-/* line 222, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 222, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .ui.left.pointing.red.basic.label::before {
   visibility: hidden;
 }
-/* line 233, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 233, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .description > .field > label {
   color: #929292;
 }
-/* line 237, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 237, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .description > .field > textarea {
   color: #979797;
 }
-/* line 242, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 242, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .description > .prev-comment {
   color: #979797;
 }
-/* line 246, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 246, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .description > .ui.button.submit-rating {
   border: solid 1px #979797;
   color: #979797;
   background-color: #FFFFFF;
 }
-/* line 251, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 251, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .reviews > .ui.form > .ui.items > .item > .content > .description > .ui.button.submit-rating:hover {
   background-color: #EDEDED;
   color: #5E5E5E;
 }
 
-/* line 257, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 257, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .pagination-styles {
   position: relative;
   bottom: 0;
   z-index: 10;
 }
 
-/* line 263, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 263, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 #listings-table {
   overflow-x: hidden;
 }
-/* line 265, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 265, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 #listings-table .listings-grid {
   width: 90%;
 }
-/* line 267, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 267, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 #listings-table .listings-grid .column {
   border-bottom: 1px solid #CCC;
   min-height: 250px;
   line-height: 2em;
 }
-/* line 274, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 274, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 #listings-table .cartCell input {
   width: 50% !important;
 }
 
-/* line 279, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 279, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .desc-name {
   font-weight: bold;
 }
 
-/* line 283, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/merchant.scss */
+/* line 283, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/merchant.scss */
 .desc-desc {
   width: 80% !important;
 }
 
-/* line 3, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/shared.scss */
+/* line 4, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/shared.scss */
 .listing-info .ui.header .sub.header.listing-info-header {
   padding-bottom: 8px;
 }
 
-/* line 2, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/vendor.scss */
+@media only screen and (max-width: 767px) {
+  /* line 12, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/shared.scss */
+  .ui.table:not(.unstackable) tr {
+    padding-top: 0;
+  }
+}
+/* line 2, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/vendor.scss */
 .order .segment {
   margin-bottom: 0px;
 }
-/* line 5, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/vendor.scss */
+/* line 5, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/vendor.scss */
 .order .segment .order-segment-details {
   margin-top: 5px;
   margin-bottom: 0px;
 }
-/* line 11, /Users/Abhi/Desktop/Various_dev_projects/reading-terminal-market/app/assets/styles/vendor.scss */
+/* line 11, /Users/anniemeng/Documents/PROJECTS/reading-terminal-market/app/assets/styles/vendor.scss */
 .order .details {
   display: none;
 }

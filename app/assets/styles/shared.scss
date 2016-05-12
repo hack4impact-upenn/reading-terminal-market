@@ -1,7 +1,15 @@
+// Listing view subheader
 .listing-info {
     .ui.header {
         .sub.header.listing-info-header{
             padding-bottom: 8px;
         }
+    }
+}
+
+// Account table
+@media (max-width: $mobile-breakpoint) {
+    .ui.table:not(.unstackable) tr {
+        padding-top:0;
     }
 }
