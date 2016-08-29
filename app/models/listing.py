@@ -111,7 +111,9 @@ class Listing(db.Model):
                 Listing.product_id.ilike('%{}%'.format(term)),
                 Listing.description.ilike('%{}%'.format(term)))
             )
-
+        if 'strict_name_search' in kwargs:
+            term = kwargs['strict_name_search']
+            filter_list.append(Listing.name.like('%{}%'.format(term)))
         if 'name_search_term' in kwargs and kwargs['name_search_term']:
             term = kwargs['name_search_term']
             vendors = Vendor.query.filter(Vendor.company_name.ilike('%{}%'.format(term))).all()

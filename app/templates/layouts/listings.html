@@ -56,7 +56,7 @@
                                     <div id="label-contain"></div>
                                     {% if current_user.is_merchant() or current_user.is_admin() %}
                                         <div class="extra">
-                                            <span class="desc-name">Vendor Name: {{ l.vendor.company_name }}</span>
+                                          <span class="desc-name">Vendor Name: <a href={{url_for('account.profile_page', profile_id = l.vendor.id) }}>{{ l.vendor.company_name }}</a></span>
                                             {% set rating = l.vendor.get_rating_value() %}
                                             {% if rating != -1 %}
                                             <br>

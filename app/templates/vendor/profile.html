@@ -1,0 +1,96 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+        <div class="ui row">
+            <div class="ui right floated three wide column">
+                {% if current_user.is_vendor() %}
+                <a href="{{ url_for('vendor.edit_profile') }}">
+                    <button class="ui button">Edit Profile</button>
+                  </a><br>
+                  RTM Link to this profile is:
+                  <a href="{{ url_for('account.profile_page', profile_id = current_user.id )}}">{{ url_for('account.profile_page', profile_id = current_user.id, _external=True )}}</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="ui row">
+            
+            <style>
+                img {
+                    max-width: 100%;
+                    max-height: 300px;
+                }
+            </style>
+            <div class="ui left aligned two wide column">
+
+            </div>
+            <div class="ui left aligned five wide column">
+                <div class="ui one column grid">
+                    <div class="column">
+                <h1 class="ui header">{{ vendor.company_name }}</h1>
+                <h5 class="ui header"><i>{{ vendor.bio }}</i></h5>
+                <p >Website: <a href="{{ vendor.website }}" target="_blank">{{ vendor.website }}</a>
+                <br>Address: {{ vendor.address }}
+                <br>Email: <a href="mailto:{{ vendor.public_email }}">{{ vendor.public_email }}</a>
+                <br>Phone: {{ vendor.phone_number }}</p>
+                        </div>
+                </div>
+            </div>
+        <div class="ui left aligned five wide column">
+            <img src="{{ url_for('static', filename='images/vendor/'+vendor.image) }}">
+        </div>
+        </div>
+        <div class="ui row">
+          <div class="ui left aligned two wide column"></div>
+            {% if f1 != None %}
+        <div class="ui left aligned three wide column grid">
+                    {% if current_user.is_vendor() %}
+                        <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f1.id) }}">{{ vendor.f1 }}</a></p>
+                    {% else %}
+                        <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f1.id) }}">{{ vendor.f1 }}</a></p>
+                    {% endif %}
+                        <p>
+                        Notes: {{ vendor.d1 }}<br>Description: {{ f1.description }}
+                        </p>
+                    </div>
+            {% endif %}
+            {% if f2 != None %}
+        <div class="ui left aligned three wide column grid">
+                    {% if current_user.is_vendor() %}
+                        <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f2.id) }}">{{ vendor.f2 }}</a></p>
+                    {% else %}
+                        <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f2.id) }}">{{ vendor.f2 }}</a></p>
+                    {% endif %}
+                        <p>
+                        Notes: {{ vendor.d2 }}<br>Description: {{ f2.description }}
+                        </p>
+                    </div>
+                {% endif %}
+
+            {% if f3 != None %}
+        <div class="ui left aligned three wide column grid">
+                    {% if current_user.is_vendor() %}
+                        <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f3.id) }}">{{ vendor.f3 }}</a></p>
+                    {% else %}
+                        <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f3.id) }}">{{ vendor.f3 }}</a></p>
+                    {% endif %}                         <p>
+                        Notes: {{ vendor.d3 }}<br>Description: {{ f3.description }}
+                        </p>
+                    </div>
+                        {% endif %}
+
+            {% if f4 != None %}
+        <div class="ui left aligned three wide column grid">
+                    {% if current_user.is_vendor() %}
+                        <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f4.id) }}">{{ vendor.f4 }}</a></p>
+                    {% else %}
+                        <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f4.id) }}">{{ vendor.f4 }}</a></p>
+                    {% endif %}
+                        <p>
+                        Notes: {{ vendor.d4 }}<br>Description: {{ f4.description }}
+                        </p>
+                    </div>
+            {% endif %}
+    </div>
+    </div>
+{% endblock %}

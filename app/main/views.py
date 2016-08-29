@@ -8,7 +8,7 @@ def index():
     if current_user.is_merchant():
         return redirect(url_for('merchant.index'))
     elif current_user.is_admin():
-        return redirect(url_for('admin.index'))
+        return redirect(url_for('admin.index')) 
     elif current_user.is_vendor():
         return redirect(url_for('vendor.index'))
     else:

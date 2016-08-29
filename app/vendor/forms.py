@@ -1,8 +1,9 @@
+import imghdr
 from flask.ext.wtf import Form
 from flask.ext.login import current_user
 from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField, IntegerField, RadioField, SelectField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length, Regexp
+from wtforms.validators import DataRequired, URL, Email, Length, Regexp
 from wtforms import ValidationError, widgets, SelectMultipleField
 from ..models import Listing, User
 from .. import db
@@ -43,6 +44,24 @@ class NewItemForm(Form):
         if current_user.listings.filter_by(name=field.data).first():
             raise ValidationError('You already have an item with this name.')
 
+
+class EditProfileForm(Form):
+    image = FileField('Image File')
+    bio = TextAreaField('Bio')
+    address = StringField('Address')
+    phone_number = StringField('Phone Number')
+    website = StringField('Website (http://www.example.com)',
+                          validators=[URL('This URL is invalid. Please enter a valid website name')])
+    email = StringField('Email', validators=[Email('Please enter a valid email address')])
+    featured1 = StringField('Featured Item 1')
+    description1 = StringField('Description Item 1')
+    featured2 = StringField('Featured Item 2')
+    description2 = StringField('Description Item 2')
+    featured3 = StringField('Featured Item 3')
+    description3 = StringField('Description Item 3')
+    featured4 = StringField('Featured Item 4')
+    description4 = StringField('Description Item 4')
+    submit = SubmitField('Save')
 
 class NewCSVForm(Form):
     file_upload = FileField(validators=[DataRequired()])
