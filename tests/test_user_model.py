@@ -132,7 +132,6 @@ class UserModelTestCase(unittest.TestCase):
         r = Role.query.filter_by(permissions=Permission.ADMINISTER).first()
         u = User(email='user@example.com', password='password', role=r)
         self.assertTrue(u.can(Permission.ADMINISTER))
-        self.assertTrue(u.can(Permission.GENERAL))
         self.assertTrue(u.is_admin())
 
     def test_anonymous(self):
