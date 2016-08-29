@@ -9,7 +9,7 @@
     {% endwith %}
 {% endmacro %}
 
-<div class="ui text container">
+<div class="ui text container custom-flash">
     <div class="flashes">
         {{ render_flashes('error') }}
         {{ render_flashes('warning') }}
@@ -17,3 +17,8 @@
         {{ render_flashes('success') }}
     </div>
 </div>
+<script>
+            $( '.custom-flash' ).fadeIn(500).delay(2500).fadeOut(function(){
+                $( '.custom-flash').clearQueue();
+            });
+</script>

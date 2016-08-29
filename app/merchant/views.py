@@ -2,8 +2,10 @@ from flask import render_template, abort, request, redirect, url_for, jsonify
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order, Vendor, Status
+from ..models import (Listing, CartItem, Order, Vendor, Status, ItemTag,
+                      Ratings, User)
 from .. import db
+from datetime import datetime
 
 
 @merchant.route('/')
@@ -19,6 +21,11 @@ def index():
 @merchant_required
 def listing_view_all(page=1):
     """Search for listings"""
+    tut_completed = (User.query
+                         .filter_by(id=current_user.id)
+                         .first()
+                         .tutorial_completed)
+    print 'tut completed is:', tut_completed
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
     fav_vendor = True if request.args.get('fav_vendor') == "on" else False
@@ -44,8 +51,8 @@ def listing_view_all(page=1):
 
     if search != "False":
         page = 1
-
-    listings_paginated = listings_raw.paginate(page, 20, False)
+    item_tags = ItemTag.query.all()
+    listings_paginated = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
@@ -55,6 +62,7 @@ def listing_view_all(page=1):
 
     return render_template(
         'merchant/view_listings.html',
+        tut_completed=tut_completed,
         listings=listings_paginated,
         main_search_term=main_search_term,
         min_price=min_price,
@@ -66,7 +74,8 @@ def listing_view_all(page=1):
         category_search=category_search,
         cart_listings=current_user.get_cart_listings(),
         header=header,
-        count=result_count
+        count=result_count,
+        item_tags=item_tags
     )
 
 
@@ -76,7 +85,8 @@ def listing_view_all(page=1):
 @merchant_required
 def order_items(vendor_id=None):
     if vendor_id:
-        Order.order_cart_items_from_vendor(vendor_id)
+        referral_name = request.form['referral_name']
+        Order.order_cart_items_from_vendor(vendor_id, referral_name)
     else:
         Order.order_cart_items()
     return redirect(url_for('.manage_cart'))
@@ -86,6 +96,10 @@ def order_items(vendor_id=None):
 @login_required
 @merchant_required
 def manage_cart():
+    tut_completed = (User.query
+                         .filter_by(id=current_user.id)
+                         .first()
+                         .tutorial_completed)
     # used to show/hide the order modal
     confirm_order = request.args.get('confirm_order', default=False, type=bool)
     # vendor_id to order from. if None, order from all
@@ -98,6 +112,7 @@ def manage_cart():
     vendor_items_dict = CartItem.get_vendor_cart_items_dict()
     return render_template(
         'merchant/manage_cart.html',
+        tut_completed=tut_completed,
         vendor_items_dict=vendor_items_dict,
         confirm_order=confirm_order,
         vendor=vendor,
@@ -139,6 +154,35 @@ def listing_info(listing_id):
     )
 
 
+@merchant.route('/items/<int:listing_id>/reviews')
+@merchant.route('/items/<int:listing_id>/info/reviews')
+@login_required
+@merchant_required
+def review_info(listing_id, page=1):
+    """View all ratings for Vendor selling the listing"""
+    listing = Listing.query.filter_by(id=listing_id, available=True).first()
+    if listing is None:
+        abort(404)
+
+    page = request.args.get('page', 1, type=int)
+    ratings_raw = listing.vendor.get_ratings_query()
+    ratings_paginated = ratings_raw.paginate(page, 3, False)
+
+    ratings_breakdown = listing.vendor.get_ratings_breakdown()
+    total_num_ratings = sum(ratings_breakdown.values())
+
+    backto = url_for('merchant.listing_info', listing_id=listing_id)
+
+    return render_template(
+        'merchant/view_reviews.html',
+        listing=listing,
+        backto=backto,
+        ratings=ratings_paginated,
+        ratings_breakdown=ratings_breakdown,
+        total_num_ratings=total_num_ratings
+    )
+
+
 @merchant.route('/add_to_cart/<int:listing_id>', methods=["PUT"])
 @login_required
 @merchant_required
@@ -149,8 +193,8 @@ def add_to_cart(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'quantity' not in request.json or type(request.json[
-                                                  'quantity']) is not int:
+    if ('quantity' not in request.json or
+            type(request.json['quantity']) is not int):
         abort(400)
 
     cart_item = CartItem.query.filter_by(
@@ -187,7 +231,8 @@ def change_favorite(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'isFavorite' not in request.json or type(request.json['isFavorite']) is not bool:
+    if ('isFavorite' not in request.json or
+            type(request.json['isFavorite']) is not bool):
         abort(400)
 
     old_status = listing in current_user.bookmarks
@@ -211,7 +256,8 @@ def change_fav_vendor(vendor_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'isFavVendor' not in request.json or type(request.json['isFavVendor']) is not bool:
+    if ('isFavVendor' not in request.json or type(request.json['isFavVendor'])
+            is not bool):
         abort(400)
 
     old_status = vendor in current_user.bookmarked_vendors
@@ -225,7 +271,7 @@ def change_fav_vendor(vendor_id):
     return jsonify(
         {'isFavVendor': vendor in current_user.bookmarked_vendors,
          'vendor_id': vendor.id,
-         'name': vendor.company_name }
+         'name': vendor.company_name}
     )
 
 
@@ -233,6 +279,8 @@ def change_fav_vendor(vendor_id):
 @login_required
 @merchant_required
 def view_orders():
+    tut_completed = (User.query.filter_by(id=current_user.id)
+                     .first().tutorial_completed)
     orders = (Order.query.filter_by(merchant_id=current_user.id)
               .order_by(Order.id.desc()))
 
@@ -247,8 +295,57 @@ def view_orders():
     else:
         status_filter = None
 
+    ratings = Ratings.query.filter_by(merchant_id=current_user.id).all()
+    rating_dict = {rating.vendor_id: rating for rating in ratings}
+
     return render_template(
         'merchant/orders.html',
+        tut_completed=tut_completed,
         orders=orders.all(),
-        status_filter=status_filter
+        status_filter=status_filter,
+        ratings=rating_dict
     )
+
+
+@merchant.route('/tutorial_completed', methods=['POST'])
+@login_required
+@merchant_required
+def tutorial_completed():
+    User.query.filter_by(id=current_user.id).first().tutorial_completed = \
+        not User.query.filter_by(id=current_user.id).first().tutorial_completed
+    db.session.commit()
+    return '', 204
+
+
+@merchant.route('/orders/<int:order_id>', methods=['POST'])
+@login_required
+@merchant_required
+def review_orders(order_id):
+    order = Order.query.get(order_id)
+    star_rating = request.json['rating']
+    comment = request.json['review']
+
+    rating = (Ratings.query
+                     .filter_by(
+                         vendor_id=order.vendor_id,
+                         merchant_id=order.merchant_id)
+                     .first())
+    if not rating:
+        rating = Ratings(
+            vendor_id=order.vendor_id,
+            merchant_id=order.merchant_id,
+            star_rating=star_rating,
+            comment=comment,
+            date_reviewed=datetime.now()
+            )
+        db.session.add(rating)
+        db.session.commit()
+    else:
+        rating.star_rating = star_rating
+        rating.comment = comment
+        rating.date_reviewed = datetime.now()
+        db.session.commit()
+
+    return jsonify({'order_id': order_id, 'rating': star_rating,
+                    'comment': comment, 'vendor id': order.vendor_id,
+                    'date_reviewed': rating.get_date()})

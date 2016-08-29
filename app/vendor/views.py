@@ -12,41 +12,172 @@ from flask import (
     request
 )
 from flask.ext.login import login_required, current_user
-from forms import (ChangeListingInformation, NewItemForm, EditProfileForm)
+from forms import (ChangeListingInformation, NewItemForm, NewCSVForm, EditProfileForm)
 from . import vendor
 from ..models import Listing, Order, Status, User
+from ..models.listing import Updated
+from ..models.user import Vendor
+import csv
+import re
+import copy
 from .. import db
 from ..email import send_email
+from pint import UnitRegistry, UndefinedUnitError
 
 @vendor.route('/')
 @login_required
 @vendor_required
 def index():
-    return render_template('vendor/index.html')
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
+    return render_template('vendor/index.html', tut_completed=tut_completed)
+
+
+@vendor.route('/tutorial_completed', methods=['POST'])
+@login_required
+@vendor_required
+def tutorial_completed():
+    current_tutorial_status = User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    User.query.filter_by(id=current_user.id).first().tutorial_completed = \
+        not User.query.filter_by(id=current_user.id).first().tutorial_completed;
+    db.session.commit();
+    return '', 204
 
 
 @vendor.route('/new-item', methods=['GET', 'POST'])
 @login_required
 @vendor_required
 def new_listing():
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
     """Create a new item."""
     form = NewItemForm()
     if form.validate_on_submit():
-        category_id = form.category_id.data.id
         listing = Listing(
             name=form.listing_name.data,
             description=form.listing_description.data,
             available=True,
+            unit= form.listing_unit.data,
+            quantity= form.listing_quantity.data,
             price=form.listing_price.data,
-            category_id=category_id,
-            vendor_id=current_user.id
+            vendor_id=current_user.id,
+            product_id=form.listing_productID.data
         )
         db.session.add(listing)
         db.session.commit()
         flash('Item {} successfully created'.format(listing.name),
               'form-success')
-        return redirect(url_for('.new_listing'))
-    return render_template('vendor/new_listing.html', form=form)
+        return redirect(url_for('.new_listing', tut_completed=tut_completed))
+    return render_template('vendor/new_listing.html', form=form, tut_completed=tut_completed)
+
+
+@vendor.route('/csv-upload', methods=['GET', 'POST'])
+@login_required
+@vendor_required
+def csv_upload():
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
+    """Create a new item."""
+    form = NewCSVForm()
+    listings = []
+    current_row = 0
+    if form.validate_on_submit():
+        if test_csv(form):
+            csv_field = form.file_upload
+            buff = csv_field.data.stream
+            buff.seek(0)
+            csv_data = csv.DictReader(buff, delimiter=',')
+            #for each row in csv, create a listing
+            current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
+            if form.replace_or_merge.data == 'replace':
+                Listing.query.filter_by(vendor_id=current_user.id).delete(synchronize_session=False)
+            for row in csv_data:
+                print 'in here!'
+                #cheap way to skip weird 'categorical' lines
+                if (row[current_vendor.product_id_col]).strip().isdigit() and form.replace_or_merge.data == 'merge':
+                    safe_price = row[current_vendor.price_col]
+                    proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
+                    queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
+                    if queried_listing:
+                        # case: listing exists and price has not changed
+                        if queried_listing.price == float(safe_price):
+                            proposed_listing.updated = Updated.NO_CHANGE
+                            listings.append(proposed_listing)
+                        # case: listing exists and price has changed
+                        else:
+                            queried_listing.price = float(safe_price)
+                            proposed_listing.price = float(safe_price)
+                            proposed_listing.updated = Updated.PRICE_CHANGE
+                            listings.append(proposed_listing)
+                            db.session.commit()
+                        #case: listing does not yet exist
+                    else:
+                        proposed_listing.updated = Updated.NEW_ITEM
+                        listings.append(proposed_listing)
+                        Listing.add_listing(new_listing=proposed_listing)
+                elif (row[current_vendor.product_id_col]).strip().isdigit() and form.replace_or_merge.data == 'replace':
+                    safe_price = row[current_vendor.price_col]
+                    proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
+                    proposed_listing.updated = Updated.NEW_ITEM
+                    listings.append(proposed_listing)
+                    Listing.add_listing(new_listing=proposed_listing)
+    return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings)
+
+#get rid of those pesky dollar signs that mess up parsing
+def stripPriceHelper(price):
+    r = re.compile("\$(\d+.\d+)")
+    return r.search(price.replace(',','')).group(1)
+
+
+def is_numeric_col(current_vendor, row, col, row_count):
+    if not row[col].isdigit() and row[col]:
+        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {}. Must be number (no letters/characters)."
+              .format(current_vendor.full_name(),col, row_count),
+              'form-error')
+        return False
+    return True
+
+
+def is_proper_unit(vendor_name, unit, row, row_count):
+    return True
+
+@vendor_required
+def test_csv(form):
+    current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
+    if current_vendor is None:
+        abort(404)
+    columns = [current_vendor.product_id_col,current_vendor.listing_description_col, current_vendor.unit_col,
+               current_vendor.price_col, current_vendor.name_col, current_vendor.quantity_col]
+    csv_file = form.file_upload
+    print csv_file.data.filename
+    if '.csv' not in csv_file.data.filename: 
+        flash("Must be a .csv file", 'form-error')
+        return False
+    buff = csv_file.data.stream
+    csv_data = csv.DictReader(buff, delimiter=',')
+    c = current_vendor.product_id_col
+    row_count = 0
+    for row in csv_data:
+        if len(row.keys()) > 1:
+            row_count += 1
+            for c in columns:
+                    if c not in row:
+                        flash("Error parsing {}'s CSV file. Couldn't find {} column at row {}"
+                              .format(current_vendor.full_name(),c, row_count),
+                              'form-error')
+                        return False
+                    if row[current_vendor.product_id_col]=="" and row[current_vendor.listing_description_col]=="":
+                        flash("Successfully parsed {}'s CSV file!"
+                        .format(current_vendor.full_name()), 'form-success')
+                        return True
+            if not(
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                              col=current_vendor.price_col, row_count=row_count) and
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                               col=current_vendor.quantity_col,row_count=row_count) and
+                is_numeric_col(current_vendor=current_vendor, row=row,
+                               col=current_vendor.product_id_col,row_count=row_count)):
+                return False
+            if not is_proper_unit(current_vendor.full_name(), current_vendor.unit_col,row, row_count):
+                return False
+    return True
 
 
 @vendor.route('/itemslist/')
@@ -55,6 +186,7 @@ def new_listing():
 @vendor_required
 def current_listings(page=1):
     """View all current listings."""
+    tut_completed = User.query.filter_by(id=current_user.id).first().tutorial_completed
     main_search_term = request.args.get('main-search', "", type=str)
     sort_by = request.args.get('sort-by', "", type=str)
     avail = request.args.get('avail', "", type=str)
@@ -69,7 +201,7 @@ def current_listings(page=1):
     if search != "False":
         page = 1
 
-    listings_paginated = listings_raw.paginate(page, 20, False)
+    listings_paginated = listings_raw.paginate(page, 21, False)
     result_count = listings_raw.count()
 
     if result_count > 0:
@@ -83,7 +215,8 @@ def current_listings(page=1):
         main_search_term=main_search_term,
         sort_by=sort_by,
         count=result_count,
-        header=header
+        header=header,
+        tut_completed=tut_completed
     )
 
 
@@ -120,9 +253,10 @@ def change_listing_info(listing_id):
     form.listing_id = listing_id
 
     if form.validate_on_submit():
-        listing.category_id = form.category_id.data.id
         listing.name = form.listing_name.data
         listing.description = form.listing_description.data
+        listing.unit = form.listing_unit.data
+        listing.quantity = form.listing_quantity.data
         if form.listing_available.data:
             listing.available = True
         else:
@@ -135,7 +269,8 @@ def change_listing_info(listing_id):
     form.listing_name.default = listing.name
     form.listing_description.default = listing.description
     form.listing_price.default = listing.price
-    form.category_id.default = listing.category
+    form.listing_unit.default = listing.unit
+    form.listing_quantity.default = listing.quantity
     form.listing_available.default = listing.available
 
     form.process()
@@ -145,6 +280,9 @@ def change_listing_info(listing_id):
         listing=listing,
         form=form
     )
+
+
+
 
 
 @vendor.route('/item/<int:listing_id>/delete')
@@ -199,7 +337,7 @@ def view_orders():
     )
 
 
-@vendor.route('/approve/<int:order_id>', methods=['PUT'])
+@vendor.route('/approve/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def approve_order(order_id):
@@ -209,6 +347,7 @@ def approve_order(order_id):
     if order.status != Status.PENDING:
         abort(400)
     order.status = Status.APPROVED
+    order.comment = request.json['comment']
     db.session.commit()
 
     merchant_id = order.merchant_id
@@ -216,18 +355,32 @@ def approve_order(order_id):
 
     vendor_name = order.company_name
     purchases = order.purchases
-
+    comment = order.comment
     send_email(merchant.email,
                'Vendor order request approved',
                'vendor/email/approved_order',
                vendor_name=vendor_name,
                order=order,
-               purchases=purchases)
+               purchases=purchases,
+               comment=comment)
 
-    return jsonify({'order_id': order_id, 'status': 'approved'})
+    return jsonify({'order_id': order_id, 'status': 'approved', 'comment': comment})
 
 
-@vendor.route('/decline/<int:order_id>', methods=['PUT'])
+'''@vendor.route('/request-tag', methods=['PUT'])
+@login_required
+@vendor_required
+def request_tag():
+    form = RequestTagForm()
+    if form.validate():
+        for tag in form.tags_chosen:
+            User.vendor_tags_table.append(current_user, tag, False)
+        for tag in User.tags_list:
+            if tag not in form.tags_chosen:
+                User.vendor_tags_table.delete(current_user, tag)'''
+
+
+@vendor.route('/decline/<int:order_id>', methods=['POST'])
 @login_required
 @vendor_required
 def decline_order(order_id):
@@ -237,25 +390,24 @@ def decline_order(order_id):
     if order.status != Status.PENDING:
         abort(400)
     order.status = Status.DECLINED
+    order.comment = request.json['comment']
     db.session.commit()
 
     merchant_id = order.merchant_id
     merchant = User.query.get(merchant_id)
-
     vendor_name = order.company_name
     vendor_email = current_user.email
     purchases = order.purchases
-
+    comment = order.comment
     send_email(merchant.email,
                'Vendor order request declined',
                'vendor/email/declined_order',
                vendor_name=vendor_name,
                vendor_email=vendor_email,
                order=order,
-               purchases=purchases)
-
-    return jsonify({'order_id': order_id, 'status': 'declined'})
-
+               purchases=purchases,
+               comment=comment)
+    return jsonify({'order_id': order_id, 'status': 'declined', 'comment': comment})
 
 @vendor.route('/profile', methods=['GET'])
 @login_required

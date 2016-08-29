@@ -1,9 +1,13 @@
 from .. import db
 from purchase import CartItem
 from sqlalchemy import or_, desc, func
-from ..models import Category, Vendor
+from ..models import Vendor
 from flask.ext.login import current_user
 from sqlalchemy import UniqueConstraint
+
+
+class Updated:
+    PRICE_CHANGE, NEW_ITEM, NO_CHANGE = range(3)
 
 
 class Listing(db.Model):
@@ -15,19 +19,24 @@ class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # model relationships
-    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
-
+    vendor_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
+    unit = db.Column(db.String(32))
+    quantity = db.Column(db.String(32))
+    cartitems = db.relationship('CartItem', backref='listings', cascade='all,delete-orphan', lazy='dynamic')
     # listing properties
     name = db.Column(db.String(64))
     description = db.Column(db.Text)
     price = db.Column(db.Float)
     available = db.Column(db.Boolean, default=True)
+    product_id=db.Column(db.Integer, default=1)
+    updated=db.Column(db.Integer, default=0)
 
-    def __init__(self, vendor_id, name, available, category_id, price,
-                 description=""):
+    def __init__(self, product_id, vendor_id, unit, name, available, price,
+                 description="", updated=Updated.NO_CHANGE, quantity=0):
+        self.product_id = product_id
         self.vendor_id = vendor_id
-        self.category_id = category_id
+        self.unit = unit
+        self.quantity = quantity
         self.name = name
         self.description = description
         self.price = price
@@ -59,6 +68,34 @@ class Listing(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    # used in csv parsing
+    @staticmethod
+    def get_listing_by_product_id(product_id):
+        return Listing.query.filter_by(product_id=product_id).first()
+
+    # used in csv parsing.
+    # adds to DB a new listing iven params in csv row
+    @staticmethod
+    def add_csv_row_as_listing(csv_row, price=0):
+        return Listing(
+                    name=csv_row[current_user.name_col],
+                    description=csv_row[current_user.listing_description_col],
+                    available=True,
+                    price=price,
+                    unit=csv_row[current_user.unit_col],
+                    quantity= csv_row[current_user.quantity_col],
+                    vendor_id=current_user.id,
+                    product_id=csv_row[current_user.product_id_col],
+                    updated=Updated.PRICE_CHANGE)
+
+    @staticmethod
+    def add_listing(new_listing):
+        db.session.add(new_listing)
+        db.session.commit()
+
+    def update_listing(self, new_product_id):
+        self.product_id = new_product_id
+
     @property
     def category_name(self):
         return self.category_id.name
@@ -70,23 +107,18 @@ class Listing(db.Model):
         if 'main_search_term' in kwargs:
             term = kwargs['main_search_term']
             filter_list.append(or_(
-                Listing.name.like('%{}%'.format(term)),
-                Listing.description.like('%{}%'.format(term)))
+                Listing.name.ilike('%{}%'.format(term)),
+                Listing.product_id.ilike('%{}%'.format(term)),
+                Listing.description.ilike('%{}%'.format(term)))
             )
         if 'strict_name_search' in kwargs:
             term = kwargs['strict_name_search']
             filter_list.append(Listing.name.like('%{}%'.format(term)))
         if 'name_search_term' in kwargs and kwargs['name_search_term']:
             term = kwargs['name_search_term']
-            vendors = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
+            vendors = Vendor.query.filter(Vendor.company_name.ilike('%{}%'.format(term))).all()
             vendor_ids = [vendor.id for vendor in vendors]
             filter_list.append(Listing.vendor_id.in_(vendor_ids))
-
-        if 'category_search' in kwargs and kwargs['category_search']:
-            term = kwargs['category_search']
-            categories = Category.query.filter(Category.name.like('%{}%'.format(term))).all()
-            category_ids = [category.id for category in categories]
-            filter_list.append(Listing.category_id.in_(category_ids))
 
         # used by vendors to filter by availability
         if 'avail' in kwargs:
@@ -139,6 +171,6 @@ class Listing(db.Model):
         return sorted_query
 
     def __repr__(self):
-        return "<Listing: {} Vendor: {} Category: {}>".format(self.name,
+        return "<Listing: {} Vendor: {} Unit: {}>".format(self.name,
                                                               self.vendor_id,
-                                                              self.category_id)
+                                                              self.unt)

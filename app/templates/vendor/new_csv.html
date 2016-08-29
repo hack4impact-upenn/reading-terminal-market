@@ -1,0 +1,183 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div class="ui stackable centered grid container">
+    <div class="six wide column">
+        <a class="ui basic compact button" href="{{ url_for('vendor.index') }}">
+            <i class="caret left icon"></i>
+            Back to dashboard
+        </a>
+
+        <h2 class="ui header">
+            Upload CSV
+        </h2>
+        <p>Here you can upload a CSV of all your items on the market. 
+          <b> Make sure to visit <a href="{{ url_for('account.csv_settings') }}"> the CSV settings page </a> to format your CSV file properly. </b>
+          Currently the following columns with names as follows are expected:
+          <ul>
+            <li>Product ID/UPC: <b>{{ current_user.product_id_col }}</b></li>
+            <li>Product Description: <b>{{ current_user.listing_description_col }}</b></li>
+            <li>Product Price: <b>{{ current_user.price_col }}</b></li>
+            <li>Product Name: <b>{{ current_user.name_col }}</b></li>
+            <li>Product Unit: <b>{{ current_user.unit_col }}</b></li>
+            <li>Product Quantity (per unit): <b>{{ current_user.quantity_col }}</b></li>
+          </ul>
+        </p>
+        {% set flashes = {
+        'error': get_flashed_messages(category_filter=['form-error']),
+        'warning': get_flashed_messages(category_filter=['form-check-email']),
+        'info': get_flashed_messages(category_filter=['form-info']),
+        'success': get_flashed_messages(category_filter=['form-success'])
+        } %}
+
+        {{ f.begin_form(form, flashes) }}
+
+        {{ f.render_form_field(form.file_upload) }}
+        {{ f.render_form_field(form.replace_or_merge) }}
+        {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
+        {{ f.form_message(flashes['warning'], header='Check your item information.', class='warning') }}
+        {{ f.form_message(flashes['info'], header='Information', class='info') }}
+        {{ f.form_message(flashes['success'], header='Success!', class='success') }}
+
+        {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
+        {{ f.render_form_field(field) }}
+        {% endfor %}
+
+        {{ f.end_form() }}
+    </div>
+    <div class="six wide column">
+        <table id="listing_table" class="ui celled table">
+            <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Unit</th>
+                <th>Quanitity</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for listing in listings %}
+                {% if listing.updated == 0 %}
+                    <tr class="ui inverted blue table">
+                        <td>{{listing.name}}</td>
+                        <td>{{listing.description}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.unit}}</td>
+                        <td>{{listing.quantity}}</td>
+                        <td><i class="icon refresh "></i> Updated Listing</td>
+                    </tr>
+
+                {% elif listing.updated == 1 %}
+                    <tr class="ui inverted green table">
+                        <td>{{listing.name}}</td>
+                        <td>{{listing.description}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.unit}}</td>
+                        <td>{{listing.quantity}}</td>
+                        <td><i class="icon checkmark "></i> Submitted New Listing</td>
+                    </tr>
+                {% elif listing.updated == 2 %}
+                    <tr class="ui inverted red table">
+                        <td>{{listing.name}}</td>
+                        <td>{{listing.description}}</td>
+                        <td>{{listing.price}}</td>
+                        <td>{{listing.unit}}</td>
+                        <td>{{listing.quantity}}</td>
+                        <td><i class="icon minus "></i> No Change in Listing</td>
+                    </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+            <tfoot>
+            <tr>
+                <th colspan="3">
+                    <div class="ui right floated pagination menu">
+                        <a class="icon item">
+                            <i class="left chevron icon"></i>
+                        </a>
+                        <a class="item">1</a>
+                        <a class="icon item">
+                            <i class="right chevron icon"></i>
+                        </a>
+                    </div>
+                </th>
+            </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>
+<script>
+   $("#listing_table").hide()
+   $( document ).ready(function() {
+    {% if listings %}
+       $("#listing_table").show()
+    {% endif %}
+});
+</script>
+    {% if not tut_completed  %}
+        <script type="text/javascript">
+            guiders.createGuider({
+                buttons: [{name: "Next"}],
+              description: "Say business has been good. Now you have 1000's of listings you want to add to the market.\
+              Instead of adding them one by one, we can upload a csv of all the listings.",
+              highlight: true,
+              id: "first",
+              next: "second",
+              overlay: true,
+              onHide: function() {guiders._dehighlightElement("#first_curr");},
+              title: "Our Last Stop: The CSV Upload Page",
+              width: 300,
+              position: 6,
+              arrowSize:20
+            }).show();
+
+            guiders.createGuider({
+                attachTo: "#file_upload",
+                buttons: [
+                        { name: "next"}
+                        ],
+                description: "Go ahead and upload the correct csv file provided in the documentation {insert link here}.",
+                highlight: true,
+                overlay: true,
+                id: "second",
+                next: "third",
+                title: "Let's give it a try.",
+                width: 300,
+                onHide: function() {guiders._dehighlightElement("#file_upload");},
+                position: 3,
+                arrowSize:20
+            });
+            guiders.createGuider({
+                attachTo: "#submit",
+                description: "Now go ahead and submit it. If the listing already exists, \
+                it will show up red. If the listing's price was updated, it will show up\
+                blue. Finally, if the listing is brand new, it will show up green. Try it out to end the tour!",
+                highlight: true,
+                overlay: true,
+                id: "third",
+                next: "fourth",
+                title: "Submit the test listings and end the tour!",
+                width: 300,
+                onHide: function() {
+                            $.ajax({
+                                url: '/vendor/tutorial_completed',
+                                data: 'turnOff',
+                                type: 'POST',
+                            });
+                            guiders._dehighlightElement("#submit");
+                            $('#notifier').hide();
+                            },
+                position: 3,
+                arrowSize:20
+            });
+        </script>
+    {% endif %}
+
+{% endblock %}

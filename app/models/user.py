@@ -5,8 +5,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, \
     BadSignature, SignatureExpired
 from .. import db, login_manager
 from sqlalchemy import or_, desc, func
-
-
+from ..models import Ratings
+import operator
 
 class Permission:
     GENERAL = 0x01
@@ -23,7 +23,6 @@ class Role(db.Model):
     default = db.Column(db.Boolean, default=False, index=True)
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
-
     @staticmethod
     def insert_roles():
         roles = {
@@ -58,9 +57,10 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(64), index=True)
     last_name = db.Column(db.String(64), index=True)
     email = db.Column(db.String(64), unique=True, index=True)
+    ratings = db.relationship("Ratings", backref="users", lazy="dynamic", cascade='all, delete-orphan')
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-
+    tutorial_completed = db.Column(db.Boolean, default=False)
     # polymorphism
     user_type = db.Column(db.String(32), nullable=False, default='user')
     __mapper_args__ = {
@@ -298,7 +298,7 @@ class Vendor(User):
 
     # are the vendor's prices visible to other vendors?
     visible = db.Column(db.Boolean, default=False)
-    listings = db.relationship("Listing", backref="vendor", lazy="dynamic")
+    listings = db.relationship("Listing", backref="vendor", lazy="dynamic", cascade='all, delete-orphan')
     company_name = db.Column(db.String(64), default="")
     # public profile information
     bio = db.Column(db.String(64), default="")
@@ -315,6 +315,16 @@ class Vendor(User):
     d3 = db.Column(db.String(64), default="")
     f4 = db.Column(db.String(64), default="")
     d4 = db.Column(db.String(64), default="")
+    tags = db.relationship("TagAssociation", back_populates="vendor", cascade='all, delete-orphan')
+    product_id_col = db.Column(db.String(64), default="ProductID")
+    ratings_vendor = db.relationship("Ratings", backref="vendor", cascade='all, delete-orphan')
+    listing_description_col = db.Column(db.String(64), default="Description")
+    price_col = db.Column(db.String(64), default="Price")
+    name_col = db.Column(db.String(64), default="Vendor")
+    unit_col = db.Column(db.String(64), default="Unit")
+    quantity_col = db.Column(db.String(64), default="Quantity")
+    def get_tags(self):
+        return [str(tag.tag.tag_name) for tag in self.tags]
 
     def __init__(self, **kwargs):
         super(Vendor, self).__init__(**kwargs)
@@ -324,6 +334,35 @@ class Vendor(User):
     def __repr__(self):
         return '<Vendor %s>' % self.full_name()
 
+    def get_rating_value(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id).all()
+        if not ratings:
+            return -1.0
+        total_rating = 0.0
+        for rating in ratings:
+            total_rating += rating.star_rating
+        return '%.1f' % (total_rating / len(ratings))
+
+    def get_all_ratings(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id).all()
+        ratings.sort(key=lambda r: r.date_reviewed, reverse=True)
+        return ratings
+
+    def get_ratings_query(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id)
+        sorted_ratings = ratings.order_by(desc(Ratings.date_reviewed))
+        return sorted_ratings
+
+    def get_ratings_breakdown(self):
+        ratings = Ratings.query.filter_by(vendor_id=self.id)
+        ratings_breakdown = {"1.0": 0, "2.0": 0, "3.0": 0, "4.0": 0, "5.0": 0}
+        for rating in ratings:
+            ratings_breakdown[rating.star_rating] = ratings_breakdown.get(rating.star_rating, 0) + 1
+        return ratings_breakdown
+
+    @staticmethod
+    def get_vendor_by_user_id(user_id):
+            return Vendor.query.filter_by(id=user_id).first()
 
 bookmarks_table = db.Table('bookmarks', db.Model.metadata,
                            db.Column('merchant_id', db.Integer,
@@ -338,7 +377,6 @@ bookmarked_vendor_table = db.Table('bookmarked_vendors', db.Model.metadata,
                               db.Column('vendor_id', db.Integer,
                                      db.ForeignKey('vendor.id')))
 
-
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
@@ -348,7 +386,7 @@ class Merchant(User):
     bookmarks = db.relationship("Listing",
                                 secondary=bookmarks_table,
                                 backref="bookmarked_by")
-    cart_items = db.relationship("CartItem")
+    cart_items = db.relationship("CartItem", backref="users", lazy="dynamic", cascade='all, delete-orphan')
     company_name = db.Column(db.String(64), default="")
 
     def get_cart_listings(self):
@@ -367,6 +405,8 @@ class Merchant(User):
 
     def __repr__(self):
         return '<Merchant %s>' % self.full_name()
+
+
 
 
 login_manager.anonymous_user = AnonymousUser

@@ -1,7 +1,9 @@
 {% extends 'layouts/base.html' %}
 {% import 'macros/form_macros.html' as f %}
 
+
 {% block scripts %}
+
 {% endblock %}
 
 {% block content %}
@@ -17,7 +19,7 @@
 					View items and add them to cart or favorite them.
 				</div>
 			</h2>
-				<div style="overflow-x: scroll;">
+				<div class="merchant-listings">
 					<table class="ui searchable sortable unstackable selectable celled table">
 						<thead>
 							<tr>
@@ -39,7 +41,7 @@
 									<td>"Available"</td>
 								{% else %}
 									<td>"Currently Unavailable"</td>
-								{% endif %} 
+								{% endif %}
 								<td class="center aligned">
 									<a href="{{ url_for('merchant.add_to_cart', listing_id=l.id, quantity=1) }}"> <!--how to update quantity? -->
 										<i class="cart icon"></i>

@@ -3,9 +3,72 @@
 
 {% set page_size = 10 %}
 
+{% macro make_guider() %}
+
+<script type="text/javascript">
+
+    guiders.createGuider({
+      buttons: [
+                {name: "Next"}],
+      description: "At this point, you are waiting for the vendor to see your order.",
+      highlight: true,
+      id: "first_order",
+      next: "second_menu",
+      overlay: true,
+      title: "This is your orders page.",
+      width: 300,
+      position: 6,
+      arrowSize:20
+    }).show();
+
+    guiders.createGuider({
+        attachTo: "#menu",
+        buttons: [
+                {name: "Next"}],
+        description: "Orders are either Pending, Approved, or Declined by the vendor. You can filter your orders by these attributes by clicking here.",
+        highlight: true,
+        id: "second_menu",
+        next: "third",
+        overlay: true,
+        title: "Orders are filtered by the vendor's actions.",
+        onHide: function() {guiders._dehighlightElement("#menu");},
+        width: 300,
+        position: 6,
+        arrowSize:20
+    });
+        guiders.createGuider({
+        buttons: [
+                {name: "Ok. Take my back to the homepage",
+                    onclick: function() {
+                                $.ajax({
+                                url: '/merchant/tutorial_completed',
+                                data: 'turnOff',
+                                type: 'POST',
+                                success: function() {
+                                    $('#notifier').hide();
+                                    window.location.href= "{{ url_for('merchant.index') }}"
+                                }
+                    });
+                } }
+                ],
+        description: "Orders are either Pending, Approved, or Declined by the vendor. You can filter your orders by these attributes by clicking here.",
+        highlight: true,
+        id: "third",
+        overlay: true,
+        title: "And that's it.",
+        onHide: function() {guiders._dehighlightElement("#menu");},
+        width: 300,
+        position: 6,
+        arrowSize:20
+    });
+</script>
+{% endmacro %}
+
+
+
 {% macro order_table(order) %}
     {% set purchase_info = order.get_purchase_info() %}
-    <table class="ui celled table">
+        <table  class="ui celled table order-purchase-table">
         <thead>
         <tr>
             <th>Item name</th>
@@ -18,14 +81,15 @@
         {% for purchase in purchase_info %}
             <tr>
                 <td>{{ purchase['name'] }}</td>
-                <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
-                <td>{{ format_price(purchase['price']) }} / {{ purchase['unit'] }}</td>
+                <td>{{ purchase['quantity']| int() }}</td>
+                <td>{{ format_price(purchase['price']) }} / {{ purchase['item_quantity']}} {{ purchase['unit'] }}</td>
                 <td>{{ format_price(purchase['price'] * purchase['quantity']) }}</td>
             </tr>
         {% endfor %}
 
         </tbody>
     </table>
+
 {% endmacro %}
 
 {% macro order_segment(order, hide=False) %}
@@ -33,42 +97,101 @@
     {% if hide %}
         {% set display = "display:none" %}
     {% endif %}
-    <div class="ui segment clearing order" style="{{ display }}" id="order-{{ order.id }}">
-        <div class="ui left floated basic segment" style="margin-bottom: 0px">
-            <h3 class="ui header">
-                Order #{{ order.id }} - {{ vendor_info['company_name'] }} {{ order_macros.status_label(order.status) }}
-                <div class="sub header">
-                    Placed on {{ order.get_date() }} at {{ order.get_time() }}
-                </div>
-            </h3>
-            <div><b>Total:</b> {{ order.get_total() }}</div>
-            <div style="margin-top: 5px; margin-bottom: 0px"><a href='#' class="toggle-details">Show purchases</a></div>
 
-        </div>
-        <div class="ui right floated basic segment">
-            <div class="ui list right">
-                <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
-                {% if vendor_info['full_name'] %}
-                    <div class="item"><b>Vendor name: </b> {{  vendor_info['full_name'] }}</div>
-                {% endif %}
-                {% if vendor_info['email'] %}
-                    <div class="item"><b>Email: </b> <a href="mailto: {{ vendor_info['email'] }}">{{  vendor_info['email'] }}</a></div>
-                {% endif %}
+    <div class="ui card clearing order" style="{{ display }}" id="order-{{ order.id }}">
+      <div class="content order-card-top {{ order_macros.status_color(order.status) }}">
+        <div class="header">
+            <div class="order-number">
+            ORDER #{{ order.id }} - {{ vendor_info['company_name'] }}
+            </div>
+            <div class="order-status">
+                {{ order_macros.status_label(order.status) }}
             </div>
         </div>
+      </div>
+      <div class="content">
+          <div class="description order-card-description">
+              <div class="ui two column grid">
+              <div class="seven wide column">
+                  Placed on {{ order.get_date() }} at {{ order.get_time() }}
+                  <div class="item"><b>Company name: </b> {{  vendor_info['company_name'] }}</div>
+                  {% if vendor_info['full_name'] %}
+                     <div class="item"><b>Vendor name: </b> {{  vendor_info['full_name'] }}</div>
+                  {% endif %}
+                  {% if vendor_info['email'] %}
+                     <div class="item"><b>Email: </b> <a href="mailto: {{ vendor_info['email'] }}">{{  vendor_info['email'] }}</a></div>
+                  {% endif %}
+              </div>
+              <div class="nine wide column">
+                  <div><b>Total:</b> {{ order.get_total() }}</div>
+                  <div class="comments">
+                      <b>Comments:</b> {{ order.comment }}
+                  </div>
+              </div>
+            </div>
+            <div class="ui divider seven wide"></div>
+            <div class="order-card-user-actions">
+                <div class="order-segment-details"><a href='#' class="toggle-details">Show purchases</a></div>
+                {% if order.status == 1 %}
+                    | <a href='#' class="toggle-rating">Rate vendor</a>
+                {% endif %}
+            </div>
+          </div>
+      </div>
 
-
-        <div class="details" style="display: none;">
+        <div class="details">
             {{ order_table(order) }}
+            <br> <!--Add space between details and ratings when both clicked-->
+        </div>
+
+        <div class="reviews" style="display: none;">
+            <div style="overflow: hidden; clear:both" class="ui form">
+                {% set rating = ratings[order.vendor_id] %}
+                {% if rating %}
+                    <div class="ui items">
+                        <div class="item">
+                            <div class="content">
+                                <h4 class="ui header">Previous Review</h4>
+                                <div class="ui star rating prev-rating" data-rating="{{ rating.star_rating }}"></div>
+                                <div class="description">
+                                    <p class="prev-comment">{{ rating.comment }}</p>
+                                </div>
+                                <div class="extra prev-date">
+                                    Reviewed on {{ rating.get_date() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui divider"></div>
+                {% endif %}
+                <div class="ui items">
+                    <div class="item">
+                        <div class="content">
+                            <h4 class="ui header">New Review</h4>
+                            <div class="ui star rating"></div>
+                            <div class="ui left pointing red basic label">Minimum 1 star rating</div>
+                            <div class="description">
+                                <div class="field">
+                                    <label>Please write a review to accompany your rating (mandatory):</label>
+                                    <textarea rows="2" class="review-box"></textarea>
+                                </div>
+                                <button class="ui right floated button submit-rating" disabled>
+                                    Submit Rating
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+          </div>
         </div>
     </div>
 {% endmacro %}
 
 {% block content %}
     <div class="ui stackable grid container">
-    <div class="sixteen wide tablet twelve wide computer centered column">
-        <h2 class="ui header">
-            Manage orders
+    <div id="menu" class="sixteen wide tablet twelve wide computer centered column">
+        <h2 class="ui header page-header">
+            <span class="title">Manage orders</span>
             <div class="sub header">
                 View and manage your orders.
             </div>
@@ -76,11 +199,13 @@
 
         {{ order_macros.status_filter_menu(status_filter) }}
 
-        {% for order in orders[:page_size] %}
-            {{ order_segment(order) }}
-        {% else %}
-            <h3>You have not made any orders.</h3>
-        {% endfor %}
+        <div class="ui cards">
+            {% for order in orders[:page_size] %}
+                {{ order_segment(order) }}
+            {% else %}
+                <h3 class="no-order-text">You have not made any orders.</h3>
+            {% endfor %}
+        </div>
 
         {% for order in orders[page_size:] %}
             {{ order_segment(order, hide=True) }}
@@ -93,6 +218,10 @@
                 </div>
             </div>
         {% endif %}
+    {% if not tut_completed %}
+
+    {{make_guider()}}
+    {% endif %}
 
     </div>
 
@@ -100,14 +229,99 @@
 
         $(document).ready(function(){
             $('.toggle-details').click(function () {
-                var order = $( this ).closest('.order');
+                var order = $(this).closest('.order');
                 var details = order.find('.details');
                 details.toggle();
-                if ($( this ).text() === 'Hide purchases') {
+                if ($(this).text() === 'Hide purchases') {
                     $(this).text('Show purchases');
                 } else {
-                    $( this ).text('Hide purchases');
+                    $(this).text('Hide purchases');
                 }
+            });
+
+            $('.toggle-rating').click(function () {
+                var order = $(this).closest('.order');
+                var reviews = order.find('.reviews');
+                reviews.toggle();
+                if ($(this).text() === 'Cancel rating') {
+                    $(this).text('Rate vendor');
+                } else {
+                    $(this).text('Cancel rating');
+                }
+            });
+
+            $('.ui.rating').rating({
+                initialRating: 0,
+                maxRating: 5,
+                onRate: function(value) {
+                    var order = $(this).closest('.order');
+                    validateNonEmpty(order);
+                }
+            });
+
+            $('.review-box').on("change input", function() {
+                var order = $(this).closest('.order');
+                validateNonEmpty(order);
+            });
+
+            $('.ui.prev-rating').rating({
+                interactive: false
+            });
+
+            function validateNonEmpty(order) {
+                var rating = order.find('.ui.rating').last().children('.active').length;
+                var review = $.trim(order.find('.review-box').val());
+                if (review && rating != 0) {
+                    $('.submit-rating').prop('disabled', false);
+                } else {
+                    $('.submit-rating').prop('disabled', true);
+                }
+            }
+
+            function ratingRequest(orderId, rating, review, callback) {
+                var ratingReview = {
+                    'rating': rating,
+                    'review': review
+                };
+                $.ajax({
+                    url: '/merchant/orders/'+ orderId,
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(ratingReview, null, '\t'),
+                    success: function(data) {
+                        console.log(data);
+                        if (callback !== undefined) {
+                            callback(data);
+                        }
+                    },
+                    method: 'POST'
+                });
+            }
+
+            function ratingHandler(order) {
+                var orderId = order.attr('id').split('-')[1];
+                var rating = order.find('.ui.rating').last().children('.active').length;
+                var review = order.find('.review-box').val();
+
+                ratingRequest(orderId, rating, review, function(data){
+                    order.find('.review-box').val('');
+                    $('.ui.rating').rating({
+                        initialRating: 0,
+                        maxRating: 5
+                    });
+                    var reviews = order.find('.reviews');
+                    reviews.hide();
+                    $('.toggle-rating').text('Rate vendor');
+                    $('.ui.prev-rating').rating('set rating', rating);
+                    $('.prev-comment').text(review);
+                    var date_reviewed = data['date_reviewed'];
+                    $('.prev-date').text("Reviewed on " + date_reviewed);
+                });
+            }
+
+            $('.submit-rating').click(function(){
+                var order = $(this).closest('.order');
+                ratingHandler(order);
             });
 
             var page_size = {{ page_size }};
@@ -128,4 +342,5 @@
          });
 
     </script>
+
 {% endblock %}

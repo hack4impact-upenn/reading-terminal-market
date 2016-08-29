@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import os
 from app import create_app, db
-from app.models import (User, Role, Vendor, Merchant, Listing, Category,
-                        CartItem)
+from app.models import (User, Role, Vendor, Merchant, Listing,
+                        CartItem, Tag)
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import Config
@@ -75,31 +75,35 @@ def setup_test_vendor_merchant():
 
 @manager.command
 def setup_test_listings():
-    c = Category(name="Milk", unit="Gallons")
-    db.session.add(c)
     l1 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
-        category_id=Category.query.filter_by(name="Milk").first().id,
+        unit = "lbs",
+        quantity="0",
         name="Broccoli",
         description="Best Broccoli Around",
         price=5.00,
-        available=True
+        available=True,
+        product_id=1
     )
     l2 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven").first().id,
-        category_id=Category.query.filter_by(name="Milk").first().id,
         name="Eggs",
+        unit = "oz",
+        quantity="2",
         description="Best Eggs Around",
         price=12.00,
-        available=True
+        available=True,
+        product_id=2
     )
     l3 = Listing(
         vendor_id=Vendor.query.filter_by(first_name="Ven2").first().id,
-        category_id=Category.query.filter_by(name="Milk").first().id,
         name="Salmon",
+        unit = "gal",
+        quantity="500",
         description="Best Salmon Around",
         price=13.00,
-        available=True
+        available=True,
+        product_id=3
     )
     db.session.add(l1)
     db.session.add(l2)
@@ -112,14 +116,17 @@ def setup_test_listings():
     fake = Faker()
 
     seed()
+    count = 0
     for i in range(100):
         u = Listing(
             vendor_id=3,
-            category_id=1,
+            unit= "lbs",
+            quantity=randint(1,200),
             name=fake.word(),
             description=fake.sentence(nb_words=10, variable_nb_words=True),
             price=randint(1,100),
-            available=True
+            available=True,
+            product_id = i*100 % 5
         )
         db.session.add(u)
         try:
@@ -136,7 +143,6 @@ def setup_test_cart_items():
     c1.quantity = 2
     db.session.add(c1)
     db.session.commit()
-
 
 @manager.command
 def recreate_db():

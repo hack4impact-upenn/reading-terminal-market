@@ -11,7 +11,6 @@
 {% endmacro %}
 
 {% macro header_items(current_user) %}
-    <a class="header item" href="{{ url_for('main.index') }}">{{ config.APP_NAME }}</a>
     {% if current_user.is_authenticated() %}
         {% set href = url_for(current_user.role.index + '.index') %}
         <a class="item" href="{{ href }}">{{ current_user.role.name }} Dashboard</a>
@@ -45,17 +44,18 @@
 {% macro mobile_nav(current_user, endpoints=None) %}
     <div class="mobile only row">
         <div class="ui fixed inverted black main menu">
-            {{ header_items(current_user) }}
+            <a class="header item" href="{{ url_for('main.index') }}">{{ config.APP_NAME }}</a>
             <div class="right menu">
-                <a class="icon item" id="open-nav"><i class="sidebar icon"></i></a>
+                <a class="icon item" id="open-nav">MENU&nbsp;<i class="sidebar icon"></i></a>
             </div>
         </div>
 
         {# The menu items which will be shown when open-nav is clicked #}
-        <div class="ui fixed vertical fluid menu">
+        <div class="ui fixed vertical fluid menu dropdown-custom">
             {% if endpoints %}
                 {{ render_menu_items(endpoints) }}
             {% endif %}
+            {{ header_items(current_user) }}
             {{ account_items(current_user) }}
         </div>
     </div>
@@ -67,6 +67,7 @@
     <div class="computer tablet only row">
         <div class="ui fixed inverted black main menu">
             <div class="ui container">
+                <a class="header item" href="{{ url_for('main.index') }}">{{ config.APP_NAME }}</a>
                 {{ header_items(current_user) }}
                 <div class="right menu">
                     {{ account_items(current_user) }}
@@ -86,7 +87,7 @@
 {% endmacro %}
 
 {% macro render_nav(current_user, count, endpoints) %}
-    <nav class="ui navigation grid {% if endpoints %}has-submenu{% endif %}">
+    <nav class="ui navigation grid {% if endpoints %}has-submenu{% endif %} custom-nav-class">
         {{ mobile_nav(current_user, endpoints=endpoints) }}
         {{ desktop_nav(current_user, endpoints=endpoints, count=count) }}
     </nav>

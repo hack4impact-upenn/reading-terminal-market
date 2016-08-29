@@ -8,26 +8,22 @@
         'info':    get_flashed_messages(category_filter=['form-info']),
         'success': get_flashed_messages(category_filter=['form-success'])
      } %}
-
-    <a class="ui basic compact button" href="{{ url_for('admin.index') }}">
-        <i class="caret left icon"></i>
-        Back to dashboard
-    </a>
-    <h2 class="ui header">
-        Your Items
-        <div class="sub header">
-            View and manage all your items.
+     </div>
+<div class="listing-contain">
+    <form class="custom-search">
+        <div class="ui form search-bar">
+            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="Search names and descriptions">
         </div>
-    </h2>
-
-    <form class="ui form segment">
-        <div class="twelve wide field">
-            <label>Search names and descriptions</label>
-            <input value="{{ main_search_term }}" type="text" name="main-search" placeholder="e.g. corned beef">
+        <div class="ui submit-section">
+            <button class="ui button blue searchbutton" type="submit">Search</button>
+            <a class="ui button clearbutton" href="{{ url_for('admin.listing_view_all', page=1) }}">Clear Criteria</a>
         </div>
 
-        <div class="inline field">
-            <select class="ui selection dropdown" name="avail">
+        <div class="side-bar"> 
+            <h3>Filtering Settings</h3>
+            <div class="field">
+                <label>Order by</label>
+                <select class="ui selection dropdown" name="avail">
                 {% if request.args.get('avail') == "avail" %}
                     {% set selected = 'selected' %}
                 {% elif request.args.get('avail') == "non_avail" %}
@@ -40,8 +36,8 @@
                 <option value="avail" {{ selected3 }}>Show Available Items</option>
 
             </select>
-            <br>
-            <br>
+            </div>
+            <div class="field">
             <select class="ui selection dropdown" name="sort-by">
                 {% if request.args.get('sortby') == "low_high" %}
                     {% set checked2 = 'selected' %}
@@ -58,44 +54,28 @@
                 <option value="alphaZA" {{ checked5 }}>Alphabetical names, (Z-A)</option>
 
             </select>
-
-        </div>
-        {% if not name_search_term and not min_price and not max_price%}
-            {% set display = 'display:none' %}
-        {% endif %}
-        <div class="twelve wide field advanced-search" style="{{ display }}">
-            <label>Search Company Names</label>
-            <input value="{{ name_search_term }}" type="text" name="name-search" placeholder="e.g. Bobby's Burgers">
-        </div>
-        <div class="twelve wide field advanced-search" style="{{ display }}">
-            <label>Search by Category Name</label>
-            <input value="{{ category_search }}"type="text" name="category-search" placeholder="e.g. Milk">
-        </div>
-
-
-        <div class="twelve wide field advanced-search" style="{{ display }}">
-            <div class="two wide fields">
-                <div class="three wide field">
-                    <label>Minimum unit price</label>
-                    <input value="{{ min_price }}" type="number" id="min-price" min="0" name="min-price" placeholder="e.g. $0">
-                </div>
-                <div class="three wide field">
-                    <label>Maximum unit price</label>
-                    <input value="{{ max_price }}" type="number" id="max-price" name="max-price" placeholder="e.g. $500">
-                </div>
             </div>
-            <div id="slider-range"></div>
 
+        <div class="ui form twelve wide field" style="{{ display }}">
+                <label>Search Company Names</label>
+                <input value="{{ name_search_term }}" type="text" name="name-search" placeholder="e.g. Bobby's Burgers">
+            </div>
+            <div class="ui twelve wide field" style="{{ display }}">
+                <div class="ui two wide fields">
+                    <div class="ui form three wide field">
+                        <label>Minimum unit price</label>
+                        <input value="{{ min_price }}" type="number" id="min-price" min="0" name="min-price" placeholder="e.g. $0">
+                    </div>
+                    <div class="ui form three wide field">
+                        <label>Maximum unit price</label>
+                        <input value="{{ max_price }}" type="number" id="max-price" name="max-price" placeholder="e.g. $500">
+                    </div>
+                </div>
+            </div>  
         </div>
-        <div>
-            <a href="#" id="toggle-advanced">Toggle advanced search</a>
-        </div>
-
-        <br>
-        <button class="ui button blue" type="submit">Search</button>
-        <a class="ui button" href="{{ url_for('admin.listing_view_all', page=1) }}">Clear Criteria</a>
+        <br>        
     </form>
-{% endblock %}
+    {% endblock %}
 
 {% block after %}
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>

@@ -2,117 +2,121 @@
 {% import 'macros/nav_macros.html' as n %}
 
 {% block content %}
-
+    <br><br><br>
     <div class="ui stackable grid container">
-        <div class="sixteen wide tablet twelve wide computer centered column">
+        <div class="twelve wide tablet twelve wide computer centered column">
             {% block before %}
             {% endblock %}
 
-            {% if header is defined %}
-                <h2 class="ui header">
-                    {{ header }}
-                </h2>
-            {% endif %}
+           
 
             {# Actual table #}
             {# Use overflow-x: scroll so that mobile views don't freak out
              # when the table is too wide #}
 
             {% if count > 0 %}
-                <div style="overflow-x: scroll;">
-                    <table id="listings-table" class="ui searchable sortable unstackable selectable celled table">
-                        <thead>
-                        <tr>
-                            <th>Item name</th>
-                            {% if current_user.is_merchant() or current_user.is_admin() %}
-                                <th>Company</th>
-                                <th>Favorite Vendor</th>
-                            {% endif %}
-                            <th>Price</th>
-                            <th class="truncate">Description</th>
-                            {% if current_user.is_vendor() or current_user.is_admin() %}
-                                <th>Availability</th>
-                            {% endif %}
-                            <th>Category</th>
-                            {% if current_user.is_merchant() %}
-                                <th>Add to Cart</th>
-                                <th>Favorite</th>
-                            {% endif %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for l in listings.items %}
 
-                            {% if current_user.is_vendor() %}
-                                {% set info_link = 'onclick=window.location.href=\'' + url_for('vendor.listing_info', listing_id=l.id) + '\';' %}
-                            {% elif current_user.is_merchant() %}
-                                {% set info_link = 'onclick=window.location.href=\'' +
-                              url_for('merchant.listing_info',
-                              backto=request.path + '?' + request.query_string,
-                              listing_id=l.id) + '\';' %}
-                            {% elif current_user.is_admin() %}
-                                {% set info_link = 'onclick=window.location.href=\'' +
-                              url_for('admin.listing_info',
-                              backto=request.path + '?' + request.query_string,
-                              listing_id=l.id) + '\';' %}
-                            {% endif %}
+            <div id="listings-table" class="listings ui relaxed divided items">
 
-                            <td {{info_link}}>{{ l.name }}</td>
-                            {% if current_user.is_merchant() or current_user.is_admin() %}
-                                <td {{info_link}}>{{ l.vendor.company_name }}</td>
-                            {% endif %}
-                                <td class="center aligned favoriteCell">
-                                    {% if l.vendor in current_user.bookmarked_vendors %}
-                                        <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="true">
-                                            <i class="favorite icon yellow"></i>
-                                        </a>
-                                    {% else %}
-                                        <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="false">
-                                            <i class="favorite icon grey"></i>
-                                        </a>
+                {% if header is defined %}
+                <h2 class="ui header" style="padding-left: 0px">
+                    {{ header }}
+                </h2>          
+                {% endif %}
+                {% if count >= 3 %} <div class="ui stackable three column grid listings-grid"> {% endif %}
+                    {% for l in listings.items %}
+                        <div class="column" id="indiv-item">
+                            <div class="item">
+                                <div class="content">
+                                    {% if current_user.is_vendor() %}
+                                        {% set info_link = 'onclick=window.location.href=\'' + url_for('vendor.listing_info', listing_id=l.id) + '\';' %}
+                                    {% elif current_user.is_merchant() %}
+                                        {% set info_link = 'onclick=window.location.href=\'' +
+                                      url_for('merchant.listing_info',
+                                      backto=request.path + '?' + request.query_string,
+                                      listing_id=l.id) + '\';' %}
+                                    {% elif current_user.is_admin() %}
+                                        {% set info_link = 'onclick=window.location.href=\'' +
+                                      url_for('admin.listing_info',
+                                      backto=request.path + '?' + request.query_string,
+                                      listing_id=l.id) + '\';' %}
                                     {% endif %}
-                                </td>
-                            <td {{info_link}}>${{ '%0.2f' | format(l.price) }}/{{l.category.unit}}</td>
-                            <td class="truncate" {{info_link}}>{{ l.description }}</td>
-                            {% if current_user.is_vendor() or current_user.is_admin() %}
-                                <td {{info_link}}>{% if l.available==True %} Yes {% else %} No {% endif %}</td>
-                            {% endif %}
-                            <td class="item category" {{info_link}}>{{ l.category.name }}</td>
-
-                            {% if current_user.is_merchant() %}
-                                {% if l in cart_listings %}
-                                    {% set in_cart = "true" %}
-                                    {% set cart_color = "blue" %}
-                                {% else %}
-                                    {% set in_cart = "false" %}
-                                    {% set cart_color = "grey" %}
-                                {% endif %}
-                                <td class="center aligned cartCell" data-id="{{ l.id }}" data-incart="{{ in_cart }}">
-                                    <div class="ui left action input">
-                                        <a class="toggle-cart ui button" id="button_padding">
-                                            <i class="cart icon {{ cart_color }}"></i>
-                                        </a>
-                                        <input class="cart-quantity" id="input_size" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">
-                                    </div>
-                                </td>
-                                <td class="center aligned favoriteCell">
-                                    {% if l in current_user.bookmarks %}
-                                        <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="true">
-                                            <i class="favorite icon yellow"></i>
-                                        </a>
-                                    {% else %}
-                                        <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="false">
-                                            <i class="favorite icon grey"></i>
-                                        </a>
+                                    <br>
+                                    {% if current_user.is_merchant() %}
+                                            {% if l in cart_listings %}
+                                                {% set in_cart = "true" %}
+                                                {% set cart_color = "blue" %}
+                                            {% else %}
+                                                {% set in_cart = "false" %}
+                                                {% set cart_color = "grey" %}
+                                            {% endif %}  
+                                    {% endif %} 
+                                    <a style="font-weight: bold; font-size: 1.25em; line-height: 20px" class="header" {{info_link}}>{{ l.name }}</a><br>
+                                    <a>${{ '%0.2f' | format(l.price) }}/{{ l.quantity }} {{l.unit}}</a>
+                                    <div id="label-contain"></div>
+                                    {% if current_user.is_merchant() or current_user.is_admin() %}
+                                        <div class="extra">
+                                          <span class="desc-name">Vendor Name: <a href={{url_for('account.profile_page', profile_id = l.vendor.id) }}>{{ l.vendor.company_name }}</a></span>
+                                            {% set rating = l.vendor.get_rating_value() %}
+                                            {% if rating != -1 %}
+                                            <br>
+                                                <b>Rating:</b>
+                                                <a class="ui small label">
+                                                    <i class="star icon"></i> {{ rating }}
+                                                </a>
+                                            {% endif %}     
+                                            {% for tag in l.vendor.get_tags() %}
+                                                <a class="ui label green">{{ tag }}</a> 
+                                            {% endfor %}                                
+                                        </div>
                                     {% endif %}
-                                </td>
-                            {% endif %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div><br>
-                <div class="ui pagination menu">
+                                    {% if current_user.is_merchant() %}
+                                        <div class="extra center aligned favoriteCell">
+                                            <span class="desc-name">Favorite this vendor: </span>
+                                            {% if l.vendor in current_user.bookmarked_vendors %}
+                                                <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="true">
+                                                    <i class="favorite icon yellow"></i>
+                                                </a>
+                                            {% else %}
+                                                <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="false">
+                                                    <i class="favorite icon grey"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        <div class="extra center aligned favoriteCell">
+                                            <span class="desc-name">Favorite this Item:</span>
+                                            {% if l in current_user.bookmarks %}
+                                                 <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="true">
+                                                    <i class="favorite icon yellow"></i>
+                                                </a>
+                                            {% else %}
+                                                <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="false">
+                                                    <i class="favorite icon grey"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                         <div class="extra center aligned cartCell" data-id="{{ l.id }}" data-incart="{{ in_cart }}">                                           
+                                         <div class="ui left action input">        
+                                             <a class="toggle-cart ui button" id="button_padding">     
+                                                 <i class="cart icon {{ cart_color }}"></i>        
+                                             </a>      
+                                             <input class="cart-quantity" id="input_size" type="number" min="0" step="1" value="{{ l.get_quantity_in_cart() }}">       
+                                         </div>        
+                                     </div>
+                                    {% endif %}
+                                    <div class="description"><span class="desc-name">Item Description:</span><div class="desc-desc">{{ l.description }}</div></div>
+                                    {% if current_user.is_vendor() or current_user.is_admin() %}
+                                        <span>Available: {% if l.available==True %} Yes {% else %} No {% endif %}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% if count >= 3 %}</div> {% endif %}
+                <br>
+                <br>
+                <br>
+                <div class="ui pagination menu pagination-styles">
                     {% for page in listings.iter_pages() %}
                         {% if page %}
                             {% if page != listings.page %}
@@ -144,26 +148,19 @@
                     {% endfor %}
                 </div>
             {% else %}
+                <div id="listings-table" class="listings ui relaxed divided items grid container">
                 {% if current_user.is_merchant() %}
-                    <h3><a href="{{ url_for('merchant.listing_view_all', page=1) }}">Reset Search</a></h3>
+                    <h2>No Results: <a href="{{ url_for('merchant.listing_view_all', page=1) }}">Reset Search</a></h2>
                 {% elif current_user.is_vendor() %}
-                    <h3><a href="{{ url_for('vendor.current_listings', page=1) }}">Reset Search</a></h3>
+                    <h2>No Results: <a href="{{ url_for('vendor.current_listings', page=1) }}" >Reset Search</a></h2>
                 {% elif current_user.is_admin() %}
-                    <h3><a href="{{ url_for('admin.listing_view_all', page=1) }}">Reset Search</a></h3>
+                    <h2>No Results: <a href="{{ url_for('admin.listing_view_all', page=1) }}">Reset Search</a></h2>
                 {% endif %}
+                </div>
             {% endif %}
             {% block after %}
             {% endblock %}
         </div>
+        <br><br><br>
     </div>
-
-
-    <style>
-        .truncate {
-            max-width: 100px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    </style>
 {% endblock %}
