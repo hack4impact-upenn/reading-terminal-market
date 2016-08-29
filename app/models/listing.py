@@ -28,7 +28,7 @@ class Listing(db.Model):
     description = db.Column(db.Text)
     price = db.Column(db.Float)
     available = db.Column(db.Boolean, default=True)
-    product_id=db.Column(db.Integer, default=1)
+    product_id=db.Column(db.String(64), default=1)
     updated=db.Column(db.Integer, default=0)
 
     def __init__(self, product_id, vendor_id, unit, name, available, price,
