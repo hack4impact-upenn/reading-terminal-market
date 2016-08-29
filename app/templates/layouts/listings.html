@@ -106,7 +106,7 @@
                                     {% endif %}
                                     <div class="description"><span class="desc-name">Item Description:</span><div class="desc-desc">{{ l.description }}</div></div>
                                     {% if current_user.is_vendor() or current_user.is_admin() %}
-                                        <span>{% if l.available==True %} Yes {% else %} No {% endif %}</span>
+                                        <span>Available: {% if l.available==True %} Yes {% else %} No {% endif %}</span>
                                     {% endif %}
                                 </div>
                             </div>

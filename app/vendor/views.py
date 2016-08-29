@@ -85,10 +85,12 @@ def csv_upload():
             csv_data = csv.DictReader(buff, delimiter=',')
             #for each row in csv, create a listing
             current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
+            if form.replace_or_merge.data == 'replace':
+                Listing.query.filter_by(vendor_id=current_user.id).delete(synchronize_session=False)
             for row in csv_data:
                 print 'in here!'
                 #cheap way to skip weird 'categorical' lines
-                if (row[current_vendor.product_id_col]).strip().isdigit():
+                if (row[current_vendor.product_id_col]).strip().isdigit() and form.replace_or_merge.data == 'merge':
                     safe_price = row[current_vendor.price_col]
                     proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
                     queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
@@ -109,6 +111,12 @@ def csv_upload():
                         proposed_listing.updated = Updated.NEW_ITEM
                         listings.append(proposed_listing)
                         Listing.add_listing(new_listing=proposed_listing)
+                elif (row[current_vendor.product_id_col]).strip().isdigit() and form.replace_or_merge.data == 'replace':
+                    safe_price = row[current_vendor.price_col]
+                    proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
+                    proposed_listing.updated = Updated.NEW_ITEM
+                    listings.append(proposed_listing)
+                    Listing.add_listing(new_listing=proposed_listing)
     return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings)
 
 #get rid of those pesky dollar signs that mess up parsing
@@ -119,7 +127,7 @@ def stripPriceHelper(price):
 
 def is_numeric_col(current_vendor, row, col, row_count):
     if not row[col].isdigit() and row[col]:
-        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {} "
+        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {}. Must be number (no letters/characters)."
               .format(current_vendor.full_name(),col, row_count),
               'form-error')
         return False
@@ -127,13 +135,6 @@ def is_numeric_col(current_vendor, row, col, row_count):
 
 
 def is_proper_unit(vendor_name, unit, row, row_count):
-    ureg = UnitRegistry()
-    try:
-        ureg.parse_expression(row[unit])
-    except UndefinedUnitError:
-        flash("Error parsing {}'s CSV file. Bad entry in the {} column, at row {} "
-              .format(vendor_name, unit, row_count),'form-error')
-        return False
     return True
 
 @vendor_required
@@ -144,6 +145,10 @@ def test_csv(form):
     columns = [current_vendor.product_id_col,current_vendor.listing_description_col, current_vendor.unit_col,
                current_vendor.price_col, current_vendor.name_col, current_vendor.quantity_col]
     csv_file = form.file_upload
+    print csv_file.data.filename
+    if '.csv' not in csv_file.data.filename: 
+        flash("Must be a .csv file", 'form-error')
+        return False
     buff = csv_file.data.stream
     csv_data = csv.DictReader(buff, delimiter=',')
     c = current_vendor.product_id_col

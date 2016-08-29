@@ -144,7 +144,6 @@ def setup_test_cart_items():
     db.session.add(c1)
     db.session.commit()
 
-
 @manager.command
 def recreate_db():
     """

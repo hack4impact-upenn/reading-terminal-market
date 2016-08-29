@@ -7,7 +7,7 @@
     ('account.manage', 'Account information'),
     ('account.change_email_request', 'Change email address'),
     ('account.change_password', 'Change password'),
-    ('account.change_name', 'Change name')
+    ('account.change_name', 'Change name'),
 ] %}
 
 {% macro navigation(items) %}
@@ -19,12 +19,12 @@
             </a>
         {% endfor %}
         {% if current_user.is_vendor() %}
-            <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{url_for('account.csv_settings') }}">
+            <a class="item {% if request.endpoint == 'account.csv_settings' %}active{% endif %}" href="{{url_for('account.csv_settings') }}">
                 CSV Settings
             </a>
         {% endif %}
         {% if current_user.is_merchant_or_vendor() %}
-            <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{ url_for('account.change_company_name') }}">
+            <a class="item {% if request.endpoint == 'account.change_company_name' %}active{% endif %}" href="{{ url_for('account.change_company_name') }}">
                 Change company name
             </a>
         {% endif %}

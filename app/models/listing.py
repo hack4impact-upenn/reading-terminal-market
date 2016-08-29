@@ -107,13 +107,14 @@ class Listing(db.Model):
         if 'main_search_term' in kwargs:
             term = kwargs['main_search_term']
             filter_list.append(or_(
-                Listing.name.like('%{}%'.format(term)),
-                Listing.description.like('%{}%'.format(term)))
+                Listing.name.ilike('%{}%'.format(term)),
+                Listing.product_id.ilike('%{}%'.format(term)),
+                Listing.description.ilike('%{}%'.format(term)))
             )
 
         if 'name_search_term' in kwargs and kwargs['name_search_term']:
             term = kwargs['name_search_term']
-            vendors = Vendor.query.filter(Vendor.company_name.like('%{}%'.format(term))).all()
+            vendors = Vendor.query.filter(Vendor.company_name.ilike('%{}%'.format(term))).all()
             vendor_ids = [vendor.id for vendor in vendors]
             filter_list.append(Listing.vendor_id.in_(vendor_ids))
 

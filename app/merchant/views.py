@@ -1,11 +1,11 @@
-from flask import render_template, abort, request, redirect, url_for, jsonify, flash
+from flask import render_template, abort, request, redirect, url_for, jsonify
 from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
-from ..models import Listing, CartItem, Order, Vendor, Status, ItemTag, Ratings, User
+from ..models import (Listing, CartItem, Order, Vendor, Status, ItemTag,
+                      Ratings, User)
 from .. import db
 from datetime import datetime
-import pytz
 
 
 @merchant.route('/')
@@ -21,7 +21,10 @@ def index():
 @merchant_required
 def listing_view_all(page=1):
     """Search for listings"""
-    tut_completed =  User.query.filter_by(id=current_user.id).first().tutorial_completed
+    tut_completed = (User.query
+                         .filter_by(id=current_user.id)
+                         .first()
+                         .tutorial_completed)
     print 'tut completed is:', tut_completed
     main_search_term = request.args.get('main-search', "", type=str)
     favorite = True if request.args.get('favorite') == "on" else False
@@ -83,7 +86,7 @@ def listing_view_all(page=1):
 def order_items(vendor_id=None):
     if vendor_id:
         referral_name = request.form['referral_name']
-        Order.order_cart_items_from_vendor(vendor_id,referral_name)
+        Order.order_cart_items_from_vendor(vendor_id, referral_name)
     else:
         Order.order_cart_items()
     return redirect(url_for('.manage_cart'))
@@ -93,7 +96,10 @@ def order_items(vendor_id=None):
 @login_required
 @merchant_required
 def manage_cart():
-    tut_completed =  User.query.filter_by(id=current_user.id).first().tutorial_completed
+    tut_completed = (User.query
+                         .filter_by(id=current_user.id)
+                         .first()
+                         .tutorial_completed)
     # used to show/hide the order modal
     confirm_order = request.args.get('confirm_order', default=False, type=bool)
     # vendor_id to order from. if None, order from all
@@ -187,8 +193,8 @@ def add_to_cart(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'quantity' not in request.json or type(request.json[
-                                                  'quantity']) is not int:
+    if ('quantity' not in request.json or
+            type(request.json['quantity']) is not int):
         abort(400)
 
     cart_item = CartItem.query.filter_by(
@@ -225,7 +231,8 @@ def change_favorite(listing_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'isFavorite' not in request.json or type(request.json['isFavorite']) is not bool:
+    if ('isFavorite' not in request.json or
+            type(request.json['isFavorite']) is not bool):
         abort(400)
 
     old_status = listing in current_user.bookmarks
@@ -249,7 +256,8 @@ def change_fav_vendor(vendor_id):
         abort(404)
     if not request.json:
         abort(400)
-    if 'isFavVendor' not in request.json or type(request.json['isFavVendor']) is not bool:
+    if ('isFavVendor' not in request.json or type(request.json['isFavVendor'])
+            is not bool):
         abort(400)
 
     old_status = vendor in current_user.bookmarked_vendors
@@ -263,7 +271,7 @@ def change_fav_vendor(vendor_id):
     return jsonify(
         {'isFavVendor': vendor in current_user.bookmarked_vendors,
          'vendor_id': vendor.id,
-         'name': vendor.company_name }
+         'name': vendor.company_name}
     )
 
 
@@ -271,7 +279,8 @@ def change_fav_vendor(vendor_id):
 @login_required
 @merchant_required
 def view_orders():
-    tut_completed =  User.query.filter_by(id=current_user.id).first().tutorial_completed
+    tut_completed = (User.query.filter_by(id=current_user.id)
+                     .first().tutorial_completed)
     orders = (Order.query.filter_by(merchant_id=current_user.id)
               .order_by(Order.id.desc()))
 
@@ -302,10 +311,9 @@ def view_orders():
 @login_required
 @merchant_required
 def tutorial_completed():
-    current_tutorial_status = User.query.filter_by(id=current_user.id).first().tutorial_completed;
     User.query.filter_by(id=current_user.id).first().tutorial_completed = \
-        not User.query.filter_by(id=current_user.id).first().tutorial_completed;
-    db.session.commit();
+        not User.query.filter_by(id=current_user.id).first().tutorial_completed
+    db.session.commit()
     return '', 204
 
 
@@ -317,7 +325,11 @@ def review_orders(order_id):
     star_rating = request.json['rating']
     comment = request.json['review']
 
-    rating = Ratings.query.filter_by(vendor_id=order.vendor_id, merchant_id=order.merchant_id).first()
+    rating = (Ratings.query
+                     .filter_by(
+                         vendor_id=order.vendor_id,
+                         merchant_id=order.merchant_id)
+                     .first())
     if not rating:
         rating = Ratings(
             vendor_id=order.vendor_id,

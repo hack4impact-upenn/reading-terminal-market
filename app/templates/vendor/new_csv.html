@@ -15,7 +15,18 @@
         <h2 class="ui header">
             Upload CSV
         </h2>
-
+        <p>Here you can upload a CSV of all your items on the market. 
+          <b> Make sure to visit <a href="{{ url_for('account.csv_settings') }}"> the CSV settings page </a> to format your CSV file properly. </b>
+          Currently the following columns with names as follows are expected:
+          <ul>
+            <li>Product ID/UPC: <b>{{ current_user.product_id_col }}</b></li>
+            <li>Product Description: <b>{{ current_user.listing_description_col }}</b></li>
+            <li>Product Price: <b>{{ current_user.price_col }}</b></li>
+            <li>Product Name: <b>{{ current_user.name_col }}</b></li>
+            <li>Product Unit: <b>{{ current_user.unit_col }}</b></li>
+            <li>Product Quantity (per unit): <b>{{ current_user.quantity_col }}</b></li>
+          </ul>
+        </p>
         {% set flashes = {
         'error': get_flashed_messages(category_filter=['form-error']),
         'warning': get_flashed_messages(category_filter=['form-check-email']),
@@ -26,8 +37,7 @@
         {{ f.begin_form(form, flashes) }}
 
         {{ f.render_form_field(form.file_upload) }}
-
-
+        {{ f.render_form_field(form.replace_or_merge) }}
         {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
         {{ f.form_message(flashes['warning'], header='Check your item information.', class='warning') }}
         {{ f.form_message(flashes['info'], header='Information', class='info') }}

@@ -8,6 +8,7 @@ from wtforms.fields import (
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired, DataRequired, Length, Email, EqualTo
 from wtforms import ValidationError
+from flask.ext.login import current_user
 from ..models import User
 
 
@@ -113,9 +114,10 @@ class ChangeNameForm(Form):
 
 
 class CSVColumnForm(Form):
-    product_id_col = StringField('Product ID Column Name', validators=[DataRequired(), Length(1, 1000)])
-    category_id_col = StringField('Category ID Column Name', validators=[DataRequired(), Length(1, 1000)])
+    product_id_col = StringField('Product ID/UPC Column Name', validators=[DataRequired(), Length(1, 1000)])
     listing_description_col = StringField('Description Column Name', validators=[DataRequired(), Length(1, 1000)])
     price_col = StringField('Price Column Name', validators=[DataRequired(), Length(1, 1000)])
     name_col = StringField('Name/Brand Column Name', validators=[DataRequired(), Length(1, 1000)])
+    unit_col = StringField('Units Column Name', validators=[DataRequired(), Length(1, 1000)])
+    quantity_col = StringField('Quantity per Item', validators=[DataRequired(), Length(1,1000)])
     submit = SubmitField('Submit')

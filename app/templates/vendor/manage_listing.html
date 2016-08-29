@@ -26,8 +26,11 @@
     <table class="ui compact definition table">
 
         <tr><td>Product Name</td><td>{{ listing.name }}</td></tr>
+        <tr><td>Product ID/UPC</td><td>{{ listing.product_id }}</td></tr>
         <tr><td>Price</td><td>{{ format_price(listing.price) }}/{{ listing.quantity }} {{listing.unit}}</td></tr>
         <tr><td>Description</td><td>{{ listing.description }}</td></tr>
+        <tr><td>Quantity</td><td>{{ listing.quantity }}</td></tr>
+        <tr><td>Unit</td><td>{{ listing.unit }}</td></tr>
         <tr><td>Available</td><td>{% if listing.available %} Yes {% else %} No {% endif %}</td></tr>
 
     </table>

@@ -1,8 +1,8 @@
 from flask.ext.wtf import Form
 from flask.ext.login import current_user
-from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField, IntegerField
+from wtforms.fields import StringField, DecimalField, BooleanField, SubmitField, TextAreaField, FileField, IntegerField, RadioField, SelectField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Regexp
 from wtforms import ValidationError, widgets, SelectMultipleField
 from ..models import Listing, User
 from .. import db
@@ -46,4 +46,5 @@ class NewItemForm(Form):
 
 class NewCSVForm(Form):
     file_upload = FileField(validators=[DataRequired()])
+    replace_or_merge = SelectField('Would you like to replace all of your current items on the system with this upload or merge this upload with the items on the system?', choices=[('replace', 'Replace'), ('merge', 'Merge')], validators=[DataRequired()])
     submit = SubmitField('Submit Upload')

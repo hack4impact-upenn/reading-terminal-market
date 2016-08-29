@@ -308,7 +308,6 @@ class Vendor(User):
     name_col = db.Column(db.String(64), default="Vendor")
     unit_col = db.Column(db.String(64), default="Unit")
     quantity_col = db.Column(db.String(64), default="Quantity")
-
     def get_tags(self):
         return [str(tag.tag.tag_name) for tag in self.tags]
 

@@ -275,15 +275,22 @@ def change_name():
 @login_required
 def csv_settings():
     form = CSVColumnForm()
+    current_vendor = User.query.filter_by(id=current_user.id).first()
     if form.validate_on_submit():
-        current_vendor = User.query.filter_by(id=current_user.id).first()
         current_vendor.product_id_col = form.product_id_col.data
-        current_vendor.category_id_col = form.category_id_col.data
         current_vendor.listing_description_col = form.listing_description_col.data
         current_vendor.price_col = form.price_col.data
         current_vendor.name_col = form.name_col.data
+        current_vendor.unit_col = form.unit_col.data
+        current_vendor.quantity_col = form.quantity_col.data
+        current_vendor.upc_col = form.upc_col.data
         db.session.commit()
-
+    form.product_id_col.data = current_vendor.product_id_col
+    form.listing_description_col.data = current_vendor.listing_description_col
+    form.price_col.data = current_vendor.price_col
+    form.name_col.data = current_vendor.name_col
+    form.unit_col.data = current_vendor.unit_col
+    form.quantity_col.data = current_vendor.quantity_col
+    form.upc_col.data = current_vendor.upc_col
     return render_template('account/manage.html', form=form)
-
 
