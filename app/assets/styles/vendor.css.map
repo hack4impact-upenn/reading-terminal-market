@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AACI,eAAS;EACL,aAAa,EAAE,GAAG;EAElB,sCAAuB;IACnB,UAAU,EAAE,GAAG;IACf,aAAa,EAAE,GAAG;AAI1B,eAAS;EACL,OAAO,EAAE,IAAI",
+"sources": ["vendor.scss"],
+"names": [],
+"file": "vendor.css"
+}

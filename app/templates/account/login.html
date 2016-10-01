@@ -18,8 +18,11 @@ body {
 
     <div class="ui grid container">
         <div class="eight wide computer ten wide tablet fourteen wide mobile centered column login-contain animated fadeIn">
-            <h2 class="ui header login"><span class="thin-title">Reading Terminal Market</span><br><span class="procure">Procurement Platform</span></h2>
+            <h2 class="ui header login"><span class="thin-title">Reading Terminal Market</span><br><span class="procure">Purchasing Platform</span></h2>
 
+            <p style="color: #FFF; text-align: left; padding-bottom: 10px">Don't have an account? 
+              <a style="font-weight: bold" 
+                href="mailto:{{ config.ADMIN_EMAIL}}">Email Us with your name and contact information to start the approval process</a></p>
             {% set flashes = {
                 'error':   get_flashed_messages(category_filter=['form-error']),
                 'warning': get_flashed_messages(category_filter=['form-check-email']),

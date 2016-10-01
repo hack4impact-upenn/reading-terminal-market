@@ -35,14 +35,14 @@
                 <br>Phone: {{ vendor.phone_number }}</p>
                         </div>
                 </div>
-            </div>
-        <div class="ui left aligned five wide column">
-            <img src="{{ url_for('static', filename='images/vendor/'+vendor.image) }}">
-        </div>
+              </div>
+              <div class="ui left aligned five wide column">
+                <img src="{{ url_for('static', filename='images/vendor/' + (vendor.image if vendor.image else 'default.png'))}}"> 
+              </div>
         </div>
         <div class="ui row">
           <div class="ui left aligned two wide column"></div>
-            {% if f1 != None %}
+          {% if f1 != None %}
         <div class="ui left aligned three wide column grid">
                     {% if current_user.is_vendor() %}
                         <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f1.id) }}">{{ vendor.f1 }}</a></p>

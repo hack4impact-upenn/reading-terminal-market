@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEQ,wDAA+B;EAC3B,cAAc,EAAE,GAAG",
+"sources": ["shared.scss"],
+"names": [],
+"file": "shared.css"
+}

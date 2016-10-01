@@ -275,7 +275,10 @@ def change_name():
 def profile_page(profile_id):
     vendor = Vendor.query.filter_by(id=profile_id).first()
     f1 = Listing.query.filter_by(name=vendor.f1).first()
-    f1_ID = f1
+    if f1:
+        f1_ID = f1
+    else:
+        f1_ID = f1
     f2 = Listing.query.filter_by(name=vendor.f2).first()
     if f2:
         f2_ID = f2
@@ -306,7 +309,6 @@ def csv_settings():
         current_vendor.name_col = form.name_col.data
         current_vendor.unit_col = form.unit_col.data
         current_vendor.quantity_col = form.quantity_col.data
-        current_vendor.upc_col = form.upc_col.data
         db.session.commit()
     form.product_id_col.data = current_vendor.product_id_col
     form.listing_description_col.data = current_vendor.listing_description_col
@@ -314,6 +316,5 @@ def csv_settings():
     form.name_col.data = current_vendor.name_col
     form.unit_col.data = current_vendor.unit_col
     form.quantity_col.data = current_vendor.quantity_col
-    form.upc_col.data = current_vendor.upc_col
     return render_template('account/manage.html', form=form)
 

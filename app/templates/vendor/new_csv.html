@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="ui stackable centered grid container">
-    <div class="six wide column">
+    <div class="twelve wide column">
         <a class="ui basic compact button" href="{{ url_for('vendor.index') }}">
             <i class="caret left icon"></i>
             Back to dashboard
@@ -46,10 +46,14 @@
         {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
         {{ f.render_form_field(field) }}
         {% endfor %}
-
         {{ f.end_form() }}
+        <div>
+          Column Errors:
+          <ul id="errors">
+          </ul>
+        </div>
     </div>
-    <div class="six wide column">
+    <div class="twelve wide column">
         <table id="listing_table" class="ui celled table">
             <thead>
             <tr>
@@ -83,7 +87,7 @@
                         <td><i class="icon checkmark "></i> Submitted New Listing</td>
                     </tr>
                 {% elif listing.updated == 2 %}
-                    <tr class="ui inverted red table">
+                    <tr class="ui inverted yellow table">
                         <td>{{listing.name}}</td>
                         <td>{{listing.description}}</td>
                         <td>{{listing.price}}</td>
@@ -94,32 +98,70 @@
                 {% endif %}
                 {% endfor %}
             </tbody>
-            <tfoot>
-            <tr>
-                <th colspan="3">
-                    <div class="ui right floated pagination menu">
-                        <a class="icon item">
-                            <i class="left chevron icon"></i>
-                        </a>
-                        <a class="item">1</a>
-                        <a class="icon item">
-                            <i class="right chevron icon"></i>
-                        </a>
-                    </div>
-                </th>
-            </tr>
-            </tfoot>
         </table>
-
     </div>
 </div>
 <script>
-   $("#listing_table").hide()
-   $( document ).ready(function() {
+ $("#listing_table").hide()
+ $( document ).ready(function() {
     {% if listings %}
        $("#listing_table").show()
     {% endif %}
 });
+</script>
+<script>
+  $( document ).ready(function() {
+    $("#submit").attr('disabled', 'disabled');
+    $("#file_upload").on('change', function() {
+      $("#submit").attr('disabled', 'disabled');
+      var requiredFields = [
+        '{{ current_user.product_id_col }}',
+        '{{ current_user.listing_description_col }}',
+        '{{ current_user.price_col }}',
+        '{{ current_user.name_col }}',
+        '{{ current_user.unit_col }}',
+        '{{ current_user.quantity_col }}'
+      ]
+      var count = 0;
+      var err = false;
+      $("#errors").html('');
+      $(this).parse({
+        config: {
+          worker: true,
+          header: true,
+          step: function(row) {
+            count++;
+            var rowObj = row.data[0];
+            requiredFields.map( function(el, idx) {
+              if(!rowObj.hasOwnProperty(el)) {
+                err = true;
+                $("#errors").append("<li style='color: red'> Row number " + count + " does not have a cell with corresponding column name \"" + el +"\"</li>");
+              } else if (rowObj[el] === "") {
+                err = true;
+                $("#errors").append("<li style='color: red'> Row number " + count + " does not have a value under the column name \"" + el + "\"</li>");
+              }
+            })
+            console.log('Row:', row.data[0]);
+          },
+          complete: function(file) {
+            console.log('complete: ', file); 
+          }
+        },
+        before: function(file, inputElem) {
+          console.log('hi'); 
+        },
+        error: function(err, file, inputElem, reason) {
+          console.log('error');
+        },
+        complete: function() {
+          if (err === false) {
+            $("#errors").append("<span style='color: green'> No Column Errors. Once you submit your form, we will check to make sure each cell has the correct value types</span>");
+            $("#submit").removeAttr('disabled');
+          } 
+        }
+      });
+    });
+  });
 </script>
     {% if not tut_completed  %}
         <script type="text/javascript">
