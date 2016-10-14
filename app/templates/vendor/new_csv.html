@@ -127,7 +127,6 @@
       $("#errors").html('');
       $(this).parse({
         config: {
-          worker: true,
           header: true,
           step: function(row) {
             count++;
@@ -146,9 +145,6 @@
           complete: function(file) {
             console.log('complete: ', file); 
           }
-        },
-        before: function(file, inputElem) {
-          console.log('hi'); 
         },
         error: function(err, file, inputElem, reason) {
           console.log('error');
