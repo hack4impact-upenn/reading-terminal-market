@@ -190,12 +190,25 @@ def join_from_invite(user_id, token):
     if new_user is None:
         return redirect(404)
 
-    if new_user.password_hash is not None and new_user.confirmed is True:
-        flash('You have been confirmed.', 'success')
-        return redirect(url_for('main.index'))
-    elif new_user.password_hash is not None:
-        flash('You have already confirmed your account', 'error');
-        return redirect(url_for('main.index'))
+    if new_user.password_hash is not None:
+        if new_user.confirmed is True:
+            if new_user.confirm_account(token):
+                flash('You have been confirmed.', 'success')
+                return redirect(url_for('main.index'))
+            else:
+                flash('The confirmation link is invalid or has expired. Another '
+                      'invite email with a new link has been sent to you.', 'error')
+                token = new_user.generate_confirmation_token()
+                send_email(new_user.email,
+                           'You Are Invited To Join',
+                           'account/email/invite',
+                           user=new_user,
+                           user_id=new_user.id,
+                           token=token)
+        else:
+            flash('You have already confirmed your account', 'error');
+            return redirect(url_for('main.index'))
+
     if new_user.confirm_account(token):
             if new_user.is_admin():
                 form = CreateUserFromInviteForm()
