@@ -113,6 +113,7 @@ def new_user():
             return render_template('admin/new_user.html', form=form)
         db.session.add(user)
         db.session.commit()
+        token = user.generate_confirmation_token()
         send_email(user.email,
                    'You Are Invited To Join',
                    'account/email/invite',
