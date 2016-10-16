@@ -191,7 +191,7 @@ def join_from_invite(user_id, token):
         return redirect(404)
 
     if new_user.password_hash is not None:
-        if new_user.confirmed is True:
+        if new_user.confirmed is False:
             if new_user.confirm_account(token):
                 flash('You have been confirmed.', 'success')
                 return redirect(url_for('main.index'))
