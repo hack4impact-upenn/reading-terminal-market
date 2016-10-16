@@ -169,6 +169,7 @@ def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
     if current_user.confirm_account(token):
+        db.session.commit()
         flash('Your account has been confirmed.', 'success')
     else:
         flash('The confirmation link is invalid or has expired.', 'error')
@@ -194,6 +195,7 @@ def join_from_invite(user_id, token):
         if new_user.confirmed is False:
             if new_user.confirm_account(token):
                 flash('You have been confirmed.', 'success')
+                db.session.commit()
                 return redirect(url_for('main.index'))
             else:
                 flash('The confirmation link is invalid or has expired. Another '
