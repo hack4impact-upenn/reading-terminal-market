@@ -190,10 +190,12 @@ def join_from_invite(user_id, token):
     if new_user is None:
         return redirect(404)
 
-    if new_user.password_hash is not None:
-        flash('You have already joined.', 'error')
+    if new_user.password_hash is not None and new_user.confirmed is True:
+        flash('You have been confirmed.', 'success')
         return redirect(url_for('main.index'))
-
+    elif new_user.password_hash is not None:
+        flash('You have already confirmed your account', 'error');
+        return redirect(url_for('main.index'))
     if new_user.confirm_account(token):
             if new_user.is_admin():
                 form = CreateUserFromInviteForm()
