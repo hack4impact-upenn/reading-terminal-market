@@ -113,6 +113,12 @@ def new_user():
             return render_template('admin/new_user.html', form=form)
         db.session.add(user)
         db.session.commit()
+        send_email(user.email,
+                   'You Are Invited To Join',
+                   'account/email/invite',
+                   user=user,
+                   user_id=user.id,
+                   token=token)
         flash('User {} successfully created'.format(user.full_name()),
               'form-success')
         return redirect(url_for('admin.new_user'))
