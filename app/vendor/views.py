@@ -87,23 +87,35 @@ def csv_upload():
             #for each row in csv, create a listing
             current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
             if form.replace_or_merge.data == 'replace':
-                Listing.query.filter_by(vendor_id=current_user.id).delete(synchronize_session=False)
+                listings_delete = db.session.query(Listing).filter_by(vendor_id=current_user.id).delete()
             for row in csv_data:
-                print 'in here!'
                 #cheap way to skip weird 'categorical' lines
                 if (row[current_vendor.product_id_col]).strip().isdigit() and form.replace_or_merge.data == 'merge':
                     safe_price = row[current_vendor.price_col]
+                    description = row[current_vendor.listing_description_col]
+                    name = row[current_vendor.name_col]
+                    unit = row[current_vendor.unit_col]
+                    quantity = row[current_vendor.quantity_col]
                     proposed_listing = Listing.add_csv_row_as_listing(csv_row=row, price=safe_price)
                     queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
                     if queried_listing:
                         # case: listing exists and price has not changed
-                        if queried_listing.price == float(safe_price):
+                        if (
+                            queried_listing.price == float(safe_price)
+                            and queried_listing.description == description
+                            and queried_listing.name == name
+                            and queried_listing.unit == unit
+                            and queried_listing.quantity == quantity):
                             proposed_listing.updated = Updated.NO_CHANGE
                             listings.append(proposed_listing)
                         # case: listing exists and price has changed
                         else:
                             queried_listing.price = float(safe_price)
                             proposed_listing.price = float(safe_price)
+                            proposed_listing.description = description
+                            proposed_listing.name = name
+                            proposed_listing.unit = unit
+                            proposed_listing.quantity = quantity
                             proposed_listing.updated = Updated.PRICE_CHANGE
                             listings.append(proposed_listing)
                             db.session.commit()
@@ -365,20 +377,7 @@ def approve_order(order_id):
                comment=comment)
 
     return jsonify({'order_id': order_id, 'status': 'approved', 'comment': comment})
-
-
-'''@vendor.route('/request-tag', methods=['PUT'])
-@login_required
-@vendor_required
-def request_tag():
-    form = RequestTagForm()
-    if form.validate():
-        for tag in form.tags_chosen:
-            User.vendor_tags_table.append(current_user, tag, False)
-        for tag in User.tags_list:
-            if tag not in form.tags_chosen:
-                User.vendor_tags_table.delete(current_user, tag)'''
-
+    
 
 @vendor.route('/decline/<int:order_id>', methods=['POST'])
 @login_required
