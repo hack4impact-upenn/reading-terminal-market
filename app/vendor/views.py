@@ -142,12 +142,11 @@ def stripPriceHelper(price):
 
 
 def is_numeric_col(current_vendor, row, col, row_count):
-    if not row[col]:
-        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {}. Must be number (no letters/characters)."
-              .format(current_vendor.full_name(),col, row_count),
+    if not row[col].isdigit() and row[col]:
+        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {}. Must be number (no letters/characters). Found <b>{}</b>"
+              .format(current_vendor.full_name(),col, row_count, row[col]),
               'form-error')
         return False
-    re.sub("[^0-9^.]","",row[col])
     return True
 
 
