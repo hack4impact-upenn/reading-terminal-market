@@ -8,7 +8,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or \
         'SjefBOa$1FgGco0SkfPO392qqH9%a492'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
-    SSL_DISABLE = True
+    SSL_DISABLE = False
 
     MAIL_SERVER = 'smtp.sendgrid.net'
     MAIL_PORT = 587
@@ -51,7 +51,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-
+    SSL_DISABLE = False
     @classmethod
     def init_app(cls, app):
         Config.init_app(app)
