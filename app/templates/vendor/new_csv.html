@@ -131,15 +131,23 @@
           step: function(row) {
             count++;
             var rowObj = row.data[0];
+            var rowErrs = [];
             requiredFields.map( function(el, idx) {
               if(!rowObj.hasOwnProperty(el)) {
                 err = true;
-                $("#errors").append("<li style='color: red'> Row number " + count + " does not have a cell with corresponding column name \"" + el +"\"</li>");
+                rowErrs.push("<li style='color: red'> Row number " + count + " does not have a cell with corresponding column name \"" + el +"\"</li>");
               } else if (rowObj[el] === "") {
                 err = true;
-                $("#errors").append("<li style='color: red'> Row number " + count + " does not have a value under the column name \"" + el + "\"</li>");
+                rowErrs.push("<li style='color: red'> Row number " + count + " does not have a value under the column name \"" + el + "\"</li>");
               }
             })
+            if (rowErrs.length < requireFields.length) {
+              rowErrs.map( function(el) {
+                $('#errors').append(el);
+              });
+            } else {
+              err = false;
+            }
             console.log('Row:', row.data[0]);
           },
           complete: function(file) {
