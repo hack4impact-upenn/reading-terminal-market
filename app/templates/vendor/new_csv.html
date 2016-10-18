@@ -141,7 +141,7 @@
                 rowErrs.push("<li style='color: red'> Row number " + count + " does not have a value under the column name \"" + el + "\"</li>");
               }
             })
-            if (rowErrs.length < requireFields.length) {
+            if (rowErrs.length < requiredFields.length) {
               rowErrs.map( function(el) {
                 $('#errors').append(el);
               });
