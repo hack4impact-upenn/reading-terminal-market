@@ -140,9 +140,15 @@ def stripPriceHelper(price):
     r = re.compile("\$(\d+.\d+)")
     return r.search(price.replace(',','')).group(1)
 
+def is_number(s):
+    try:
+        complex(s) # for int, long, float and complex
+    except ValueError:
+        return False
 
+    return True
 def is_numeric_col(current_vendor, row, col, row_count):
-    if not row[col].isdigit() and row[col]:
+    if not is_number(row[col]) and row[col]:
         flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {}. Must be number (no letters/characters). Found <b>{}</b>"
               .format(current_vendor.full_name(),col, row_count, row[col]),
               'form-error')
