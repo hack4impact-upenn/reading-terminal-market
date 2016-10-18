@@ -320,7 +320,7 @@ class Vendor(User):
     ratings_vendor = db.relationship("Ratings", backref="vendor", cascade='all, delete-orphan')
     listing_description_col = db.Column(db.String(64), default="Description")
     price_col = db.Column(db.String(64), default="Price")
-    name_col = db.Column(db.String(64), default="Vendor")
+    name_col = db.Column(db.String(64), default="Name")
     unit_col = db.Column(db.String(64), default="Unit")
     quantity_col = db.Column(db.String(64), default="Quantity")
     def get_tags(self):
