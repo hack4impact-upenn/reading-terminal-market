@@ -87,7 +87,9 @@ def csv_upload():
             #for each row in csv, create a listing
             current_vendor = Vendor.get_vendor_by_user_id(user_id=current_user.id)
             if form.replace_or_merge.data == 'replace':
-                listings_delete = db.session.query(Listing).filter_by(vendor_id=current_user.id).delete()
+                listings_delete = db.session.query(Listing).filter_by(vendor_id=current_user.id).all()
+                for listing in listings_delete:
+                    listing.available = False
             for row in csv_data:
                 #cheap way to skip weird 'categorical' lines
                 if (row[current_vendor.product_id_col]).strip().isdigit() and form.replace_or_merge.data == 'merge':
@@ -100,6 +102,7 @@ def csv_upload():
                     queried_listing = Listing.get_listing_by_product_id(product_id=row[current_vendor.product_id_col])
                     if queried_listing:
                         # case: listing exists and price has not changed
+                        queried_listing.available = True
                         if (
                             queried_listing.price == float(safe_price)
                             and queried_listing.description == description
@@ -139,11 +142,6 @@ def stripPriceHelper(price):
 
 
 def is_numeric_col(current_vendor, row, col, row_count):
-    if not row[col].isdigit() and row[col]:
-        flash("Error parsing {}'s CSV file. Bad entry in {} column, at row {}. Must be number (no letters/characters)."
-              .format(current_vendor.full_name(),col, row_count),
-              'form-error')
-        return False
     return True
 
 
