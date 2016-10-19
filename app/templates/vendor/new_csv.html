@@ -164,6 +164,7 @@
       $(this).parse({
         config: {
           header: true,
+          skipEmptyLines: true,
           step: function(row) {
             count++;
             var rowObj = row.data[0];
