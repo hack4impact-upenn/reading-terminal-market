@@ -37,6 +37,7 @@
         {{ f.begin_form(form, flashes) }}
 
         {{ f.render_form_field(form.file_upload) }}
+        <i> If you need to resubmit a csv after editing it, please refresh the page </i> <br><br>
         {{ f.render_form_field(form.replace_or_merge) }}
         {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
         {{ f.form_message(flashes['warning'], header='Check your item information.', class='warning') }}
@@ -44,14 +45,33 @@
         {{ f.form_message(flashes['success'], header='Success!', class='success') }}
 
         {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
-        {{ f.render_form_field(field) }}
-        {% endfor %}
+<div class="field  ">
+        
+    
+        <input class="ui button" id="submit" type="submit" value="Submit Upload" >
+            <b> Note in order to stop an upload, simply refresh the page </b>
+
+
+        
+    </div>
+            {% endfor %}
         {{ f.end_form() }}
-        <div>
-          Column Errors:
-          <ul id="errors">
+        <div class="ui grid">
+        <br>
+        <div class="eight wide column">        <br>
+
+          <h2>Column Errors:</h2>
+          <ul id="errors" style="height: 200px; overflow-y: scroll">
           </ul>
         </div>
+        <div class="eight wide column">        <br>
+
+          <h2>Successful Items:</h2>
+          <ul id="success" style="height: 200px; overflow-y: scroll">
+          </ul>
+        </div>
+        </div>
+
     </div>
     <div class="twelve wide column">
         <table id="listing_table" class="ui celled table">
@@ -111,7 +131,9 @@
 </script>
 <script>
   $( document ).ready(function() {
+    var finalEls = [];
     $("#submit").attr('disabled', 'disabled');
+
     $("#file_upload").on('change', function() {
       $("#submit").attr('disabled', 'disabled');
       var requiredFields = [
@@ -124,7 +146,9 @@
       ]
       var count = 0;
       var err = false;
+      finalElms = [];
       $("#errors").html('');
+      $("#success").html('');
       $(this).parse({
         config: {
           header: true,
@@ -141,14 +165,25 @@
                 rowErrs.push("<li style='color: red'> Row number " + count + " does not have a value under the column name \"" + el + "\"</li>");
               }
             })
-            if (rowErrs.length < requiredFields.length) {
+            console.log(rowErrs.length);
+            if (rowErrs.length > 0 && rowErrs.length < requiredFields.length) {
+                          console.log(rowErrs.length);
+
+              finalElms = [];
               rowErrs.map( function(el) {
                 $('#errors').append(el);
               });
-            } else {
+            } else if (rowErrs.length === 0) {
               err = false;
+              finalElms.push({
+                'name': rowObj['{{current_user.name_col}}'],
+                'description': rowObj['{{current_user.listing_description_col}}'],
+                'unit': rowObj['{{current_user.unit_col}}'],
+                'quantity': rowObj['{{current_user.quantity_col}}'],
+                'price': rowObj['{{current_user.price_col}}'],
+                'productId': rowObj['{{current_user.product_id_col}}']
+              });
             }
-            console.log('Row:', row.data[0]);
           },
           complete: function(file) {
             console.log('complete: ', file); 
@@ -159,12 +194,79 @@
         },
         complete: function() {
           if (err === false) {
-            $("#errors").append("<span style='color: green'> No Column Errors. Once you submit your form, we will check to make sure each cell has the correct value types</span>");
+            $("#success").append("<li style='color: green'> No Column Errors. Once you submit your form, we will check to make sure each cell has the correct value types</li>");
             $("#submit").removeAttr('disabled');
           } 
         }
       });
     });
+    $("#submit").on('click', function(e) {
+      var count = 0;
+      var replace = false;
+      e.preventDefault();
+      var action = $("#replace_or_merge").dropdown('get value')[0];
+      var ajaxReqArr = [];
+      if (action === 'replace') {
+        replace = true;
+        ajaxReqArr.push({
+          action: 'replace'
+        })
+      }
+      if (finalElms.length > 0) {
+        finalElms.map(function(el) {
+          ajaxReqArr.push({
+            action: 'add',
+            row: el
+          })
+        })
+      }
+      // DeferredAjax object
+      function DeferredAjax(opts) {
+        this.options = opts;
+        this.deferred = $.Deferred();
+        this.action = opts.action;
+        this.row = opts.row;
+      }
+      DeferredAjax.prototype.invoke = function() {
+        var self = this; 
+        var data = {action: self. action, row: self.row}
+        return $.ajax({
+          type: "POST",
+          url: "{{ url_for('vendor.row_upload') }}",
+          data: {json: JSON.stringify(data)},
+          dataType: "JSON",
+          success: function(res) {
+            if(res.status === 'Failure') {
+              $("#errors").prepend("<li style='color: red'>" + res.message + "</li>")
+            }
+            if (res.status === 'Success') {
+              count++;
+              $("#success").prepend("Success Count: " + count + "/" + finalElms.length + "<li style='color: green'>" + res.message + "</li>");
+            }
+            self.deferred.resolve();
+          }
+        })
+      }
+      DeferredAjax.prototype.promise = function() {
+        return this.deferred.promise();
+      }
+
+      startingpoint = $.Deferred();
+      startingpoint.resolve();
+      $("#errors").html('');
+      $("#success").html('');
+
+      $.each(ajaxReqArr, function(idx, el) {
+        var da = new DeferredAjax({
+          action: el.action,
+          row: el.row
+        })
+        $.when(startingpoint).then(function() {
+          da.invoke();
+        })
+        startingpoint = da;
+      })
+    })
   });
 </script>
     {% if not tut_completed  %}

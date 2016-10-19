@@ -11,6 +11,7 @@ from flask import (
     jsonify,
     request
 )
+import json
 from flask.ext.login import login_required, current_user
 from forms import (ChangeListingInformation, NewItemForm, NewCSVForm, EditProfileForm)
 from . import vendor
@@ -68,6 +69,62 @@ def new_listing():
         return redirect(url_for('.new_listing', tut_completed=tut_completed))
     return render_template('vendor/new_listing.html', form=form, tut_completed=tut_completed)
 
+@vendor.route('/csv-row-upload', methods=['POST'])
+@login_required
+@vendor_required
+def row_upload():
+    data = json.loads(request.form['json'])
+    print data
+    if data['action'] == 'replace':
+        listings_delete = db.session.query(Listing).filter_by(vendor_id = current_user.id).all()
+        for listing in listings_delete:
+            listing.available = False
+        return jsonify({"status": "Prep", "message": "Prepared current items for replacement"})
+    if data['action'] == 'add':
+        row = data['row']
+        name = row['name']
+        description = row['description']
+        unit = row['unit']
+        quantity = row['quantity']
+        price = row['price']
+        print name, description, unit, quantity, price
+
+        print re.findall("\d+\.\d+", price)
+
+        formatted_raw_price = re.findall("\d+\.*\d*", price)
+        product_id = row['productId']
+
+        if not (is_number(formatted_raw_price)):
+            message_string = ("Skipping {} (Product Id: {}), due to fact that price was unable to be interpreted as a number. Found {}".
+                format(name, product_id, price))
+            return jsonify({"status": "Failure", "message": message_string})
+
+        formatted_price = re.findall("\d+\.*\d*", price)[0]
+
+        queried_listing = Listing.query.filter_by(product_id=product_id, vendor_id = current_user.id).first()
+        if queried_listing:
+            changed = False
+            if queried_listing.name != name:
+                changed = True
+                queried_listing.name = name
+            if queried_listing.description != description:
+                changed = True
+                queried_listing.description = description
+            if queried_listing.unit != unit:
+                changed = True
+                queried_listing.unit = unit
+            if queried_listing.quantity != quantity:
+                changed = True
+                queried_listing.quantity = quantity
+            if queried_listing.price != price:
+                changed = True
+                queried_listing.price = formatted_price
+            if changed is True:
+                queried_listing.available = True
+                return jsonify({"status": "Success", "message": "Successfully added {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
+        else:
+            Listing.add_listing(Listing(product_id, current_user.id, unit, name, True, formatted_price, description, Updated.NEW_ITEM, quantity))
+            return jsonify({"status": "Success", "message": "Successfully added {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
 
 @vendor.route('/csv-upload', methods=['GET', 'POST'])
 @login_required
@@ -141,8 +198,10 @@ def stripPriceHelper(price):
     return r.search(price.replace(',','')).group(1)
 
 def is_number(s):
+    if len(s) == 0:
+        return False
     try:
-        complex(s) # for int, long, float and complex
+        complex(s[0]) # for int, long, float and complex
     except ValueError:
         return False
 
