@@ -178,15 +178,14 @@
                 rowErrs.push("<li style='color: red'> Row number " + count + " does not have a value under the column name \"" + el + "\"</li>");
               }
             })
-            console.log(rowErrs.length);
             if (rowErrs.length > 0 && rowErrs.length < requiredFields.length) {
-                          console.log(rowErrs.length);
+                          console.log("Err1"+rowErrs.length);
 
               finalElms = [];
               rowErrs.map( function(el) {
                 $('#errors').append(el);
               });
-            } else if (rowErrs.length === 0) {
+            } else if (rowErrs.length === 0 ) {
               err = false;
               finalElms.push({
                 'name': rowObj['{{current_user.name_col}}'],
@@ -196,6 +195,8 @@
                 'price': rowObj['{{current_user.price_col}}'],
                 'productId': rowObj['{{current_user.product_id_col}}']
               });
+            } else if (rowErrs.length === requiredFields.length) {
+              err = false;
             }
           },
           complete: function(file) {
