@@ -133,8 +133,20 @@
   $( document ).ready(function() {
     var finalEls = [];
     $("#submit").attr('disabled', 'disabled');
-
+    $("#file_upload").on('click', function() {
+      console.log('clicked!');
+      $("#errors").html('');
+      $("#success").html('');
+      var $el = $("#file_upload");
+      $el.wrap('<form>').closest('form').get(0).reset();
+      $el.unwrap();
+    })
     $("#file_upload").on('change', function() {
+      if ($("#file_upload").val() === "") {
+        $("#errors").html('');
+        $("#errors").html('<li style="color:red"> No file input for upload. Please refresh page and upload new file </li>');
+        return;
+      };
       $("#submit").attr('disabled', 'disabled');
       var requiredFields = [
         '{{ current_user.product_id_col }}',
