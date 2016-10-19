@@ -171,17 +171,15 @@
             var rowErrs = [];
             requiredFields.map( function(el, idx) {
               if(!rowObj.hasOwnProperty(el)) {
-                err = true;
                 rowErrs.push("<li style='color: red'> Row number " + count + " does not have a cell with corresponding column name \"" + el +"\"</li>");
               } else if (rowObj[el] === "") {
-                err = true;
                 rowErrs.push("<li style='color: red'> Row number " + count + " does not have a value under the column name \"" + el + "\"</li>");
               }
             })
             if (rowErrs.length > 0 && rowErrs.length < requiredFields.length) {
-                          console.log("Err1"+rowErrs.length);
-
+              console.log("Err1"+rowErrs.length);
               finalElms = [];
+              err = true;
               rowErrs.map( function(el) {
                 $('#errors').append(el);
               });
@@ -196,7 +194,8 @@
                 'productId': rowObj['{{current_user.product_id_col}}']
               });
             } else if (rowErrs.length === requiredFields.length) {
-              err = false;
+              console.log(err);
+              if (err != true) { err = false; }
             }
           },
           complete: function(file) {
