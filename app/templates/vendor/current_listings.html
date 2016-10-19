@@ -27,7 +27,7 @@
                 <label>Order by</label>
                 </div>
                 <select class="ui selection dropdown"  name="avail">
-                    {% if request.args.get('avail') == "avail" %}
+                    {% if request.args.get('avail') == "both" %}
                         {% set selected = 'selected' %}
                     {% elif request.args.get('avail') == "non_avail" %}
                         {% set selected2 = 'selected' %}
