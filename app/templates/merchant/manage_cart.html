@@ -13,7 +13,7 @@
     <table class="ui compact table">
         <thead>
         <tr>
-            <th>Item name</th>
+            <th>Item name (and Product ID)</th>
             <th>Quantity</th>
             <th>Unit Price</th>
             <th>Total</th>
@@ -22,7 +22,7 @@
         <tbody>
         {% for cart_item in cart_items %}
             <tr>
-                <td>{{ cart_item.listing.name }}</td>
+                <td>{{ cart_item.listing.name }} (Product ID: {{ cart_item.listing.product_id }})</td>
                 <td>{{ cart_item.quantity| int() }} x</td>
                 <td>{{ format_price(cart_item.listing.price) }} / {{ cart_item.listing.quantity }} {{ cart_item.listing.unit }}</td>
                 <td>{{ format_price(cart_item.listing.price * cart_item.quantity) }}</td>
@@ -57,7 +57,7 @@
 
                 <thead>
                 <tr>
-                    <th class="four wide">Item name</th>
+                    <th class="four wide">Item name (and Product ID)</th>
                     <th class="two wide">Unit price</th>
                     <th id="quantity" class="two wide">Quantity</th>
                     <th class="one wide">Total price</th>
@@ -74,7 +74,7 @@
                               listing_id=item.listing.id) + '\';' %}
 
                     <tr data-id="{{ item.listing.id }}">
-                        <td {{info_link}}>{{ item.listing.name }}</td>
+                        <td {{info_link}}>{{ item.listing.name }} (Product ID: {{ item.listing.product_id }})</td>
                         <td {{info_link}} class="unit_price" data-price="{{ item.listing.price  }}">${{ '%0.2f' | format(item.listing.price) }}/{{ item.listing.quantity}} {{ item.listing.unit }}</td>
                         <td>
                             <div class="ui input fluid">

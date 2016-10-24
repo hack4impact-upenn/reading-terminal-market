@@ -364,28 +364,9 @@ class Vendor(User):
     def get_vendor_by_user_id(user_id):
             return Vendor.query.filter_by(id=user_id).first()
 
-bookmarks_table = db.Table('bookmarks', db.Model.metadata,
-                           db.Column('merchant_id', db.Integer,
-                                     db.ForeignKey('users.id')),
-                           db.Column('listing_id', db.Integer,
-                                     db.ForeignKey('listings.id'))
-                           )
-
-bookmarked_vendor_table = db.Table('bookmarked_vendors', db.Model.metadata,
-                              db.Column('merchant_id', db.Integer,
-                                     db.ForeignKey('users.id')),
-                              db.Column('vendor_id', db.Integer,
-                                     db.ForeignKey('vendor.id')))
-
 class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    bookmarked_vendors = db.relationship("Vendor",
-                                        secondary=bookmarked_vendor_table,
-                                        backref="bookmarked_vendor_by")
-    bookmarks = db.relationship("Listing",
-                                secondary=bookmarks_table,
-                                backref="bookmarked_by")
     cart_items = db.relationship("CartItem", backref="users", lazy="dynamic", cascade='all, delete-orphan')
     company_name = db.Column(db.String(64), default="")
 

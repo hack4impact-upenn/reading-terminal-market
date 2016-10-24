@@ -257,6 +257,9 @@
               $("#success").prepend("Success Count: " + count + "/" + finalElms.length + "<li style='color: green'>" + res.message + "</li>");
             }
             self.deferred.resolve();
+          },
+          error: function(res, err, msg) {
+            $("#errors").prepend("<li style='color:red'>There was an unexpected error. We have noted the error, please try again later or email suriabhinav1997@gmail.com for an immediate response. Paste the following in your email " + err + ":" + msg + "</li>");
           }
         })
       }

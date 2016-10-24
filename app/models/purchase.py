@@ -108,6 +108,7 @@ class Order(db.Model):
         cart_items = filter(lambda item: item.listing.vendor_id == vendor_id,
                             current_user.cart_items)
         order = Order(date, vendor_id, referral_name)
+        total = reduce(lambda x,y: x + y, map(lambda item: item.listing.price * item.quantity, cart_items))
         referral_name = referral_name
         vendor = User.query.get(vendor_id)
         merchant_id = current_user.id
@@ -117,17 +118,20 @@ class Order(db.Model):
                    'merchant/email/order_item',
                    merchant=merchant,
                    cart_items=cart_items,
-                   referral_name=referral_name)
+                   referral_name=referral_name,
+                   total=total)
         # send confirmation to the merchant
         send_email(merchant.email,
                    'Confirmation of order request',
                    'merchant/email/confirm_order',
                    vendor=vendor,
-                   cart_items=cart_items)
+                   cart_items=cart_items,
+                   total=total)
         for item in cart_items:
             p = Purchase(
                 order=order,
                 listing_id=item.listing.id,
+                product_id=item.product_id,
                 quantity=item.quantity,
                 item_name=item.listing.name,
                 item_price=item.listing.price,
@@ -186,6 +190,7 @@ class Order(db.Model):
         purchase_info = []
         for purchase in purchases:
             purchase_info.append({
+                'product_id': purchase.product_id, 
                 'quantity': purchase.quantity,
                 'name': purchase.item_name,
                 'price': purchase.item_price,
@@ -216,18 +221,19 @@ class Purchase(db.Model):
     # model relationships
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     order = db.relationship("Order", backref="purchases")
-    listing_id = db.Column(db.Integer)
-
+    listing_id = db.Column(db.String(64))
+    product_id = db.Column(db.String(64))
     # purchase properties
     quantity = db.Column(db.Integer)
     item_name = db.Column(db.String(64))
     item_price = db.Column(db.Float)
     unit = db.Column(db.String(32))
-    item_quantity = db.Column(db.Integer)
+    item_quantity = db.Column(db.String(32))
 
-    def __init__(self, order, listing_id, quantity, item_name, item_price, unit, item_quantity):
+    def __init__(self, order, listing_id, product_id, quantity, item_name, item_price, unit, item_quantity):
         self.order = order
         self.listing_id = listing_id
+        self.product_id = product_id
         self.quantity = quantity
         self.item_name = item_name
         self.item_price = item_price

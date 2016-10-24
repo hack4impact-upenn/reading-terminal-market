@@ -3,7 +3,7 @@ from . import merchant
 from ..decorators import merchant_required
 from flask.ext.login import login_required, current_user
 from ..models import (Listing, CartItem, Order, Vendor, Status, ItemTag,
-                      Ratings, User)
+                      Ratings, User, Bookmark, BookmarkVendor)
 from .. import db
 from datetime import datetime
 
@@ -48,6 +48,15 @@ def listing_view_all(page=1):
     )
     # used to reset page count to pg.1 when new search is performed from a page
     # that isn't the first one
+    bookmark_ids = []
+    bookmark = Bookmark.query.filter_by(merchant_id=current_user.id).all()
+    for book in bookmark:
+        bookmark_ids.append(book.listing_id)
+
+    bookmark_vids = []
+    bookmark = BookmarkVendor.query.filter_by(merchant_id=current_user.id).all()
+    for book in bookmark:
+        bookmark_vids.append(book.vendor_id)
 
     if search != "False":
         page = 1
@@ -68,6 +77,8 @@ def listing_view_all(page=1):
         min_price=min_price,
         max_price=max_price,
         sort_by=sort_by,
+        bookmarks=bookmark_ids,
+        bookmarkv=bookmark_vids,
         name_search_term=name_search_term,
         fav_vendor=fav_vendor,
         favorite=favorite,
@@ -234,16 +245,21 @@ def change_favorite(listing_id):
     if ('isFavorite' not in request.json or
             type(request.json['isFavorite']) is not bool):
         abort(400)
-
-    old_status = listing in current_user.bookmarks
-    new_status = request.json.get('isFavorite', old_status)
-    if new_status and listing not in current_user.bookmarks:
-        current_user.bookmarks.append(listing)
-    elif not new_status and listing in current_user.bookmarks:
-        current_user.bookmarks.remove(listing)
+    old_status = listing in Bookmark.query.filter_by(listing_id=listing_id).all()
+    favorited = "false"
+    book_listing = Bookmark.query.filter_by(listing_id=listing_id).first()
+    if not book_listing:
+        bookmark = Bookmark(merchant_id=current_user.id, listing_id=listing_id)
+        db.session.add(bookmark)
+        db.session.commit()
+        favorited = "true"
+    elif book_listing:
+        db.session.delete(book_listing)
+        db.session.commit()
+        favorited = "false"
     db.session.commit()
     return jsonify(
-        {'isFavorite': listing in current_user.bookmarks, 'name': listing.name}
+        {'isFavorite': favorited, 'name': listing.name}
     )
 
 
@@ -260,16 +276,20 @@ def change_fav_vendor(vendor_id):
             is not bool):
         abort(400)
 
-    old_status = vendor in current_user.bookmarked_vendors
-    new_status = request.json.get('isFavVendor', old_status)
-    if new_status and vendor not in current_user.bookmarked_vendors:
-        print current_user.bookmarked_vendors
-        current_user.bookmarked_vendors.append(vendor)
-    elif not new_status and vendor in current_user.bookmarked_vendors:
-        current_user.bookmarked_vendors.remove(vendor)
+    favorited = "false"
+    book_vendor = BookmarkVendor.query.filter_by(vendor_id=vendor_id).first()
+    if not book_vendor:
+        bookmark = BookmarkVendor(merchant_id=current_user.id, vendor_id=vendor_id)
+        db.session.add(bookmark)
+        db.session.commit()
+        favorited = "true"
+    elif book_vendor:
+        db.session.delete(book_vendor)
+        db.session.commit()
+        favorited = "false"
     db.session.commit()
     return jsonify(
-        {'isFavVendor': vendor in current_user.bookmarked_vendors,
+        {'isFavVendor': favorited,
          'vendor_id': vendor.id,
          'name': vendor.company_name}
     )

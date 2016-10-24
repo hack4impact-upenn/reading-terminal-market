@@ -4,21 +4,26 @@
 
 <table>
     <thead>
-    <tr>
+    <tr>  
+        <th>Product ID </th>
         <th>Item name</th>
         <th>Quantity</th>
+        <th>Total Price</th>
     </tr>
     </thead>
     <tbody>
     {% for cart_item in cart_items %}
         <tr>
+            <td>{{ cart_item.listing.product_id }}</td>
             <td>{{ cart_item.listing.name }}</td>
-            <td>{{ cart_item.quantity| int() }} x {{ cart_item.listing.quantity }} {{ cart_item.listing.unit }}</td>
+            <td>{{ cart_item.quantity| int() }} x {{ cart_item.listing.quantity }}</td>
+            <td>{{ cart_item.listing.price * cart_item.quantity }}</td>
         </tr>
-    {% endfor %}
+        {% endfor %}
     </tbody>
 </table>
 
+Total = {{ total }}
 <p>Sincerely,</p>
 
 <p>The {{ config.APP_NAME }} Team</p>

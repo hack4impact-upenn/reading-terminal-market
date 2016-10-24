@@ -4,9 +4,13 @@ You have requested the following items from {{ vendor.company_name }}:
 
 {% for cart_item in cart_items %}
 ----------------------------------------
+Product ID: {{ cart_item.listing.product_id }}
 Item name : {{ cart_item.listing.name }}
 Quantity  : {{ cart_item.quantity| int() }} x {{ cart_item.listing.quantity }} {{ cart_item.listing.unit }}
+Item Total Price: {{ cart_item.listing.price * cart_item.quantity }}
 {% endfor %}
+
+Total: {{ total }}
 
 Sincerely,
 

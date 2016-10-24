@@ -4,11 +4,14 @@ The merchant {{ merchant.company_name }} has a new order request for the followi
 
 {% for cart_item in cart_items %}
 ----------------------------------------
+Product ID: {{ cart_item.listing.product_id }}
 Item name : {{ cart_item.listing.name }}
 Quantity  : {{ cart_item.quantity| int() }} x {{ cart_item.listing.quantity }} {{ cart_item.listing.unit }}
+Item Total Price: {{ cart_item.listing.price * cart_item.quantity }}
 {% endfor %}
 
-Sincerely,</p>
+Total Price : {{ total }}
+Sincerely,
 
 The {{ config.APP_NAME }} Team
 

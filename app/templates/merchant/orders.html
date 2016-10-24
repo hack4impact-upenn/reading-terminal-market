@@ -71,7 +71,7 @@
         <table  class="ui celled table order-purchase-table">
         <thead>
         <tr>
-            <th>Item name</th>
+            <th>Item name (and Product ID)</th>
             <th>Quantity</th>
             <th>Unit Price</th>
             <th>Total</th>
@@ -80,7 +80,7 @@
         <tbody>
         {% for purchase in purchase_info %}
             <tr>
-                <td>{{ purchase['name'] }}</td>
+                <td>{{ purchase['name'] }} (Product ID: {{ purchase['product_id'] }})</td>
                 <td>{{ purchase['quantity']| int() }}</td>
                 <td>{{ format_price(purchase['price']) }} / {{ purchase['item_quantity']}} {{ purchase['unit'] }}</td>
                 <td>{{ format_price(purchase['price'] * purchase['quantity']) }}</td>
@@ -131,7 +131,7 @@
             </div>
             <div class="ui divider seven wide"></div>
             <div class="order-card-user-actions">
-                <div class="order-segment-details"><a href='#' class="toggle-details">Show purchases</a></div>
+                <div class="order-segment-details"><a class="toggle-details">Hide purchases</a></div>
                 {% if order.status == 1 %}
                     | <a href='#' class="toggle-rating">Rate vendor</a>
                 {% endif %}
@@ -139,7 +139,7 @@
           </div>
       </div>
 
-        <div class="details">
+        <div class="details" style="display: block">
             {{ order_table(order) }}
             <br> <!--Add space between details and ratings when both clicked-->
         </div>

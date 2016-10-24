@@ -17,7 +17,7 @@
         <tbody>
         {% for purchase in purchase_info %}
             <tr>
-                <td>{{ purchase['name'] }}</td>
+                <td>{{ purchase['name'] }} (Product ID: {{ purchase['product_id'] }})</td>
                 <td>{{ purchase['quantity']| int() }} {{ purchase['unit'] }}</td>
                 <td>{{ format_price(purchase['price']) }} / {{ purchase['unit'] }}</td>
                 <td>{{ format_price(purchase['price'] * purchase['quantity']) }}</td>
@@ -64,7 +64,7 @@
                   <div class="comments">
                       <b>Comments:</b> {{ order.comment }}
                   </div>
-                  <a class="toggle-details" href="#">Show purchases</a>
+                  <a class="toggle-details" href="#">Hide purchases</a>
               </div>
             </div>
             {% if order.status == 0 %}
@@ -80,7 +80,7 @@
           
       </div>
 
-        <div class="details">
+        <div class="details" style="display:block">
             {{ order_table(order) }}
         </div>
     </div>

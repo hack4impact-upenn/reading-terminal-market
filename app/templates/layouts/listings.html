@@ -51,7 +51,7 @@
                                                 {% set cart_color = "grey" %}
                                             {% endif %}  
                                     {% endif %} 
-                                    <a style="font-weight: bold; font-size: 1.25em; line-height: 20px" class="header" {{info_link}}>{{ l.name }}</a><br>
+                                    <a style="font-weight: bold; font-size: 1.25em; line-height: 20px" class="header" {{info_link}}>{{ l.name }} (Product ID: {{ l.product_id }})</a><br>
                                     <a>${{ '%0.2f' | format(l.price) }}/{{ l.quantity }} {{l.unit}}</a>
                                     <div id="label-contain"></div>
                                     {% if current_user.is_merchant() or current_user.is_admin() %}
@@ -73,7 +73,7 @@
                                     {% if current_user.is_merchant() %}
                                         <div class="extra center aligned favoriteCell">
                                             <span class="desc-name">Favorite this vendor: </span>
-                                            {% if l.vendor in current_user.bookmarked_vendors %}
+                                            {% if l.vendor.id in bookmarkv %}
                                                 <a class="toggle-fav-vendor" data-id="{{ l.vendor_id }}" data-isFavVendor="true">
                                                     <i class="favorite icon yellow"></i>
                                                 </a>
@@ -85,12 +85,12 @@
                                         </div>
                                         <div class="extra center aligned favoriteCell">
                                             <span class="desc-name">Favorite this Item:</span>
-                                            {% if l in current_user.bookmarks %}
+                                            {% if l.id in bookmarks %}
                                                  <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="true">
                                                     <i class="favorite icon yellow"></i>
                                                 </a>
                                             {% else %}
-                                                <a class="toggle-favorite" data-id="{{ l.id }}" data-isfavorite="false">
+                                                <a class="toggle-favorite" data-id="{{ l.id }}" data-prodid="{{ l.product_id }}" data-isfavorite="false">
                                                     <i class="favorite icon grey"></i>
                                                 </a>
                                             {% endif %}

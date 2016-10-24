@@ -78,7 +78,7 @@ def row_upload():
     if data['action'] == 'replace':
         listings_delete = db.session.query(Listing).filter_by(vendor_id = current_user.id).all()
         for listing in listings_delete:
-            listing.available = False
+            listing.delete_listing()
         return jsonify({"status": "Prep", "message": "Prepared current items for replacement"})
     if data['action'] == 'add':
         row = data['row']

@@ -1,5 +1,6 @@
 from .. import db
 from purchase import CartItem
+from bookmark import *
 from sqlalchemy import or_, desc, func
 from ..models import Vendor
 from flask.ext.login import current_user
@@ -65,6 +66,7 @@ class Listing(db.Model):
     def delete_listing(self):
         """Delete the listing and remove from all carts"""
         self.remove_from_carts()
+        self.remove_from_favs()
         db.session.delete(self)
         db.session.commit()
 
@@ -137,12 +139,18 @@ class Listing(db.Model):
             filter_list.append(Listing.available == True)
 
         if 'fav_vendor' in kwargs and kwargs['fav_vendor']:
-            bookmarked_vendor_ids = [vendor.id for vendor in current_user.bookmarked_vendors]
-            filter_list.append(Listing.vendor_id.in_(bookmarked_vendor_ids))
+            bookmarked_vendor_ids = BookmarkVendor.query.filter_by(merchant_id=current_user.id).all()
+            ids = []
+            for bookmark in bookmarked_vendor_ids:
+                ids.append(bookmark.vendor_id)
+            filter_list.append(Listing.vendor_id.in_(ids))
 
         if 'favorite' in kwargs and kwargs['favorite']:
-            bookmark_ids = [listing.id for listing in current_user.bookmarks]
-            filter_list.append(Listing.id.in_(bookmark_ids))
+            bookmarked_vendor_ids = Bookmark.query.filter_by(merchant_id=current_user.id).all()
+            ids = []
+            for bookmark in bookmarked_vendor_ids:
+                ids.append(bookmark.listing_id)
+            filter_list.append(Listing.id.in_(ids))
 
         if 'min_price' in kwargs and kwargs['min_price']:
             filter_list.append(Listing.price >= kwargs['min_price'])
