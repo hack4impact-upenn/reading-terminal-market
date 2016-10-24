@@ -66,7 +66,6 @@ class Listing(db.Model):
     def delete_listing(self):
         """Delete the listing and remove from all carts"""
         self.remove_from_carts()
-        self.remove_from_favs()
         db.session.delete(self)
         db.session.commit()
 
