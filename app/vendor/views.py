@@ -76,10 +76,10 @@ def row_upload():
     data = json.loads(request.form['json'])
     print data
     if data['action'] == 'replace':
-        listings_delete = db.session.query(Listing).filter_by(vendor_id = current_user.id).all()
-        for listing in listings_delete:
-            listing.delete_listing()
-        return jsonify({"status": "Prep", "message": "Prepared current items for replacement"})
+        listings_delete = db.session.query(Listing).filter_by(vendor_id = current_user.id)
+        if listings_delete.first():
+            listings_delete.first().delete_listing()
+        return jsonify({"status": "Prep", "message": "Prepared current items for replacement. {} left".format(listings_delete.count())})
     if data['action'] == 'add':
         row = data['row']
         name = row['name']
@@ -134,6 +134,7 @@ def csv_upload():
     """Create a new item."""
     form = NewCSVForm()
     listings = []
+    count = db.session.query(Listing).filter_by(vendor_id = current_user.id).count()
     current_row = 0
     if form.validate_on_submit():
         if test_csv(form):
@@ -190,7 +191,7 @@ def csv_upload():
                     proposed_listing.updated = Updated.NEW_ITEM
                     listings.append(proposed_listing)
                     Listing.add_listing(new_listing=proposed_listing)
-    return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings)
+    return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings, count=count)
 
 #get rid of those pesky dollar signs that mess up parsing
 def stripPriceHelper(price):
