@@ -105,23 +105,28 @@ def row_upload():
         if queried_listing:
             changed = False
             if queried_listing.name != name:
+                print "name"
                 changed = True
                 queried_listing.name = name
             if queried_listing.description != description:
+                print "desc"
                 changed = True
                 queried_listing.description = description
             if queried_listing.unit != unit:
+                print "unit"
                 changed = True
                 queried_listing.unit = unit
             if queried_listing.quantity != quantity:
+                print "quantity"
                 changed = True
                 queried_listing.quantity = quantity
-            if queried_listing.price != price:
+            if queried_listing.price != formatted_price:
+                print queried_listing.price == formatted_price
                 changed = True
                 queried_listing.price = formatted_price
             if changed is True:
                 queried_listing.available = True
-                return jsonify({"status": "Success", "message": "Successfully changed {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
+                return jsonify({"status": "Success", "message": "Successfully merged {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
             else:
                 return jsonify({"status": "Prep", "message": "No change {} (Product Id: {})".format(name, product_id)})
         else:
