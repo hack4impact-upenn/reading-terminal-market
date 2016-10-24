@@ -121,7 +121,7 @@ def row_upload():
                 queried_listing.price = formatted_price
             if changed is True:
                 queried_listing.available = True
-                return jsonify({"status": "Success", "message": "Successfully added {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
+                return jsonify({"status": "Success", "message": "Successfully changed {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
         else:
             Listing.add_listing(Listing(product_id, current_user.id, unit, name, True, formatted_price, description, Updated.NEW_ITEM, quantity))
             return jsonify({"status": "Success", "message": "Successfully added {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
