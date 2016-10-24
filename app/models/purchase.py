@@ -131,7 +131,7 @@ class Order(db.Model):
             p = Purchase(
                 order=order,
                 listing_id=item.listing.id,
-                product_id=item.product_id,
+                product_id=item.listing.product_id,
                 quantity=item.quantity,
                 item_name=item.listing.name,
                 item_price=item.listing.price,
