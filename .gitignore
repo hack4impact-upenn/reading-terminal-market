@@ -11,4 +11,5 @@ dist
 *.egg-info
 *.sqlite
 .idea
+*.swp
 app/static/images/vendor/*
