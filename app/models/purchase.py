@@ -77,9 +77,10 @@ class Order(db.Model):
 
     date = db.Column(db.DateTime)
     status = db.Column(db.Integer)
-    merchant_id = db.Column(db.Integer)
-
-    vendor_id = db.Column(db.Integer)
+    merchant_id = db.Column(db.Integer, db.ForeignKey('merchant.id', ondelete='CASCADE'),
+                            primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendor.id', ondelete='CASCADE'),
+                           primary_key=True)
     company_name = db.Column(db.String(64))
     referral_name = db.Column(db.String(64))
     comment = db.Column(db.Text)
@@ -168,7 +169,7 @@ class Order(db.Model):
                 'email': merchant.email
             }
         else:
-            merchant_info = {'company_name': 'INVALID COMPANY NAME' }
+            merchant_info = {'company_name': 'USER DELETED FROM SYSTEM' }
         return merchant_info
 
     def get_vendor_info(self):

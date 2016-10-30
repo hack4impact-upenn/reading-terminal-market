@@ -21,15 +21,15 @@ class Listing(db.Model):
 
     # model relationships
     vendor_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
-    unit = db.Column(db.String(32))
-    quantity = db.Column(db.String(32))
+    unit = db.Column(db.String(1000))
+    quantity = db.Column(db.String(1000))
     cartitems = db.relationship('CartItem', backref='listings', cascade='all,delete-orphan', lazy='dynamic')
     # listing properties
-    name = db.Column(db.String(64))
+    name = db.Column(db.String(1000))
     description = db.Column(db.Text)
     price = db.Column(db.Float)
     available = db.Column(db.Boolean, default=True)
-    product_id=db.Column(db.String(64), default=1)
+    product_id=db.Column(db.String(1000), default=1)
     updated=db.Column(db.Integer, default=0)
 
     def __init__(self, product_id, vendor_id, unit, name, available, price,

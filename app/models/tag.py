@@ -8,7 +8,7 @@ from sqlalchemy import UniqueConstraint
 class Tag(db.Model):
     __tablename__ = "tag"
     id = db.Column(db.Integer, primary_key=True)
-    tag_name = db.Column(db.String(64))
+    tag_name = db.Column(db.String(1000))
     vendors = db.relationship("TagAssociation", back_populates="tag")
 
 

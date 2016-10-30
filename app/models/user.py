@@ -54,9 +54,9 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     confirmed = db.Column(db.Boolean, default=False)
-    first_name = db.Column(db.String(64), index=True)
-    last_name = db.Column(db.String(64), index=True)
-    email = db.Column(db.String(64), unique=True, index=True)
+    first_name = db.Column(db.String(1000), index=True)
+    last_name = db.Column(db.String(1000), index=True)
+    email = db.Column(db.String(1000), unique=True, index=True)
     ratings = db.relationship("Ratings", backref="users", lazy="dynamic", cascade='all, delete-orphan')
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
@@ -316,6 +316,7 @@ class Vendor(User):
     f4 = db.Column(db.String(64), default="")
     d4 = db.Column(db.String(64), default="")
     tags = db.relationship("TagAssociation", back_populates="vendor", cascade='all, delete-orphan')
+    orders = db.relationship("Order", backref="vendor", cascade='all, delete-orphan')
     product_id_col = db.Column(db.String(64), default="ProductID")
     ratings_vendor = db.relationship("Ratings", backref="vendor", cascade='all, delete-orphan')
     listing_description_col = db.Column(db.String(64), default="Description")
@@ -368,6 +369,7 @@ class Merchant(User):
     __mapper_args__ = {'polymorphic_identity': 'merchant'}
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     cart_items = db.relationship("CartItem", backref="users", lazy="dynamic", cascade='all, delete-orphan')
+    orders = db.relationship("Order", backref="merchant", lazy="dynamic", cascade='all, delete-orphan')
     company_name = db.Column(db.String(64), default="")
 
     def get_cart_listings(self):
