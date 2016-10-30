@@ -3,6 +3,11 @@ webassets-external/
 .DS_Store
 *.pyc
 *.pyo
+.env
+*.swo
+*.crt
+*.csr
+*.key
 env
 venv
 env*
