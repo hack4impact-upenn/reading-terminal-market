@@ -76,10 +76,10 @@ def row_upload():
     data = json.loads(request.form['json'])
     print data
     if data['action'] == 'replace':
-        listings_delete = db.session.query(Listing).filter_by(vendor_id = current_user.id).all()
-        for listing in listings_delete:
-            listing.delete_listing()
-        return jsonify({"status": "Prep", "message": "Prepared current items for replacement"})
+        listings_delete = db.session.query(Listing).filter_by(vendor_id = current_user.id)
+        if listings_delete.first():
+            listings_delete.first().delete_listing()
+        return jsonify({"status": "Prep", "message": "Prepared current items for replacement. {} left".format(listings_delete.count())})
     if data['action'] == 'add':
         row = data['row']
         name = row['name']
@@ -105,23 +105,30 @@ def row_upload():
         if queried_listing:
             changed = False
             if queried_listing.name != name:
+                print "name"
                 changed = True
                 queried_listing.name = name
             if queried_listing.description != description:
+                print "desc"
                 changed = True
                 queried_listing.description = description
             if queried_listing.unit != unit:
+                print "unit"
                 changed = True
                 queried_listing.unit = unit
             if queried_listing.quantity != quantity:
+                print "quantity"
                 changed = True
                 queried_listing.quantity = quantity
-            if queried_listing.price != price:
+            if queried_listing.price != formatted_price:
+                print queried_listing.price == formatted_price
                 changed = True
                 queried_listing.price = formatted_price
             if changed is True:
                 queried_listing.available = True
-                return jsonify({"status": "Success", "message": "Successfully added {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
+                return jsonify({"status": "Success", "message": "Successfully merged {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
+            else:
+                return jsonify({"status": "Prep", "message": "No change {} (Product Id: {})".format(name, product_id)})
         else:
             Listing.add_listing(Listing(product_id, current_user.id, unit, name, True, formatted_price, description, Updated.NEW_ITEM, quantity))
             return jsonify({"status": "Success", "message": "Successfully added {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
@@ -134,6 +141,7 @@ def csv_upload():
     """Create a new item."""
     form = NewCSVForm()
     listings = []
+    count = db.session.query(Listing).filter_by(vendor_id = current_user.id).count()
     current_row = 0
     if form.validate_on_submit():
         if test_csv(form):
@@ -190,7 +198,7 @@ def csv_upload():
                     proposed_listing.updated = Updated.NEW_ITEM
                     listings.append(proposed_listing)
                     Listing.add_listing(new_listing=proposed_listing)
-    return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings)
+    return render_template('vendor/new_csv.html', tut_completed=tut_completed, form=form, listings=listings, count=count)
 
 #get rid of those pesky dollar signs that mess up parsing
 def stripPriceHelper(price):

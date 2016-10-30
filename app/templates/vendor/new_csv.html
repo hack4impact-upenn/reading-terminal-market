@@ -214,16 +214,18 @@
       });
     });
     $("#submit").on('click', function(e) {
-      var count = 0;
+      var succount = 0;
       var replace = false;
       e.preventDefault();
       var action = $("#replace_or_merge").dropdown('get value')[0];
       var ajaxReqArr = [];
       if (action === 'replace') {
         replace = true;
-        ajaxReqArr.push({
-          action: 'replace'
-        })
+        for(var i = 0; i < {{ count }}; i++) {
+          ajaxReqArr.push({
+            action: 'replace'
+          })
+        } 
       }
       if (finalElms.length > 0) {
         finalElms.map(function(el) {
@@ -253,8 +255,11 @@
               $("#errors").prepend("<li style='color: red'>" + res.message + "</li>")
             }
             if (res.status === 'Success') {
-              count++;
-              $("#success").prepend("Success Count: " + count + "/" + finalElms.length + "<li style='color: green'>" + res.message + "</li>");
+              succount++;
+              $("#success").prepend("Success Count: " + succount + "/" + finalElms.length + "<li style='color: green'>" + res.message + "</li>");
+            }
+            if (res.status === 'Prep') {
+              $("#success").prepend("<li style='color: orange'>" + res.message + "</li>");
             }
             self.deferred.resolve();
           },

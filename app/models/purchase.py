@@ -92,7 +92,6 @@ class Order(db.Model):
         vendor = User.query.get(vendor_id)
         self.company_name = vendor.company_name
         self.comment = None
-        self.merchant_company_name = current_user.company_name
         self.referral_name=referral_name
 
     def __repr__(self):
@@ -131,7 +130,7 @@ class Order(db.Model):
             p = Purchase(
                 order=order,
                 listing_id=item.listing.id,
-                product_id=item.product_id,
+                product_id=item.listing.product_id,
                 quantity=item.quantity,
                 item_name=item.listing.name,
                 item_price=item.listing.price,
@@ -169,7 +168,7 @@ class Order(db.Model):
                 'email': merchant.email
             }
         else:
-            merchant_info = {'company_name': self.merchant_company_name}
+            merchant_info = {'company_name': 'INVALID COMPANY NAME' }
         return merchant_info
 
     def get_vendor_info(self):
