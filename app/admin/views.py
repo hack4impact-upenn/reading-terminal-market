@@ -1,6 +1,7 @@
 from ..decorators import admin_required
+from threading import Thread
 
-from flask import render_template, abort, redirect, request, flash, url_for
+from flask import render_template, current_app, abort, redirect, request, flash, url_for
 from flask.ext.login import login_required, current_user
 import pint
 
@@ -355,6 +356,11 @@ def delete_user_request(user_id):
     return render_template('admin/manage_user.html', user=user)
 
 
+def delete_async(app, user):
+    with app.app_context():
+        db.session.delete(user)
+        db.session.commit()
+
 @admin.route('/user/<int:user_id>/_delete')
 @login_required
 @admin_required
@@ -365,9 +371,9 @@ def delete_user(user_id):
               'administrator to do this.', 'error')
     else:
         user = User.query.filter_by(id=user_id).first()
-        db.session.delete(user)
+        db.session.query(User).filter_by(id=user_id).delete()
         db.session.commit()
-        flash('Successfully deleted user %s.' % user.full_name(), 'success')
+        flash('Successfully deleted user', 'success')
     return redirect(url_for('admin.registered_users'))
 
 
