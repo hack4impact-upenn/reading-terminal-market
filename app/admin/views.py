@@ -371,7 +371,7 @@ def delete_user(user_id):
               'administrator to do this.', 'error')
     else:
         user = User.query.filter_by(id=user_id).first()
-        db.session.query(User).filter_by(id=user_id).delete()
+        db.session.delete(user)
         db.session.commit()
         flash('Successfully deleted user', 'success')
     return redirect(url_for('admin.registered_users'))
