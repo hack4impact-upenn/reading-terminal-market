@@ -12,6 +12,7 @@ env
 venv
 env*
 dist
+*.rdb
 *.egg
 *.egg-info
 *.sqlite
