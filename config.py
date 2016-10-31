@@ -32,6 +32,9 @@ class Config:
     RQ_DEFAULT_PASSWORD = url.password
     RQ_DEFAULT_DB = 0
     DEFAULT_USER = 'admin'
+    print RQ_DEFAULT_HOST
+    print RQ_DEFAULT_PORT
+    print RQ_DEFAULT_PASSWORD
     DEFAULT_PASSWORD = 'alpine'
     DEFAULT_FIRST = 'John'
     DEFAULT_LAST = 'Cleese'
