@@ -1,4 +1,5 @@
 import os
+import urlparse
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,6 +22,15 @@ class Config:
     EMAIL_SENDER = '{app_name} Admin <{email}>'.format(app_name=APP_NAME,
                                                        email=ADMIN_EMAIL)
 
+    REDIS_URL = os.getenv('REDISTOGO_URL') or 'http://localhost:6379'
+
+    urlparse.uses_netloc.append('redis')
+    url = urlparse.urlparse(REDIS_URL)
+
+    RQ_DEFAULT_HOST = url.hostname
+    RQ_DEFAULT_PORT = url.port
+    RQ_DEFAULT_PASSWORD = url.password
+    RQ_DEFAULT_DB = 0
     DEFAULT_USER = 'admin'
     DEFAULT_PASSWORD = 'alpine'
     DEFAULT_FIRST = 'John'

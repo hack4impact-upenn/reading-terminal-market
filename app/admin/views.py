@@ -2,6 +2,7 @@ from ..decorators import admin_required
 from threading import Thread
 
 from flask import render_template, current_app, abort, redirect, request, flash, url_for
+from flask.ext.rq import get_queue
 from flask.ext.login import login_required, current_user
 import pint
 
@@ -18,6 +19,7 @@ from ..models import User, Role, Vendor, Merchant, Listing, Tag, TagAssociation,
 from .. import db
 from .. vendor.forms import NewCSVForm
 from ..email import send_email
+from ..deluser import del_user
 import csv
 from pint import UnitRegistry, UndefinedUnitError
 
@@ -356,11 +358,6 @@ def delete_user_request(user_id):
     return render_template('admin/manage_user.html', user=user)
 
 
-def delete_async(app, user):
-    with app.app_context():
-        db.session.delete(user)
-        db.session.commit()
-
 @admin.route('/user/<int:user_id>/_delete')
 @login_required
 @admin_required
@@ -370,10 +367,8 @@ def delete_user(user_id):
         flash('You cannot delete your own account. Please ask another '
               'administrator to do this.', 'error')
     else:
-        user = User.query.filter_by(id=user_id).first()
-        db.session.delete(user)
-        db.session.commit()
-        flash('Successfully deleted user', 'success')
+        get_queue().enqueue(del_user, user_id=user_id)
+        flash('Adding user to be processed for deletion', 'success')
     return redirect(url_for('admin.registered_users'))
 
 

@@ -5,6 +5,8 @@ from app.models import (User, Role, Vendor, Merchant, Listing,
                         CartItem, Tag)
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
+from redis import Redis
+from rq import Worker, Queue, Connection
 from config import Config
 from random import randint
 
@@ -208,6 +210,19 @@ def setup_prod():
 def setup_general():
     """Runs the set-up needed for both local development and production."""
     pass
+@manager.command
+def run_worker():
+    listen = ['default']
+    conn = Redis(
+        host=app.config['RQ_DEFAULT_HOST'],
+        port=app.config['RQ_DEFAULT_PORT'],
+        db=0,
+        password=app.config['RQ_DEFAULT_PASSWORD']
+    )
+
+    with Connection(conn):
+        worker = Worker(map(Queue, listen))
+        worker.work()
 
 if __name__ == '__main__':
     manager.run()
