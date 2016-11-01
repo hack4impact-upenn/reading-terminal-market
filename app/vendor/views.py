@@ -435,7 +435,7 @@ def view_orders():
 @login_required
 @vendor_required
 def approve_order(order_id):
-    order = Order.query.get(order_id)
+    order = Order.query.filter_by(id = order_id).first()
     if not order or order.vendor_id != current_user.id:
         abort(404)
     if order.status != Status.PENDING:
@@ -445,7 +445,7 @@ def approve_order(order_id):
     db.session.commit()
 
     merchant_id = order.merchant_id
-    merchant = User.query.get(merchant_id)
+    merchant = User.query.filter_by(id=merchant_id).first()
 
     vendor_name = order.company_name
     purchases = order.purchases
@@ -465,7 +465,7 @@ def approve_order(order_id):
 @login_required
 @vendor_required
 def decline_order(order_id):
-    order = Order.query.get(order_id)
+    order = Order.query.filter_by(id=order_id).first()
     if not order or order.vendor_id != current_user.id:
         abort(404)
     if order.status != Status.PENDING:
@@ -475,7 +475,7 @@ def decline_order(order_id):
     db.session.commit()
 
     merchant_id = order.merchant_id
-    merchant = User.query.get(merchant_id)
+    merchant = User.query.filter_by(id=merchant_id).first()
     vendor_name = order.company_name
     vendor_email = current_user.email
     purchases = order.purchases
