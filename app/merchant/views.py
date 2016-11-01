@@ -118,7 +118,7 @@ def manage_cart():
     if vendor_id not in CartItem.get_vendor_ids():
         vendor = None
     else:
-        vendor = Vendor.query.get(vendor_id)
+        vendor = Vendor.query.filter_by(id=vendor_id).first()
 
     vendor_items_dict = CartItem.get_vendor_cart_items_dict()
     return render_template(
@@ -341,7 +341,7 @@ def tutorial_completed():
 @login_required
 @merchant_required
 def review_orders(order_id):
-    order = Order.query.get(order_id)
+    order = Order.query.filter_by(id=order_id).first()
     star_rating = request.json['rating']
     comment = request.json['review']
 
