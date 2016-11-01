@@ -38,7 +38,7 @@
             {% if vendor.image %}
             <img src="{{ vendor.image }}">
             {% else %} 
-            <img src="{{ url_file('static', filename='images/default.png') }}">
+            <img src="{{ url_for('static', filename='images/default.png') }}">
             {% endif %}
             {% if current_user.is_vendor() %}
             Note: If you recently changed your profile picture, it may take a while for your image to upload to our servers.
