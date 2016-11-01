@@ -137,6 +137,7 @@
         }
         .side-bar {
             background: #FFFFFF;
+            z-index:10000;
             border-right: 1px solid #CCC;
             padding: 20px;
             padding-bottom: 30px;
@@ -206,7 +207,18 @@
         color: $light-gray;
     }
 }
-
+#expand {
+  display:none;
+  @media(max-width: 600px) {
+    display: block
+  }
+}
+#close {
+  display:none;
+  @media(max-width: 600px) {
+    display: block
+  }
+}
 // Order Card Review Functionality
 .reviews > .ui.form > .ui.items > .item > .content {
     > .ui.header {

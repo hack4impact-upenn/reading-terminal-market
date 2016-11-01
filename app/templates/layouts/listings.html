@@ -17,7 +17,7 @@
             {% if count > 0 %}
 
             <div id="listings-table" class="listings ui relaxed divided items">
-
+              <div id="expand"><a>Show Filtering Options</a></div>
                 {% if header is defined %}
                 <h2 class="ui header" style="padding-left: 0px">
                     {{ header }}
@@ -162,5 +162,18 @@
             {% endblock %}
         </div>
         <br><br><br>
-    </div>
+      </div>
+      <script>
+var windowsize = $(window).width();
+
+$(window).resize(function() {
+  var windowsize = $(window).width();
+});
+
+if (windowsize <= 600) {
+  $('#expand').on('click', function() {
+    $('.side-bar').toggle();
+  });
+}
+      </script>
 {% endblock %}

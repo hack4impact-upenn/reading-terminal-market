@@ -12,6 +12,8 @@
             <a class="ui button clearbutton" href="{{ url_for('admin.registered_users', page=1) }}">Clear Criteria</a>
         </div>
         <div class="side-bar"> 
+          <div id="close"><a>Close filtering settings</a></div>
+          <script>$("#close").on('click', function() { $(".side-bar").css('display','none') });</script>
             <h3>Filtering Settings</h3>
             <div class="field">
                 <label>Order by</label>

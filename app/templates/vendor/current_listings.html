@@ -21,7 +21,9 @@
             <a class="ui button clearbutton" href="{{ url_for('vendor.current_listings', page=1) }}">Clear Criteria</a>
         </div>
         <div id="availability_wrapper" class="side-bar">
-            <h3>Filtering Settings </h3>
+          <div id="close"><a>Close filtering settings</a></div>
+          <script>$("#close").on('click', function() { $(".side-bar").css('display','none') });</script>
+          <h3>Filtering Settings </h3>
             <div class="field" >
                 <div >
                 <label>Order by</label>
