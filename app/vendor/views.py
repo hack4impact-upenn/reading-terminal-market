@@ -1,6 +1,8 @@
 from threading import Thread
 from ..decorators import vendor_required
-from app import os
+from app import os, create_app
+import app
+import boto
 from config import Config
 from flask import (
     render_template,
@@ -24,6 +26,9 @@ import re
 import copy
 from .. import db
 from ..email import send_email
+from flask.ext.rq import get_queue
+from werkzeug.utils import secure_filename
+from uuid import uuid4
 from pint import UnitRegistry, UndefinedUnitError
 
 @vendor.route('/')
@@ -509,8 +514,6 @@ def view_profile():
     return render_template('vendor/profile.html', vendor=current_user,
                            f1=f1_ID, f2=f2_ID, f3=f3_ID, f4=f4_ID)
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
 
 @vendor.route('/picture/<filename>', methods=['GET'])
 @login_required
@@ -555,8 +558,10 @@ def edit_profile():
         current_user.d4 = form.description4.data
         if form.image.data:
             filename = form.image.data.filename
-            form.image.data.save(os.path.join(c.UPLOAD_FOLDER, filename))
-            current_user.image = filename
+            get_queue().enqueue(process_image, 
+                                filename=filename,
+                                data =form.image.data.read(),
+                                user_id=current_user.id)
         db.session.commit()
         return redirect(url_for('vendor.view_profile'))
     form.bio.data = current_user.bio
@@ -572,7 +577,20 @@ def edit_profile():
     form.description2.data = current_user.d2
     form.description3.data = current_user.d3
     form.description4.data = current_user.d4
-
-
-
     return render_template('vendor/edit_profile.html', form=form)
+
+def process_image(filename, data, user_id):
+    app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+    with app.app_context():
+        source_filename = secure_filename(filename)
+        source_extension = os.path.splitext(source_filename)[1]
+
+        destination_filename = uuid4().hex + source_extension
+        conn = boto.connect_s3(os.environ["AWS_ACCESS_KEY_ID"], os.environ["AWS_SECRET_ACCESS_KEY"])
+        b = conn.get_bucket(os.environ["S3_BUCKET"])
+        sml = b.new_key("/".join([destination_filename]))
+        sml.set_contents_from_string(data)
+        sml.set_acl('public-read')
+        user = User.query.filter_by(id=user_id).first()
+        user.image = 'https://s3-us-west-2.amazonaws.com/{}/{}'.format(os.environ["S3_BUCKET"], destination_filename)
+        db.session.commit()

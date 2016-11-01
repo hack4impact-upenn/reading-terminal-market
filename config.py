@@ -31,10 +31,12 @@ class Config:
     RQ_DEFAULT_PORT = url.port
     RQ_DEFAULT_PASSWORD = url.password
     RQ_DEFAULT_DB = 0
+    
+    S3_BUCKET = os.environ.get('S3_BUCKET')
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    
     DEFAULT_USER = 'admin'
-    print RQ_DEFAULT_HOST
-    print RQ_DEFAULT_PORT
-    print RQ_DEFAULT_PASSWORD
     DEFAULT_PASSWORD = 'alpine'
     DEFAULT_FIRST = 'John'
     DEFAULT_LAST = 'Cleese'

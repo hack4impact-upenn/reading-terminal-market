@@ -174,7 +174,8 @@
                 rowErrs.push("<li style='color: red'> Row number " + count + " does not have a cell with corresponding column name \"" + el +"\"</li>");
               } else if (rowObj[el] === "") {
                 rowErrs.push("<li style='color: red'> Row number " + count + " does not have a value under the column name \"" + el + "\"</li>");
-              }
+              } else if (rowObj[el].length > 1000) {
+                rowErrs.push("<li style='color:red'> Row number " + count + " have a value > 1000 characters under column name \"" + el + "\"</li>");
             })
             if (rowErrs.length > 0 && rowErrs.length < requiredFields.length) {
               console.log("Err1"+rowErrs.length);
