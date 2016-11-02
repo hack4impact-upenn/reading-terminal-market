@@ -75,6 +75,12 @@ def new_listing():
         return redirect(url_for('.new_listing', tut_completed=tut_completed))
     return render_template('vendor/new_listing.html', form=form, tut_completed=tut_completed)
 
+def isclose(a, b, rel_tol=1e-09, abs_tol=0.000001):
+    b = float(b)
+    print "ABS", abs(a-b)
+    print "MAX", max(rel_tol * max(abs(a), abs(b)), abs_tol)
+    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
+
 @vendor.route('/csv-row-upload', methods=['POST'])
 @login_required
 @vendor_required
@@ -126,8 +132,7 @@ def row_upload():
                 print "quantity"
                 changed = True
                 queried_listing.quantity = quantity
-            if queried_listing.price != formatted_price:
-                print queried_listing.price == formatted_price
+            if (isclose(queried_listing.price,formatted_price)) == False:
                 changed = True
                 queried_listing.price = formatted_price
             if changed is True:

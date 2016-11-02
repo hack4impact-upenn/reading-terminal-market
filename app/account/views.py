@@ -326,6 +326,7 @@ def csv_settings():
         current_vendor.name_col = form.name_col.data
         current_vendor.unit_col = form.unit_col.data
         current_vendor.quantity_col = form.quantity_col.data
+        flash('Your CSV settings have been updated.', 'form-success')
         db.session.commit()
     form.product_id_col.data = current_vendor.product_id_col
     form.listing_description_col.data = current_vendor.listing_description_col
