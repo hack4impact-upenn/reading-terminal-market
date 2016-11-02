@@ -137,6 +137,7 @@ def row_upload():
                 queried_listing.price = formatted_price
             if changed is True:
                 queried_listing.available = True
+                db.session.commit()
                 return jsonify({"status": "Success", "message": "Successfully merged {} (Product Id: {}) with price ${}".format(name, product_id, formatted_price)})
             else:
                 return jsonify({"status": "Prep", "message": "No change {} (Product Id: {})".format(name, product_id)})
