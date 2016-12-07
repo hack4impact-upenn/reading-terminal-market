@@ -500,29 +500,7 @@ def decline_order(order_id):
 @login_required
 @vendor_required
 def view_profile():
-    f1 = Listing.query.filter_by(name=current_user.f1).first()
-    if f1:
-        f1_ID = f1
-    else:
-        f1_ID = current_user.f1
-    f2 = Listing.query.filter_by(name=current_user.f2).first()
-    if f2:
-        f2_ID = f2
-    else:
-        f2_ID = current_user.f2
-    f3 = Listing.query.filter_by(name=current_user.f3).first()
-    if f3:
-        f3_ID = f3
-    else:
-        f3_ID = current_user.f3
-    f4 = Listing.query.filter_by(name=current_user.f4).first()
-    if f4:
-        f4_ID = f4
-    else:
-        f4_ID = current_user.f4
-    return render_template('vendor/profile.html', vendor=current_user,
-                           f1=f1_ID, f2=f2_ID, f3=f3_ID, f4=f4_ID)
-
+    return render_template('vendor/profile.html', vendor=current_user)
 
 @vendor.route('/picture/<filename>', methods=['GET'])
 @login_required
