@@ -26,6 +26,7 @@
                 <div class="column">
                     <h1 class="ui header">{{ vendor.company_name }}</h1>
                     <h5 class="ui header"><i>{{ vendor.bio }}</i></h5>
+                    {% if vendor.pdf %}<a href="{{vendor.pdf}}">Click here to download credit app</a>{% endif %}
                     <p >Website: <a href="{{ vendor.website }}" target="_blank">{{ vendor.website }}</a>
                         <br>Address: {{ vendor.address }}
                         <br>Email: <a href="mailto:{{ vendor.public_email }}">{{ vendor.public_email }}</a>
@@ -41,7 +42,7 @@
             <img src="{{ url_for('static', filename='images/default.png') }}">
             {% endif %}
             {% if current_user.is_vendor() %}
-            Note: If you recently changed your profile picture, it may take a while for your image to upload to our servers.
+            Note: If you recently changed your profile picture or credit app, it may take a while for your image to upload to our servers.
             Refresh the page if you do not see your image change
             {% endif %}
         </div>
@@ -54,52 +55,8 @@
     </div>
     <div class="ui row">
         <div class="ui left aligned two wide column"></div>
-        {% if f1 != None %}
-        <div class="ui left aligned three wide column grid">
-            {% if current_user.is_vendor() %}
-            <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f1.id) }}">{{ vendor.f1 }}</a></p>
-            {% else %}
-            <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f1.id) }}">{{ vendor.f1 }}</a></p>
-            {% endif %}
-            <p>
-                Notes: {{ vendor.d1 }}<br>Description: {{ f1.description }}
-            </p>
-        </div>
-        {% endif %}
-        {% if f2 != None %}
-        <div class="ui left aligned three wide column grid">
-            {% if current_user.is_vendor() %}
-            <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f2.id) }}">{{ vendor.f2 }}</a></p>
-            {% else %}
-            <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f2.id) }}">{{ vendor.f2 }}</a></p>
-            {% endif %}
-            <p>
-                Notes: {{ vendor.d2 }}<br>Description: {{ f2.description }}
-            </p>
-        </div>
-        {% endif %}
-        {% if f3 != None %}
-        <div class="ui left aligned three wide column grid">
-            {% if current_user.is_vendor() %}
-            <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f3.id) }}">{{ vendor.f3 }}</a></p>
-            {% else %}
-            <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f3.id) }}">{{ vendor.f3 }}</a></p>
-            {% endif %}                         
-            <p>
-                Notes: {{ vendor.d3 }}<br>Description: {{ f3.description }}
-            </p>
-        </div>
-        {% endif %}
-        {% if f4 != None %}
-        <div class="ui left aligned three wide column grid">
-            {% if current_user.is_vendor() %}
-            <p class="ui header"><a href="{{ url_for('vendor.listing_info', listing_id=f4.id) }}">{{ vendor.f4 }}</a></p>
-            {% else %}
-            <p class="ui header"><a href="{{ url_for('merchant.listing_info', listing_id=f4.id) }}">{{ vendor.f4 }}</a></p>
-            {% endif %}
-            <p>
-                Notes: {{ vendor.d4 }}<br>Description: {{ f4.description }}
-            </p>
+        <div class="ui left aligned fourteen wide column grid">
+              <p class="ui header">{{ vendor.f1 }}</a></p>
         </div>
         {% endif %}
     </div>

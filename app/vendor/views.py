@@ -501,22 +501,25 @@ def decline_order(order_id):
 @vendor_required
 def view_profile():
     f1 = Listing.query.filter_by(name=current_user.f1).first()
-    f1_ID = f1
+    if f1:
+        f1_ID = f1
+    else:
+        f1_ID = current_user.f1
     f2 = Listing.query.filter_by(name=current_user.f2).first()
     if f2:
         f2_ID = f2
     else:
-        f2_ID = None
+        f2_ID = current_user.f2
     f3 = Listing.query.filter_by(name=current_user.f3).first()
     if f3:
         f3_ID = f3
     else:
-        f3_ID = None
+        f3_ID = current_user.f3
     f4 = Listing.query.filter_by(name=current_user.f4).first()
     if f4:
         f4_ID = f4
     else:
-        f4_ID = None
+        f4_ID = current_user.f4
     return render_template('vendor/profile.html', vendor=current_user,
                            f1=f1_ID, f2=f2_ID, f3=f3_ID, f4=f4_ID)
 
@@ -565,8 +568,16 @@ def edit_profile():
         if form.image.data:
             filename = form.image.data.filename
             get_queue().enqueue(process_image, 
+                                'image',
                                 filename=filename,
                                 data =form.image.data.read(),
+                                user_id=current_user.id)
+        if form.pdf.data:
+            filename = form.pdf.data.filename
+            get_queue().enqueue(process_image, 
+                                'pdf',
+                                filename=filename,
+                                data =form.pdf.data.read(),
                                 user_id=current_user.id)
         db.session.commit()
         return redirect(url_for('vendor.view_profile'))
@@ -585,7 +596,7 @@ def edit_profile():
     form.description4.data = current_user.d4
     return render_template('vendor/edit_profile.html', form=form)
 
-def process_image(filename, data, user_id):
+def process_image(filename, type, data, user_id):
     app = create_app(os.getenv('FLASK_CONFIG') or 'default')
     with app.app_context():
         source_filename = secure_filename(filename)
@@ -597,6 +608,10 @@ def process_image(filename, data, user_id):
         sml = b.new_key("/".join([destination_filename]))
         sml.set_contents_from_string(data)
         sml.set_acl('public-read')
+        
         user = User.query.filter_by(id=user_id).first()
-        user.image = 'https://s3-us-west-2.amazonaws.com/{}/{}'.format(os.environ["S3_BUCKET"], destination_filename)
+        if type == 'image': 
+            user.image = 'https://s3-us-west-2.amazonaws.com/{}/{}'.format(os.environ["S3_BUCKET"], destination_filename)
+        if type == 'pdf':
+            user.pdf = 'https://s3-us-west-2.amazonaws.com/{}/{}'.format(os.environ["S3_BUCKET"], destination+filename)
         db.session.commit()

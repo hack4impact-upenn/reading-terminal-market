@@ -47,20 +47,14 @@ class NewItemForm(Form):
 
 class EditProfileForm(Form):
     image = FileField('Image File')
+    pdf = FileField('Credit Application File')
     bio = TextAreaField('Bio')
     address = StringField('Address')
     phone_number = StringField('Phone Number')
     website = StringField('Website (http://www.example.com)',
                           validators=[URL('This URL is invalid. Please enter a valid website name')])
     email = StringField('Email', validators=[Email('Please enter a valid email address')])
-    featured1 = StringField('Featured Item 1')
-    description1 = StringField('Description Item 1')
-    featured2 = StringField('Featured Item 2')
-    description2 = StringField('Description Item 2')
-    featured3 = StringField('Featured Item 3')
-    description3 = StringField('Description Item 3')
-    featured4 = StringField('Featured Item 4')
-    description4 = StringField('Description Item 4')
+    featured1 = TextAreaField('Specials')
     submit = SubmitField('Save')
 
 class NewCSVForm(Form):
