@@ -26,7 +26,7 @@
                 <div class="column">
                     <h1 class="ui header">{{ vendor.company_name }}</h1>
                     <h5 class="ui header"><i>{{ vendor.bio }}</i></h5>
-                    {% if vendor.pdf %}<a href="{{vendor.pdf}}">Click here to download credit app</a>{% endif %}
+                    {% if vendor.pdf %}Credit App:<a href="{{vendor.pdf}}">Click here to download credit app</a>{% endif %}
                     <p >Website: <a href="{{ vendor.website }}" target="_blank">{{ vendor.website }}</a>
                         <br>Address: {{ vendor.address }}
                         <br>Email: <a href="mailto:{{ vendor.public_email }}">{{ vendor.public_email }}</a>
@@ -42,7 +42,7 @@
             <img src="{{ url_for('static', filename='images/default.png') }}">
             {% endif %}
             {% if current_user.is_vendor() %}
-            Note: If you recently changed your profile picture or credit app, it may take a while for your image to upload to our servers.
+            <br>            Note: If you recently changed your profile picture or credit app, it may take a while for your image to upload to our servers.
             Refresh the page if you do not see your image change
             {% endif %}
         </div>
@@ -56,9 +56,8 @@
     <div class="ui row">
         <div class="ui left aligned two wide column"></div>
         <div class="ui left aligned fourteen wide column grid">
-              <p class="ui header">{{ vendor.f1 }}</a></p>
+        {{ vendor.f1|safe }}
         </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

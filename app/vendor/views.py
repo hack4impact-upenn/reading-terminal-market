@@ -558,24 +558,17 @@ def edit_profile():
         current_user.website = form.website.data
         current_user.public_email = form.email.data
         current_user.f1 = form.featured1.data
-        current_user.f2 = form.featured2.data
-        current_user.f3 = form.featured3.data
-        current_user.f4 = form.featured4.data
-        current_user.d1 = form.description1.data
-        current_user.d2 = form.description2.data
-        current_user.d3 = form.description3.data
-        current_user.d4 = form.description4.data
         if form.image.data:
             filename = form.image.data.filename
             get_queue().enqueue(process_image, 
-                                'image',
+                                type='image',
                                 filename=filename,
                                 data =form.image.data.read(),
                                 user_id=current_user.id)
         if form.pdf.data:
             filename = form.pdf.data.filename
             get_queue().enqueue(process_image, 
-                                'pdf',
+                                type='pdf',
                                 filename=filename,
                                 data =form.pdf.data.read(),
                                 user_id=current_user.id)
@@ -587,13 +580,6 @@ def edit_profile():
     form.website.data = current_user.website
     form.email.data = current_user.public_email
     form.featured1.data = current_user.f1
-    form.featured2.data = current_user.f2
-    form.featured3.data = current_user.f3
-    form.featured4.data = current_user.f4
-    form.description1.data = current_user.d1
-    form.description2.data = current_user.d2
-    form.description3.data = current_user.d3
-    form.description4.data = current_user.d4
     return render_template('vendor/edit_profile.html', form=form)
 
 def process_image(filename, type, data, user_id):
@@ -613,5 +599,5 @@ def process_image(filename, type, data, user_id):
         if type == 'image': 
             user.image = 'https://s3-us-west-2.amazonaws.com/{}/{}'.format(os.environ["S3_BUCKET"], destination_filename)
         if type == 'pdf':
-            user.pdf = 'https://s3-us-west-2.amazonaws.com/{}/{}'.format(os.environ["S3_BUCKET"], destination+filename)
+            user.pdf = 'https://s3-us-west-2.amazonaws.com/{}/{}'.format(os.environ["S3_BUCKET"], destination_filename)
         db.session.commit()

@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 {% import 'macros/form_macros.html' as f %}
 
-{% block content %}
+{% block content %}<script src='https://cdn.tinymce.com/4/tinymce.min.js'></script>
     <div class="ui container">
         <h1 class="ui header">Edit Profile</h1>
         <div class="ui centered two wide column">
@@ -11,5 +11,8 @@
     </div>
 
 
-    <script>
+    <script>  tinymce.init({
+    selector: '#featured1'
+  });
+  </script>
 {% endblock %}
