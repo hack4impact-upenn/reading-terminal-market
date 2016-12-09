@@ -291,28 +291,7 @@ def change_name():
 @login_required
 def profile_page(profile_id):
     vendor = Vendor.query.filter_by(id=profile_id).first()
-    f1 = Listing.query.filter_by(name=vendor.f1).first()
-    if f1:
-        f1_ID = f1
-    else:
-        f1_ID = f1
-    f2 = Listing.query.filter_by(name=vendor.f2).first()
-    if f2:
-        f2_ID = f2
-    else:
-        f2_ID = None
-    f3 = Listing.query.filter_by(name=vendor.f3).first()
-    if f3:
-        f3_ID = f3
-    else:
-        f3_ID = None
-    f4 = Listing.query.filter_by(name=vendor.f4).first()
-    if f4:
-        f4_ID = f4
-    else:
-        f4_ID = None
-    return render_template('vendor/profile.html', vendor=vendor,
-                           f1=f1_ID, f2=f2_ID, f3=f3_ID, f4=f4_ID)
+    return render_template('vendor/profile.html', vendor=vendor) 
 
 @account.route('/manage/csv-settings', methods=['GET', 'POST'])
 @login_required
