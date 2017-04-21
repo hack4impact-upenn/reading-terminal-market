@@ -46,8 +46,8 @@ class NewItemForm(Form):
 
 
 class EditProfileForm(Form):
-    image = FileField('Image File')
-    pdf = FileField('Credit Application File')
+    image = FileField('Image File (note cannot be more than 5 MB)')
+    pdf = FileField('Credit Application File (note cannot be more than 5 MB)')
     bio = TextAreaField('Bio')
     address = StringField('Address')
     phone_number = StringField('Phone Number')
