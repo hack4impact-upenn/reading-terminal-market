@@ -90,6 +90,9 @@ def reset_password(token):
             flash('Invalid email address.', 'form-error')
             return redirect(url_for('main.index'))
         if user.reset_password(token, form.new_password.data):
+            user.password = form.new_password.data
+            db.session.add(user)
+            db.session.commit()
             flash('Your password has been updated.', 'form-success')
             return redirect(url_for('account.login'))
         else:
